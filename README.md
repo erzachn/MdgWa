@@ -11,34 +11,38 @@ An Xposed module to customize your WhatsApp.
 |  | Status |
 | ------------- | ------------- |
 | New WhatsApp theme | ✅ |
-| New home style | ✅ |
 | New settings style | ✅ |
 | Filter chats | ✅ |
 | Buttons stroke | ✅ |
 | Menu icons | ✅ |
 | Outlined icons | ✅ |
 | Show name and bio | ✅ |
+| AM:PM Time Format | ✅ |
 | Seconds in time | ✅ |
 | Change color global | ✅ |
+| Separe chats and groups | ✅ |
 
 
 ### Functions
 
 |  | Status |
-| ------------- | ------------- |
+| ------------- | ------------ |
 | Anti revoke message | ✅ |
 | Anti revoke status | ✅ |
-| Remove forward limit | ⚠️ BETA |
-| Download status | ⚠️ BETA |
-| Videos in high resolution | ⚠️ BETA |
+| Download status | ✅|
+| Download view once | ✅ |
+| Videos in high resolution | ✅ |
+| Images in high resolution | ✅ |
 
 ### Privacy
 
 |  | Status |
 | ------------- | ------------- |
 | Hide forwarding tag | ✅ |
-| Freeze last seen | ⚠️ BETA |
-| Hide status view | ❌ BUG |
+| Remove forward limit | ✅ |
+| Freeze last seen | ✅ |
+| Hide status view | ✅ |
+| Hide message view | ✅ |
 | Hide receipt | ✅ |
 | Hide typing | ✅ |
 | Hide recording | ✅ |

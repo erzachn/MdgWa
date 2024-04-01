@@ -11,38 +11,42 @@ WhatsApp'ınızı özelleştirmek için bir Xposed modülü.
 |  | Durum |
 | ------------- | ------------- |
 | Yeni WhatsApp teması | ✅ |
-| Yeni ana sayfa stili | ✅ |
 | Yeni ayarlar stili | ✅ |
-| Sohbetleri filtreleme | ✅ |
+| Sohbetleri filtrele | ✅ |
 | Düğmelerin kenarlığı | ✅ |
 | Menü simgeleri | ✅ |
 | Çizgili simgeler | ✅ |
 | İsim ve biyografi göster | ✅ |
+| ÖÖ:DD Zaman Formatı | ✅ |
 | Zaman içinde saniyeleri göster | ✅ |
 | Global renk değiştirme | ✅ |
+| Sohbetleri ve grupları ayır | ✅ |
 
 
 ### Fonksiyonlar
 
 |  | Durum |
-| ------------- | ------------- |
-| Mesajların geri alınmasını engelleme | ✅ |
-| Durumların geri alınmasını engelleme | ✅ |
-| İleti gönderme sınırını kaldırma | ⚠️ BETA |
-| Durumları indirme | ⚠️ BETA |
-| Yüksek çözünürlüklü videolar | ⚠️ BETA |
+| ------------- | ------------ |
+| Anti geri mesaj | ✅ |
+| Anti geri durum | ✅ |
+| Durumu indir | ✅ |
+| Bir kez görüntülemeyi indir | ✅ |
+| Yüksek çözünürlükte videolar | ✅ |
+| Yüksek çözünürlükte resimler | ✅ |
 
 ### Gizlilik
 
 |  | Durum |
-| ------------- | ------------- |
-| İletim etiketini gizleme | ✅ |
-| Son görünümü dondurma | ⚠️ BETA |
-| Durum görünümünü gizleme | ❌ BUG |
-| Teslimatı gizleme | ✅ |
-| Yazı yazma durumunu gizleme | ✅ |
-| Kayıt yapma durumunu gizleme | ✅ |
-| Bir kez görüntüleme özelliğini devre dışı bırakma | ✅ |
+| ------------ | ------------ |
+| Yönlendirme etiketini gizle | ✅ |
+| İleri sınırını kaldır | ✅ |
+| Son görülmeyi dondur | ✅ |
+| Durum görünümünü gizle | ✅ |
+| Mesaj görünümünü gizle | ✅ |
+| Makbuzu gizle | ✅ |
+| Yazmayı gizle | ✅ |
+| Kaydı gizle | ✅ |
+| Bir kez görüntülemeyi devre dışı bırak | ✅ |
 
 ## Uyumluluk
 
