@@ -48,7 +48,9 @@ public class XHideView extends XHookBase {
                 }
             });
 
-        } else if (hidereadstatus) {
+        }
+
+        if (hidereadstatus) {
             var methodHideViewJid = Unobfuscator.loadHideViewJidMethod(loader);
             logDebug(Unobfuscator.getMethodDescriptor(methodHideViewJid));
             XposedBridge.hookMethod(methodHideViewJid,XC_MethodReplacement.returnConstant(null));
