@@ -1,15 +1,18 @@
 package its.madruga.wpp.xposed.plugins.personalization;
 
-import static its.madruga.wpp.ClassesReference.ShowBioAndName.setTitleMethod;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
+
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import its.madruga.wpp.ClassesReference;
 import its.madruga.wpp.xposed.models.XHookBase;
 
 public class XBioAndName extends XHookBase {
@@ -33,6 +36,12 @@ public class XBioAndName extends XHookBase {
         XposedHelpers.findAndHookMethod("com.whatsapp.HomeActivity", loader, "onCreate", Bundle.class, methodHook);
     }
 
+    @NonNull
+    @Override
+    public String getPluginName() {
+        return "Show Name and Bio";
+    }
+
     public static class MethodHook extends XC_MethodHook {
         private final boolean showName;
         private final boolean showBio;
@@ -49,22 +58,25 @@ public class XBioAndName extends XHookBase {
             var homeActivity = (Activity) param.thisObject;
             var bio = getBio(homeActivity);
             var name = getName(homeActivity);
+            XposedBridge.log("Bio: " + bio + ", Name: " + name);
+            // 1 to set Title, 0 to set Summary
+            var methods = Arrays.stream(actionBar.getClass().getDeclaredMethods()).filter(m -> m.getParameterCount() == 1 && m.getParameterTypes()[0].equals(CharSequence.class)).toArray(Method[]::new);
+            XposedBridge.log("ActionBar class: " + actionBar.getClass().getName());
 
-            XposedHelpers.findAndHookMethod(actionBar.getClass().getName(), actionBar.getClass().getClassLoader(), setTitleMethod, CharSequence.class, new XC_MethodHook() {
+            if (showName) {
+                methods[1].invoke(actionBar, name);
+                XposedBridge.log(methods[1].getName());
+            }
+            if (showBio) {
+                methods[0].invoke(actionBar, bio);
+                XposedBridge.log(methods[0].getName());
+            }
+            XposedBridge.hookMethod(methods[1], new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                     if (showName) param.args[0] = name;
-                    super.beforeHookedMethod(param);
                 }
             });
-            if (showName) {
-                XposedHelpers.callMethod(actionBar, setTitleMethod, name);
-            }
-            if (showBio) {
-                XposedHelpers.callMethod(actionBar, ClassesReference.ShowBioAndName.setSummaryMethod, bio);
-            }
-
-            super.afterHookedMethod(param);
         }
     }
 }
