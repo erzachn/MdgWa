@@ -2,9 +2,15 @@ package its.madruga.wpp.xposed.plugins.personalization;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.Gravity;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -20,19 +26,12 @@ public class XBioAndName extends XHookBase {
         super(loader, preferences);
     }
 
-    public static String getBio(Activity activity) {
-        return activity.getSharedPreferences(activity.getPackageName() + "_preferences_light", Context.MODE_PRIVATE).getString("my_current_status", ".");
-    }
-
-    public static String getName(Activity activity) {
-        return activity.getSharedPreferences("startup_prefs", Context.MODE_PRIVATE).getString("push_name", "MdgWa");
-    }
-
     @Override
     public void doHook() {
         var showName = prefs.getBoolean("shownamehome", false);
         var showBio = prefs.getBoolean("showbiohome", false);
         var methodHook = new MethodHook(showName, showBio);
+        if (!showName && !showBio) return;
         XposedHelpers.findAndHookMethod("com.whatsapp.HomeActivity", loader, "onCreate", Bundle.class, methodHook);
     }
 
@@ -53,36 +52,36 @@ public class XBioAndName extends XHookBase {
 
         @Override
         protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-
-            var actionBar = XposedHelpers.callMethod(param.thisObject, "getSupportActionBar");
             var homeActivity = (Activity) param.thisObject;
-            var bio = getBio(homeActivity);
-            var name = getName(homeActivity);
-            XposedBridge.log("Bio: " + bio + ", Name: " + name);
-            // 1 to set Title, 0 to set Summary
-            var methods = Arrays.stream(actionBar.getClass().getDeclaredMethods()).filter(m -> m.getParameterCount() == 1 && m.getParameterTypes()[0].equals(CharSequence.class)).toArray(Method[]::new);
-            XposedBridge.log("ActionBar class: " + actionBar.getClass().getName());
+            var toolbar = homeActivity.findViewById(homeActivity.getResources().getIdentifier("toolbar", "id", homeActivity.getPackageName()));
+            var logo = toolbar.findViewById(toolbar.getResources().getIdentifier("toolbar_logo", "id", homeActivity.getPackageName()));
+            var parent = (LinearLayout) logo.getParent();
+            var startup_prefs = homeActivity.getSharedPreferences("startup_prefs", Context.MODE_PRIVATE);
+            var mainPrefs = homeActivity.getSharedPreferences(homeActivity.getPackageName() + "_preferences_light", Context.MODE_PRIVATE);
 
-            if (showName) {
-                methods[1].invoke(actionBar, name);
-                XposedBridge.log(methods[1].getName());
-            }
+            var mTitle = new TextView(homeActivity);
+            mTitle.setText(showName ? startup_prefs.getString("push_name", "WhatsApp") : "WhatsApp");
+            mTitle.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
+            mTitle.setTextSize(20f);
+            mTitle.setTextColor(0xffffffff);
+            parent.addView(mTitle);
+
             if (showBio) {
-                methods[0].invoke(actionBar, bio);
-                XposedBridge.log(methods[0].getName());
+                var mSubtitle = new TextView(homeActivity);
+                mSubtitle.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
+                mSubtitle.setText(mainPrefs.getString("my_current_status", ""));
+                mSubtitle.setTextSize(12f);
+                mSubtitle.setTextColor(0xffffffff);
+                mSubtitle.setMarqueeRepeatLimit(-1);
+                mSubtitle.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+                mSubtitle.setSingleLine();
+                mSubtitle.setSelected(true);
+                parent.addView(mSubtitle);
+
+            } else {
+                mTitle.setGravity(Gravity.CENTER);
             }
-            XposedBridge.hookMethod(methods[1], new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    if (showName) param.args[0] = name;
-                }
-            });
-            XposedBridge.hookMethod(methods[0], new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    if (showBio) param.args[0] = bio;
-                }
-            });
+            parent.removeView(logo);
         }
     }
 }
