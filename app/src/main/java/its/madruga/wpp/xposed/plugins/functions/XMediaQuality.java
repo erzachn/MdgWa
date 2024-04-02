@@ -30,6 +30,7 @@ public class XMediaQuality extends XHookBase {
 
             var resolutionMethod = Unobfuscator.loadMediaQualityResolutionMethod(loader);
             logDebug(Unobfuscator.getMethodDescriptor(resolutionMethod));
+
             XposedBridge.hookMethod(resolutionMethod, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) {
@@ -45,12 +46,14 @@ public class XMediaQuality extends XHookBase {
 
             var videoMethod = Unobfuscator.loadMediaQualityVideoMethod(loader);
             logDebug(Unobfuscator.getMethodDescriptor(videoMethod));
+
             XposedBridge.hookMethod(videoMethod, new XC_MethodReplacement() {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam param) {
                     return new Pair<>(true, new ArrayList<>());
                 }
             });
+
         }
 
         if (imageQuality) {

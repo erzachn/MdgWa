@@ -77,6 +77,12 @@ public class XBioAndName extends XHookBase {
                     if (showName) param.args[0] = name;
                 }
             });
+            XposedBridge.hookMethod(methods[0], new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (showBio) param.args[0] = bio;
+                }
+            });
         }
     }
 }

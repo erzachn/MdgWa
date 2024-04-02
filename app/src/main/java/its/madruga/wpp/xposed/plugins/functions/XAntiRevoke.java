@@ -170,7 +170,7 @@ public class XAntiRevoke extends XHookBase {
                     if (textView1 == null || textView1.getId() == dateId) {
                         logDebug("textView = " + textView.getName());
                         logDebug("keyMessage = " + param.args[0]);
-                        isMRevoked(objMessage, textView1,"antirevokestatus");
+                        isMRevoked(objMessage, textView1, "antirevokestatus");
                         break;
                     }
                 }
@@ -212,12 +212,15 @@ public class XAntiRevoke extends XHookBase {
                     saveRevokedMessage(stripJID, messageKey, objMessage);
                     try {
                         if (mConversation != null && getCurrentJid().equals(stripJID)) {
-                            if (mConversation.hasWindowFocus()) {
-                                mConversation.startActivity(mConversation.getIntent());
-                                mConversation.overridePendingTransition(0, 0);
-                            } else {
-                                mConversation.recreate();
-                            }
+
+                            mConversation.runOnUiThread(() -> {
+                                if (mConversation.hasWindowFocus()) {
+                                    mConversation.startActivity(mConversation.getIntent());
+                                    mConversation.overridePendingTransition(0, 0);
+                                } else {
+                                    mConversation.recreate();
+                                }
+                            });
                         }
                     } catch (Exception e) {
                         XposedBridge.log(e.getMessage());

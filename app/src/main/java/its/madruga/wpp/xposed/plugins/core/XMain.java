@@ -80,28 +80,26 @@ public class XMain {
 
     private static void plugins(@NonNull ClassLoader loader, @NonNull XSharedPreferences pref) {
         ArrayList<String> loadedClasses = new ArrayList<>();
+
         var classes = new Class<?>[]{
-                XOthers.class,
-                XDndMode.class,
-                XHideTag.class,
-                XHideView.class,
-                XViewOnce.class,
-                XGhostMode.class,
                 XAntiRevoke.class,
                 XBioAndName.class,
-                XShareLimit.class,
-                XChatsFilter.class,
-                XHideReceipt.class,
-                XChangeColors.class,
-                XMediaQuality.class,
                 XBubbleColors.class,
-                XSecondsToTime.class,
-                XStatusDownload.class,
-                XStatusDownload.class,
+                XChangeColors.class,
+                XChatsFilter.class,
+                XDndMode.class,
                 XFreezeLastSeen.class,
+                XGhostMode.class,
+                XHideReceipt.class,
+                XHideTag.class,
+                XHideView.class,
+                XMediaQuality.class,
+                XOthers.class,
+                XSecondsToTime.class,
+                XShareLimit.class,
+                XStatusDownload.class,
+                XViewOnce.class,
         };
-
-
 
         for (var classe : classes) {
             try {

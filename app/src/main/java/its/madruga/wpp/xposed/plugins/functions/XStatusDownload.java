@@ -68,7 +68,6 @@ public class XStatusDownload extends XHookBase {
                             Object menuObj = XposedHelpers.getObjectField(submenu, menuField.getName());
                             var menu = (MenuItem) XposedHelpers.callMethod(menuObj, "findItem", 0x7f0b1009);
                             if (menu != null) return;
-
                             menu = (MenuItem) XposedHelpers.callMethod(menuObj, "add", 0, 0x7f0b1009, 0, "Download");
                             menu.setOnMenuItemClickListener(item -> {
                                 if (copyFile(file)) {
@@ -78,8 +77,6 @@ public class XStatusDownload extends XHookBase {
                                 }
                                 return true;
                             });
-
-                            super.afterHookedMethod(param);
                         }
                     });
 
