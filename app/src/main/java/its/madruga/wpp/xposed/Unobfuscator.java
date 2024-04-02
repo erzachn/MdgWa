@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -42,6 +43,8 @@ public class Unobfuscator {
     public static final String BUBBLE_COLORS_BALLOON_INCOMING_NORMAL_EXT = "balloon_incoming_normal_ext";
     public static final String BUBBLE_COLORS_BALLOON_OUTGOING_NORMAL = "balloon_outgoing_normal";
     public static final String BUBBLE_COLORS_BALLOON_OUTGOING_NORMAL_EXT = "balloon_outgoing_normal_ext";
+
+    private static final HashMap<String, Object> cache = new HashMap<>();
 
     static {
         System.loadLibrary("dexkit");
@@ -131,10 +134,12 @@ public class Unobfuscator {
     // TODO: Classes and Methods for Receipt
 
     public static Method loadReceiptMethod(ClassLoader classLoader) throws Exception {
+        if (cache.containsKey("receipt")) return (Method) cache.get("receipt");
         Method[] methods = findAllMethodUsingStrings(classLoader, StringMatchType.Equals, "privacy_token", "false", "receipt");
         var deviceJidClass = XposedHelpers.findClass("com.whatsapp.jid.DeviceJid", classLoader);
         Method bestMethod = Arrays.stream(methods).filter(method -> method.getParameterTypes().length > 1 && method.getParameterTypes()[1] == deviceJidClass).findFirst().orElse(null);
         if (bestMethod == null) throw new Exception("Receipt method not found");
+        cache.put("receipt", bestMethod);
         return bestMethod;
     }
 
@@ -178,21 +183,28 @@ public class Unobfuscator {
     }
 
     public static Class<?> loadThreadMessageClass(ClassLoader classLoader) throws Exception {
-        return findFirstClassUsingStrings(classLoader, StringMatchType.Contains, "Message/getSenderUserJid");
+        if (cache.containsKey("message")) return (Class<?>) cache.get("message");
+        var messageClass = findFirstClassUsingStrings(classLoader, StringMatchType.Contains, "Message/getSenderUserJid");
+        if (messageClass == null) throw new Exception("Message class not found");
+        cache.put("message", messageClass);
+        return messageClass;
     }
 
     // TODO: Classes and Methods for BubbleColors
     private static ClassDataList loadBubbleColorsClass() throws Exception {
+        if (cache.containsKey("balloon")) return (ClassDataList) cache.get("balloon");
         var balloonIncomingNormal = XMain.mApp.getResources().getIdentifier(BUBBLE_COLORS_BALLOON_INCOMING_NORMAL, "drawable", XMain.mApp.getPackageName());
         var balloonIncomingNormalExt = XMain.mApp.getResources().getIdentifier(BUBBLE_COLORS_BALLOON_INCOMING_NORMAL_EXT, "drawable", XMain.mApp.getPackageName());
         var balloonOutgoingNormal = XMain.mApp.getResources().getIdentifier(BUBBLE_COLORS_BALLOON_OUTGOING_NORMAL, "drawable", XMain.mApp.getPackageName());
         var balloonOutgoingNormalExt = XMain.mApp.getResources().getIdentifier(BUBBLE_COLORS_BALLOON_OUTGOING_NORMAL_EXT, "drawable", XMain.mApp.getPackageName());
-        return dexkit.findClass(new FindClass().matcher(new ClassMatcher()
+        var clsBubbleColors = dexkit.findClass(new FindClass().matcher(new ClassMatcher()
                 .addMethod(new MethodMatcher().addUsingNumber(balloonIncomingNormal))
                 .addMethod(new MethodMatcher().addUsingNumber(balloonOutgoingNormal))
                 .addMethod(new MethodMatcher().addUsingNumber(balloonIncomingNormalExt))
                 .addMethod(new MethodMatcher().addUsingNumber(balloonOutgoingNormalExt))
         ));
+        cache.put("balloon", clsBubbleColors);
+        return clsBubbleColors;
     }
 
     public static Method loadBubbleColorsMethod(ClassLoader classLoader, String name) throws Exception {
@@ -214,8 +226,10 @@ public class Unobfuscator {
     }
 
     public static Method loadGetTabMethod(ClassLoader classLoader) throws Exception {
+        if (cache.containsKey("tab")) return (Method) cache.get("tab");
         Method result = findFirstMethodUsingStrings(classLoader, StringMatchType.Contains, "Invalid tab id: 600");
         if (result == null) throw new Exception("GetTab method not found");
+        cache.put("tab", result);
         return result;
     }
 
@@ -243,21 +257,31 @@ public class Unobfuscator {
     }
 
     public static Method loadIconTabMethod(ClassLoader classLoader) throws Exception {
+        if (cache.containsKey("iconTab")) return (Method) cache.get("iconTab");
         Method result = findFirstMethodUsingStrings(classLoader, StringMatchType.Contains, "homeFabManager");
         if (result == null) throw new Exception("IconTab method not found");
+        cache.put("iconTab", result);
         return result;
     }
 
     public static Field loadIconTabField(ClassLoader classLoader) throws Exception {
+        if (cache.containsKey("iconTabField")) return (Field) cache.get("iconTabField");
         Class<?> cls = loadIconTabMethod(classLoader).getDeclaringClass();
         Class<?> clsType = findFirstClassUsingStrings(classLoader, StringMatchType.Contains, "Tried to set badge");
-        return Arrays.stream(cls.getFields()).filter(f -> f.getType().equals(clsType)).findFirst().orElse(null);
+        var result = Arrays.stream(cls.getFields()).filter(f -> f.getType().equals(clsType)).findFirst().orElse(null);
+        if (result == null) throw new Exception("IconTabField not found");
+        cache.put("iconTabField", result);
+        return result;
     }
 
     public static Field loadIconTabLayoutField(ClassLoader classLoader) throws Exception {
+        if (cache.containsKey("iconTabLayoutField")) return (Field) cache.get("iconTabLayoutField");
         Class<?> clsType = loadIconTabField(classLoader).getType();
         Class<?> framelayout = findFirstClassUsingStrings(classLoader, StringMatchType.Contains, "android:menu:presenters");
-        return Arrays.stream(clsType.getFields()).filter(f -> f.getType().equals(framelayout)).findFirst().orElse(null);
+        var result = Arrays.stream(clsType.getFields()).filter(f -> f.getType().equals(framelayout)).findFirst().orElse(null);
+        if (result == null) throw new Exception("IconTabLayoutField not found");
+        cache.put("iconTabLayoutField", result);
+        return result;
     }
 
     public static Field loadIconMenuField(ClassLoader classLoader) throws Exception {
@@ -309,9 +333,11 @@ public class Unobfuscator {
     // TODO: Classes and methods to MediaQuality
 
     private static Class<?> loadMediaQualityClass(ClassLoader classLoader) throws Exception {
-        Class<?> clazz = findFirstClassUsingStrings(classLoader, StringMatchType.Contains, "getCorrectedResolution");
-        if (clazz == null) throw new Exception("MediaQuality class not found");
-        return clazz;
+        if (cache.containsKey("MediaQuality")) return (Class<?>) cache.get("MediaQuality");
+        var clazzMediaClass = findFirstClassUsingStrings(classLoader, StringMatchType.Contains, "getCorrectedResolution");
+        if (clazzMediaClass == null) throw new Exception("MediaQuality class not found");
+        cache.put("MediaQuality", clazzMediaClass);
+        return clazzMediaClass;
     }
 
     public static Method loadMediaQualityResolutionMethod(ClassLoader classLoader) throws Exception {
@@ -383,8 +409,10 @@ public class Unobfuscator {
     }
 
     public static Class<?> loadStatusDownloadMediaClass(ClassLoader classLoader) throws Exception {
+        if (cache.containsKey("StatusDownloadMedia")) return (Class<?>) cache.get("StatusDownloadMedia");
         var clazz = findFirstClassUsingStrings(classLoader, StringMatchType.Contains, "FMessageVideo/Cloned");
         if (clazz == null) throw new Exception("StatusDownloadMedia class not found");
+        cache.put("StatusDownloadMedia", clazz);
         return clazz;
     }
 
@@ -395,9 +423,13 @@ public class Unobfuscator {
     }
 
     public static Field loadStatusDownloadFileField(ClassLoader classLoader) throws Exception {
+        if (cache.containsKey("StatusDownloadFile")) return (Field) cache.get("StatusDownloadFile");
         var clazz = loadStatusDownloadMediaClass(classLoader);
         var clazz2 = clazz.getField("A01").getType();
-        return getFieldByType(clazz2, File.class);
+        var field = getFieldByType(clazz2, File.class);
+        if (field == null) throw new Exception("StatusDownloadFile field not found");
+        cache.put("StatusDownloadFile", field);
+        return field;
     }
 
     public static Class<?> loadStatusDownloadSubMenuClass(ClassLoader classLoader) throws Exception {
@@ -445,12 +477,14 @@ public class Unobfuscator {
     }
 
     public static Method loadViewOnceDownloadMenuMethod(ClassLoader classLoader) throws Exception {
+        if (cache.containsKey("ViewOnceDownloadMenu")) return (Method) cache.get("ViewOnceDownloadMenu");
         var clazz = XposedHelpers.findClass("com.whatsapp.mediaview.MediaViewFragment", classLoader);
         var method = Arrays.stream(clazz.getMethods()).filter(m -> m.getParameterCount() == 2 &&
                 Objects.equals(m.getParameterTypes()[0], Menu.class) &&
                 Objects.equals(m.getParameterTypes()[1], MenuInflater.class)
         ).findFirst();
         if (!method.isPresent()) throw new Exception("ViewOnceDownloadMenu method not found");
+        cache.put("ViewOnceDownloadMenu", method.get());
         return method.get();
     }
 
@@ -564,10 +598,12 @@ public class Unobfuscator {
     }
 
     public static Field loadAntiRevokeChatJidField(ClassLoader loader) throws Exception {
+        if (cache.containsKey("loadAntiRevokeChatJidField")) return (Field) cache.get("loadAntiRevokeChatJidField");
         Class<?> chatClass = findFirstClassUsingStrings(loader, StringMatchType.Contains, "payment_chat_composer_entry_nux_shown");
         Class<?> jidClass = XposedHelpers.findClass("com.whatsapp.jid.Jid", loader);
         Field field = getFieldByExtendType(chatClass, jidClass);
         if (field == null) throw new Exception("AntiRevokeChatJid field not found");
+        cache.put("loadAntiRevokeChatJidField", field);
         return field;
     }
 
