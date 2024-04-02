@@ -23,6 +23,7 @@ import its.madruga.wpp.xposed.models.XHookBase;
 import its.madruga.wpp.xposed.plugins.functions.XAntiRevoke;
 import its.madruga.wpp.xposed.plugins.functions.XDndMode;
 import its.madruga.wpp.xposed.plugins.functions.XMediaQuality;
+import its.madruga.wpp.xposed.plugins.functions.XNewChat;
 import its.madruga.wpp.xposed.plugins.functions.XOthers;
 import its.madruga.wpp.xposed.plugins.functions.XShareLimit;
 import its.madruga.wpp.xposed.plugins.functions.XStatusDownload;
@@ -94,6 +95,7 @@ public class XMain {
                 XHideTag.class,
                 XHideView.class,
                 XMediaQuality.class,
+                XNewChat.class,
                 XOthers.class,
                 XSecondsToTime.class,
                 XShareLimit.class,

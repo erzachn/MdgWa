@@ -7,6 +7,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.InputType;
+import android.view.Gravity;
 import android.view.Menu;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -35,14 +37,17 @@ public class XNewChat extends XHookBase {
                 var item = menu.add(0, 0, 0, "New Chat");
                 item.setOnMenuItemClickListener(item1 -> {
                     var view = new LinearLayout(home);
+                    view.setGravity(Gravity.CENTER);
+                    view.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
                     var edt = new EditText(view.getContext());
+                    edt.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1.0f));
+                    edt.setMaxLines(1);
+                    edt.setInputType(InputType.TYPE_CLASS_PHONE);
+                    edt.setTransformationMethod(null);
                     edt.setHint("number");
-
                     view.addView(edt);
-
                     new AlertDialog.Builder(home)
-                            .setTitle("Hi")
-                            .setMessage("Hello World")
+                            .setTitle("New Chat")
                             .setView(view)
                             .setPositiveButton("Message", (dialog, which) -> {
                                 var number = edt.getText().toString();
@@ -52,9 +57,7 @@ public class XNewChat extends XHookBase {
                                     intent.setData(Uri.parse("https://wa.me/" + numberFomatted));
                                     home.startActivity(intent);
                             })
-                            .setNegativeButton("Cancel", (dialog, which) -> {
-                                Toast.makeText(home, "CANCEL", Toast.LENGTH_SHORT).show();
-                            })
+                            .setNegativeButton("Cancel",null)
                             .setCancelable(false)
                             .create().show();
                     return true;
@@ -63,5 +66,11 @@ public class XNewChat extends XHookBase {
                 super.afterHookedMethod(param);
             }
         });
+    }
+
+    @NonNull
+    @Override
+    public String getPluginName() {
+        return "New Chat";
     }
 }
