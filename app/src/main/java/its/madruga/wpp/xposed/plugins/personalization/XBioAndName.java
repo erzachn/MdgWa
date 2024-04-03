@@ -53,12 +53,33 @@ public class XBioAndName extends XHookBase {
         @Override
         protected void afterHookedMethod(MethodHookParam param) throws Throwable {
             var homeActivity = (Activity) param.thisObject;
+            var actionbar = XposedHelpers.callMethod(homeActivity, "getSupportActionBar");
             var toolbar = homeActivity.findViewById(homeActivity.getResources().getIdentifier("toolbar", "id", homeActivity.getPackageName()));
             var logo = toolbar.findViewById(toolbar.getResources().getIdentifier("toolbar_logo", "id", homeActivity.getPackageName()));
-            var parent = (LinearLayout) logo.getParent();
             var startup_prefs = homeActivity.getSharedPreferences("startup_prefs", Context.MODE_PRIVATE);
             var mainPrefs = homeActivity.getSharedPreferences(homeActivity.getPackageName() + "_preferences_light", Context.MODE_PRIVATE);
+            var name = startup_prefs.getString("push_name", "WhatsApp");
+            var bio = mainPrefs.getString("my_current_status", "");
 
+            if (!(logo.getParent() instanceof LinearLayout)){
+                var methods = Arrays.stream(actionbar.getClass().getDeclaredMethods()).filter(m -> m.getParameterCount() == 1 && m.getParameterTypes()[0] == CharSequence.class).toArray(Method[]::new);
+                if (showName){
+                    methods[1].invoke(actionbar,  name);
+                }
+                if (showBio){
+                    methods[0].invoke(actionbar, bio);
+                }
+                XposedBridge.hookMethod(methods[1], new XC_MethodHook() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                        if (showName) {
+                            param.args[0] = name;
+                        }
+                    }
+                });
+                return;
+            }
+            var parent = (LinearLayout) logo.getParent();
             var mTitle = new TextView(homeActivity);
             mTitle.setText(showName ? startup_prefs.getString("push_name", "WhatsApp") : "WhatsApp");
             mTitle.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
