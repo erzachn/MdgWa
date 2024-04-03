@@ -64,7 +64,7 @@ public class XOthers extends XHookBase {
         XposedBridge.hookMethod(methodProps, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                int i = (int) param.args[2];
+                int i = (int) (param.args.length > 2 ? param.args[2] : param.args[1]);
 
                 var propValue = props.get(i);
 
@@ -85,6 +85,7 @@ public class XOthers extends XHookBase {
                 }
             }
         });
+
         var homeActivity = findClass("com.whatsapp.HomeActivity", loader);
         XposedHelpers.findAndHookMethod(homeActivity, "onCreateOptionsMenu", Menu.class, new XC_MethodHook() {
             @Override
