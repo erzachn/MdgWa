@@ -4,12 +4,12 @@ import androidx.annotation.NonNull;
 
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
+import its.madruga.wpp.BuildConfig;
 
 public abstract class XHookBase {
 
     public final ClassLoader loader;
     public final XSharedPreferences prefs;
-    public static boolean debug = true;
 
     public XHookBase(@NonNull ClassLoader loader, @NonNull XSharedPreferences preferences) {
         this.loader = loader;
@@ -22,12 +22,11 @@ public abstract class XHookBase {
     public abstract String getPluginName();
 
     public void logDebug(Object object) {
-        if (!debug) return;
+        if (!BuildConfig.DEBUG) return;
         log(object);
     }
 
     public void log(Object object) {
-        if (!debug) return;
         if (object instanceof Throwable) {
             XposedBridge.log(String.format("[%s] Error:", this.getPluginName()));
             XposedBridge.log((Throwable) object);

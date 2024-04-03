@@ -36,17 +36,18 @@ An Xposed module to customize your WhatsApp.
 
 ### Privacy
 
-|  | Status |
-| ------------- | ------------- |
-| Hide forwarding tag | ✅ |
-| Remove forward limit | ✅ |
-| Freeze last seen | ✅ |
-| Hide status view | ✅ |
-| Hide message view | ✅ |
-| Hide receipt | ✅ |
-| Hide typing | ✅ |
-| Hide recording | ✅ |
-| Disable view once | ✅ |
+|                         | Status |
+|-------------------------| ------------- |
+| Hide forwarding tag     | ✅ |
+| Remove forward limit    | ✅ |
+| Freeze last seen        | ✅ |
+| Hide status view        | ✅ |
+| Hide message view       | ✅ |
+| Hide receipt            | ✅ |
+| Hide typing             | ✅ |
+| Hide recording          | ✅ |
+| Disable view once       | ✅ |
+| Send blue tick on reply | ✅ |
 
 ## Compatibility
 

@@ -144,6 +144,7 @@ public class XAntiRevoke extends XHookBase {
             });
 
         }
+
         XposedBridge.hookMethod(bubbleMethod, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) {
@@ -246,7 +247,7 @@ public class XAntiRevoke extends XHookBase {
         }
     }
 
-    private static String stripJID(String str) {
+    public static String stripJID(String str) {
         try {
             return (str.contains("@g.us") || str.contains("@s.whatsapp.net") || str.contains("@broadcast")) ? str.substring(0, str.indexOf("@")) : str;
         } catch (Exception e) {
@@ -255,14 +256,14 @@ public class XAntiRevoke extends XHookBase {
         }
     }
 
-    private static String getJidAuthor(Object objMessage) {
+    public static String getJidAuthor(Object objMessage) {
         Object fieldMessageDetails = XposedHelpers.getObjectField(objMessage, fieldMessageKey.getName());
         Object fieldMessageAuthorJid = XposedHelpers.getObjectField(fieldMessageDetails, "A00");
         if (fieldMessageAuthorJid == null) return "";
         else return getRawString(fieldMessageAuthorJid);
     }
 
-    private static String getRawString(Object objJid) {
+    public static String getRawString(Object objJid) {
         if (objJid == null) return "";
         else return (String) XposedHelpers.callMethod(objJid, "getRawString");
     }

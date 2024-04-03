@@ -3,12 +3,14 @@ package its.madruga.wpp.xposed.plugins.privacy;
 import androidx.annotation.NonNull;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 import its.madruga.wpp.xposed.Unobfuscator;
 import its.madruga.wpp.xposed.models.XHookBase;
 
@@ -36,24 +38,24 @@ public class XHideView extends XHookBase {
                 }
             });
 
-            var receiptMethod = Unobfuscator.loadReceiptMethod(loader);
-            logDebug(Unobfuscator.getMethodDescriptor(receiptMethod));
-            XposedBridge.hookMethod(receiptMethod, new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    var p4 = param.args[4];
-                    if (p4 != null && p4.equals("read")) {
-                        param.args[4] = null;
-                    }
-                }
-            });
+//            var receiptMethod = Unobfuscator.loadReceiptMethod(loader);
+//            logDebug(Unobfuscator.getMethodDescriptor(receiptMethod));
+//            XposedBridge.hookMethod(receiptMethod, new XC_MethodHook() {
+//                @Override
+//                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                    var p4 = param.args[4];
+//                    if (p4 != null && p4.equals("read")) {
+//                        param.args[4] = null;
+//                    }
+//                }
+//            });
 
         }
 
         if (hidereadstatus) {
             var methodHideViewJid = Unobfuscator.loadHideViewJidMethod(loader);
             logDebug(Unobfuscator.getMethodDescriptor(methodHideViewJid));
-            XposedBridge.hookMethod(methodHideViewJid,XC_MethodReplacement.returnConstant(null));
+            XposedBridge.hookMethod(methodHideViewJid, XC_MethodReplacement.returnConstant(null));
         }
     }
 

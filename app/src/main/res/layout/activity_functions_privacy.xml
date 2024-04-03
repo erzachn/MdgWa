@@ -113,6 +113,14 @@
                     android:tag="viewonce"
                     android:text="@string/viewonce" />
 
+                <its.madruga.wpp.views.SwitchButton
+                    android:id="@+id/blueonreply"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:summary="@string/blueonreply_sum"
+                    android:tag="blueonreply"
+                    android:text="@string/blueonreply" />
+
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>

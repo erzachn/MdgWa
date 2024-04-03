@@ -13,6 +13,7 @@ import org.luckypray.dexkit.query.enums.StringMatchType;
 import org.luckypray.dexkit.query.matchers.ClassMatcher;
 import org.luckypray.dexkit.query.matchers.FieldMatcher;
 import org.luckypray.dexkit.query.matchers.MethodMatcher;
+import org.luckypray.dexkit.query.matchers.base.OpCodesMatcher;
 import org.luckypray.dexkit.result.ClassData;
 import org.luckypray.dexkit.result.ClassDataList;
 import org.luckypray.dexkit.result.MethodData;
@@ -184,7 +185,7 @@ public class Unobfuscator {
 
     public static Class<?> loadThreadMessageClass(ClassLoader classLoader) throws Exception {
         if (cache.containsKey("message")) return (Class<?>) cache.get("message");
-        var messageClass = findFirstClassUsingStrings(classLoader, StringMatchType.Contains, "Message/getSenderUserJid");
+        var messageClass = findFirstClassUsingStrings(classLoader, StringMatchType.Contains, "FMessage/getSenderUserJid/key.id");
         if (messageClass == null) throw new Exception("Message class not found");
         cache.put("message", messageClass);
         return messageClass;
@@ -674,5 +675,20 @@ public class Unobfuscator {
         var result = findFirstClassUsingStrings(loader, StringMatchType.Contains, "failed to open axolotl store");
         if (result == null) throw new Exception("Axolotl class not found");
         return result;
+    }
+
+    public static Method loadBlueOnReplayMessageJobMethod(ClassLoader loader) throws Exception {
+        var result = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "SendE2EMessageJob/e2e message send job added");
+        if (result == null) throw new Exception("BlueOnReplayMessageJob method not found");
+        return result;
+    }
+
+    public static Method loadBlueOnReplayWaJobManagerMethod(ClassLoader loader) throws Exception {
+        var result = findFirstClassUsingStrings(loader, StringMatchType.Contains, "WaJobManager/start");
+        var job = XposedHelpers.findClass("org.whispersystems.jobqueue.Job", loader);
+        if (result == null) throw new Exception("BlueOnReplayWaJobManager method not found");
+        var method = Arrays.stream(result.getMethods()).filter(m -> m.getParameterCount() == 1 && m.getParameterTypes()[0] == job).findFirst().orElse(null);
+        if (method == null) throw new Exception("BlueOnReplayWaJobManager method not found");
+        return method;
     }
 }
