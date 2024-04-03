@@ -113,4 +113,6 @@
     <string name="downloadviewonce_sum">Bir Kez Görüntülenebilir medyalar için indirme düğmesi oluştur</string>
     <string name="separate_groups_sum">Sohbetlerinizi gruplar, özel sohbetler, durum, aramalar, topluluklar şeklinde ayırın</string>
     <string name="separate_groups">Grupları Ayır</string>
+    <string name="blueonreply">Cevapta mavi tik gönder</string>
+    <string name="blueonreply_sum">Mesaja cevap verirken mavi tik gönderir</string>
 </resources>

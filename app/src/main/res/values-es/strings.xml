@@ -114,4 +114,6 @@
     <string name="separate_groups">Grupos separados</string>
     <string name="ghostmode_r">Ocultar grabación de audio...</string>
     <string name="ghostmode_sum_r">Cuando está activo, la persona no puede ver que estás grabando audio.</string>
+    <string name="blueonreply">Enviar marca azul al responder</string>
+    <string name="blueonreply_sum">Envía el tick azul al responder el mensaje</string>
 </resources>

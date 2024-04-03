@@ -114,4 +114,6 @@
     <string name="separate_groups">Отдельные группы</string>
     <string name="ghostmode_r">Скрыть запись звука...</string>
     <string name="ghostmode_sum_r">Когда этот параметр активен, человек не видит, что вы записываете звук.</string>
+    <string name="blueonreply">Отправить синюю галочку в ответ</string>
+    <string name="blueonreply_sum">Отправляет синюю галочку при ответе на сообщение</string>
 </resources>

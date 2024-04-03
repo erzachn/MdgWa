@@ -114,4 +114,6 @@
     <string name="separate_groups">مجموعات منفصلة</string>
     <string name="ghostmode_r">إخفاء تسجيل الصوت...</string>
     <string name="ghostmode_sum_r">عندما يكون نشطًا، لا يستطيع الشخص رؤية أنك تقوم بتسجيل الصوت</string>
+    <string name="blueonreply">أرسل علامة زرقاء عند الرد</string>
+    <string name="blueonreply_sum">أرسل العلامة الزرقاء عند الرد على الرسالة</string>
 </resources>
