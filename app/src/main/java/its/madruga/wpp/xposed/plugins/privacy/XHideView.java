@@ -26,30 +26,20 @@ public class XHideView extends XHookBase {
 
         var hideread = prefs.getBoolean("hideread", false);
         var hidereadstatus = prefs.getBoolean("hidestatusview", false);
-
-        if (!hideread && !hidereadstatus) return;
+        var hideonceseen = prefs.getBoolean("hideonceseen", false);
 
         if (hideread) {
 
             Method methodHideViewCollection = Unobfuscator.loadHideViewCollectionMethod(loader);
             logDebug(Unobfuscator.getMethodDescriptor(methodHideViewCollection));
 
+            XposedBridge.hookMethod(methodHideViewCollection, XC_MethodReplacement.returnConstant(new HashMap<>()));
+
+        }
+
+        if (hideonceseen) {
             var methodPlayerViewJid = Unobfuscator.loadHideViewAudioMethod(loader);
             logDebug(Unobfuscator.getMethodDescriptor(methodPlayerViewJid));
-
-            var methodHideOnceViewMethod = Unobfuscator.loadHideOnceViewMethod(loader);
-            logDebug(Unobfuscator.getMethodDescriptor(methodHideOnceViewMethod));
-
-            XposedBridge.hookMethod(methodHideOnceViewMethod, new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) {
-                    if (param.args[1] instanceof Boolean) {
-                        param.args[1] = false;
-                    }
-                }
-            });
-
-            XposedBridge.hookMethod(methodHideViewCollection, XC_MethodReplacement.DO_NOTHING);
             XposedBridge.hookMethod(methodPlayerViewJid,XC_MethodReplacement.returnConstant(true));
         }
 

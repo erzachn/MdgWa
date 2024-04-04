@@ -83,6 +83,14 @@
                     android:text="@string/hideread" />
 
                 <its.madruga.wpp.views.SwitchButton
+                    android:id="@+id/hideonceseen"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:summary="@string/hide_once_view_seen_sum"
+                    android:tag="hideonceseen"
+                    android:text="@string/hide_once_view_seen" />
+
+                <its.madruga.wpp.views.SwitchButton
                     android:id="@+id/hidereceipt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -168,7 +168,7 @@ public class Unobfuscator {
     // TODO: Classes and Methods for HideView
     public static Method loadHideViewCollectionMethod(ClassLoader classLoader) throws Exception {
         Class<?> receiptsClass = loadReadReceiptsClass(classLoader);
-        Method method = Arrays.stream(receiptsClass.getMethods()).filter(m -> m.getParameterTypes().length > 0 && m.getParameterTypes()[0].equals(Collection.class) && m.getReturnType().equals(void.class)).findFirst().orElse(null);
+        Method method = Arrays.stream(receiptsClass.getMethods()).filter(m -> m.getParameterTypes().length > 0 && m.getParameterTypes()[0].equals(Collection.class) && m.getReturnType().equals(HashMap.class)).findFirst().orElse(null);
         if (method == null) throw new Exception("HideViewCollection method not found");
         return method;
     }
