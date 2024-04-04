@@ -45,11 +45,11 @@ public class XViewOnce extends XHookBase {
         if (prefs.getBoolean("downloadviewonce", false)) {
 
             var menuMethod = Unobfuscator.loadViewOnceDownloadMenuMethod(loader);
-
-            var menuIntField= Unobfuscator.loadViewOnceDownloadMenuField(loader);
             logDebug(Unobfuscator.getMethodDescriptor(menuMethod));
-            var initIntField = Unobfuscator.loadViewOnceDownloadMenuField2(loader);
+            var menuIntField= Unobfuscator.loadViewOnceDownloadMenuField(loader);
             logDebug(Unobfuscator.getFieldDescriptor(menuIntField));
+            var initIntField = Unobfuscator.loadViewOnceDownloadMenuField2(loader);
+            logDebug(Unobfuscator.getFieldDescriptor(initIntField));
             var callMethod = Unobfuscator.loadViewOnceDownloadMenuCallMethod(loader);
             logDebug(Unobfuscator.getMethodDescriptor(callMethod));
             var fileField = Unobfuscator.loadStatusDownloadFileField(loader);
@@ -67,7 +67,9 @@ public class XViewOnce extends XHookBase {
                         item.setShowAsAction(2);
                         item.setOnMenuItemClickListener(item1 -> {
                             var i = XposedHelpers.getIntField(param.thisObject, initIntField.getName());
-                            var message = XposedHelpers.callMethod(param.thisObject, callMethod.getName(), param.thisObject,i);
+                            logDebug("init: " + i);
+                            var message = callMethod.getParameterCount() == 2 ? XposedHelpers.callMethod(param.thisObject, callMethod.getName(), param.thisObject,i) : XposedHelpers.callMethod(param.thisObject, callMethod.getName(),i);
+                            log("message: " + message);
                             if (message != null) {
                                 var fileData = XposedHelpers.getObjectField(message, "A01");
                                 var file = (File) XposedHelpers.getObjectField(fileData, fileField.getName());

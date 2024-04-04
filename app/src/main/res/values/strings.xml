@@ -4,6 +4,7 @@
     <string name="app_desc">An Xposed module to customize your WhatsApp.</string>
     <string-array name="scope">
         <item>com.whatsapp</item>
+        <item>com.whatsapp.w4b</item>
         <item>android</item>
     </string-array>
     <string name="antirevoke">Anti-Delete Messages</string>

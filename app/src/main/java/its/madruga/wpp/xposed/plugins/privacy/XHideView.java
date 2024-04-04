@@ -3,6 +3,7 @@ package its.madruga.wpp.xposed.plugins.privacy;
 import androidx.annotation.NonNull;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -56,6 +57,20 @@ public class XHideView extends XHookBase {
             var methodHideViewJid = Unobfuscator.loadHideViewJidMethod(loader);
             logDebug(Unobfuscator.getMethodDescriptor(methodHideViewJid));
             XposedBridge.hookMethod(methodHideViewJid, XC_MethodReplacement.returnConstant(null));
+
+//            var methodHideViewJid = Unobfuscator.loadHideViewJidMethod2(loader);
+//            logDebug(Unobfuscator.getMethodDescriptor(methodHideViewJid));
+//            XposedBridge.hookMethod(methodHideViewJid, new XC_MethodHook() {
+//                @Override
+//                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                    var messageObj = param.args[0];
+//                    logDebug("Read Status: " + messageObj);
+//                    Class<?> deviceJidClass = XposedHelpers.findClass("com.whatsapp.jid.DeviceJid", loader);
+//                    var fDeviceJid = Arrays.stream(messageObj.getClass().getFields()).filter(m -> m.getType().equals(deviceJidClass)).findFirst().orElse(null);
+//                    fDeviceJid.setAccessible(true);
+//                    fDeviceJid.set(messageObj, null);
+//                }
+//            });
         }
     }
 

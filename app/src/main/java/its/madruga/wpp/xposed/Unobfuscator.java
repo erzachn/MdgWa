@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import its.madruga.wpp.xposed.plugins.core.XMain;
 
@@ -177,10 +178,12 @@ public class Unobfuscator {
 
     public static Method loadHideViewJidMethod(ClassLoader classLoader) throws Exception {
         Class<?> messageInfoClass = loadThreadMessageClass(classLoader);
-        Class<?> deviceJidClass = XposedHelpers.findClass("com.whatsapp.jid.DeviceJid", classLoader);
-        Method method = Arrays.stream(messageInfoClass.getMethods()).filter(m -> m.getReturnType().equals(deviceJidClass)).findFirst().orElse(null);
-        if (method == null) throw new Exception("HideViewJid method not found");
-        return method;
+        var called = dexkit.findMethod(new FindMethod().matcher(new MethodMatcher().addUsingString("statusmanager/markstatusasseen/sending status"))).get(0);
+        var result = dexkit.findMethod(new FindMethod().matcher(new MethodMatcher().paramCount(1)
+                .addParamType(messageInfoClass.getName()).returnType(void.class)
+                .modifiers(Modifier.PUBLIC).addCall(called.getDescriptor())));
+        if (result.isEmpty()) throw new Exception("HideViewJid method not found");
+        return result.get(0).getMethodInstance(classLoader);
     }
 
     public static Class<?> loadThreadMessageClass(ClassLoader classLoader) throws Exception {
@@ -244,6 +247,10 @@ public class Unobfuscator {
     public static Method loadTabNameMethod(ClassLoader classLoader) throws Exception {
         Method tabListMethod = loadGetTabMethod(classLoader);
         Class<?> cls = tabListMethod.getDeclaringClass();
+        if (Modifier.isAbstract(cls.getModifiers())){
+            var findClass = dexkit.findClass(new FindClass().matcher(new ClassMatcher().superClass(cls.getName()).addUsingString("The item position should be less")));
+            cls = findClass.get(0).getInstance(classLoader);
+        }
         Method result = Arrays.stream(cls.getMethods()).filter(m -> m.getParameterTypes().length == 1 && m.getReturnType().equals(String.class)).findFirst().orElse(null);
         if (result == null) throw new Exception("TabName method not found");
         return result;
@@ -292,7 +299,7 @@ public class Unobfuscator {
     }
 
     public static Method loadTabCountMethod(ClassLoader classLoader) throws Exception {
-        Method result = findFirstMethodUsingStrings(classLoader, StringMatchType.Contains, "com.whatsapp.profile.ProfilePhotoReminder");
+        Method result = findFirstMethodUsingStrings(classLoader, StringMatchType.Contains, "required free space should be > 0");
         if (result == null) throw new Exception("TabCount method not found");
         return result;
     }
@@ -480,9 +487,10 @@ public class Unobfuscator {
     public static Method loadViewOnceDownloadMenuMethod(ClassLoader classLoader) throws Exception {
         if (cache.containsKey("ViewOnceDownloadMenu")) return (Method) cache.get("ViewOnceDownloadMenu");
         var clazz = XposedHelpers.findClass("com.whatsapp.mediaview.MediaViewFragment", classLoader);
-        var method = Arrays.stream(clazz.getMethods()).filter(m -> m.getParameterCount() == 2 &&
+        var method = Arrays.stream(clazz.getDeclaredMethods()).filter(m -> m.getParameterCount() == 2 &&
                 Objects.equals(m.getParameterTypes()[0], Menu.class) &&
-                Objects.equals(m.getParameterTypes()[1], MenuInflater.class)
+                Objects.equals(m.getParameterTypes()[1], MenuInflater.class) &&
+                m.getDeclaringClass() == clazz
         ).findFirst();
         if (!method.isPresent()) throw new Exception("ViewOnceDownloadMenu method not found");
         cache.put("ViewOnceDownloadMenu", method.get());
@@ -491,9 +499,9 @@ public class Unobfuscator {
 
     public static Field loadViewOnceDownloadMenuField(ClassLoader classLoader) throws Exception {
         var method = loadViewOnceDownloadMenuMethod(classLoader);
-        var clazz = method.getDeclaringClass();
-        var clazzData = dexkit.getClassData(clazz);
-        var methodData = clazzData.findMethod(new FindMethod().matcher(new MethodMatcher().name(method.getName()))).get(0);
+        var clazz = XposedHelpers.findClass("com.whatsapp.mediaview.MediaViewFragment", classLoader);
+        var methodData = dexkit.findMethod(new FindMethod().matcher(new MethodMatcher().declaredClass(clazz).name(method.getName()))).get(0);
+        XposedBridge.log(methodData.getDescriptor());
         var fields = methodData.getUsingFields();
         for (UsingFieldData field : fields) {
             Field field1 = field.getField().getFieldInstance(classLoader);
@@ -519,11 +527,10 @@ public class Unobfuscator {
 
     public static Method loadViewOnceDownloadMenuCallMethod(ClassLoader classLoader) throws Exception {
         var clazz = XposedHelpers.findClass("com.whatsapp.mediaview.MediaViewFragment", classLoader);
-        var method = Arrays.stream(clazz.getMethods()).filter(m -> m.getParameterCount() == 2 &&
-                Objects.equals(m.getParameterTypes()[0], clazz) &&
-                Objects.equals(m.getParameterTypes()[1], int.class) &&
-                Modifier.isStatic(m.getModifiers()) &&
-                Modifier.isPublic(m.getModifiers())
+        var method = Arrays.stream(clazz.getDeclaredMethods()).filter(m ->
+                ((m.getParameterCount() == 2 && Objects.equals(m.getParameterTypes()[1], int.class) && Objects.equals(m.getParameterTypes()[0], clazz))
+                        || (m.getParameterCount() == 1 && Objects.equals(m.getParameterTypes()[0], int.class))) &&
+                Modifier.isPublic(m.getModifiers()) && Object.class.isAssignableFrom(m.getReturnType())
         ).findFirst();
         if (!method.isPresent()) throw new Exception("ViewOnceDownloadMenuCall method not found");
         return method.get();
@@ -651,12 +658,15 @@ public class Unobfuscator {
         return result.get(0).getMethodInstance(loader);
     }
 
-    public static Field loadStatusPlaybackField(ClassLoader loader) throws Exception {
-        var statusPlaybackClass = XposedHelpers.findClass("com.whatsapp.status.playback.fragment.StatusPlaybackContactFragment", loader);
-        var clazzExtra = findFirstClassUsingStrings(loader, StringMatchType.Contains, "sendmedia/retrymediaupload/already-uploading");
-        var field = getFieldByType(statusPlaybackClass, clazzExtra);
-        if (field == null) throw new Exception("StatusPlayback field not found");
-        return field;
+    public static Field loadStatusPlaybackViewField(ClassLoader loader) throws Exception {
+        Class<?> class1 = XposedHelpers.findClass("com.whatsapp.status.playback.widget.StatusPlaybackProgressView",loader);
+        ClassDataList classView = dexkit.findClass(FindClass.create().matcher(
+                ClassMatcher.create().methodCount(1).addFieldForType(class1)
+        ));
+        if (classView.isEmpty()) throw new Exception("StatusPlaybackView field not found");
+        Class<?> clsViewStatus = classView.get(0).getInstance(loader);
+        Class<?> class2 = XposedHelpers.findClass("com.whatsapp.status.playback.fragment.StatusPlaybackBaseFragment", loader);
+        return Arrays.stream(class2.getDeclaredFields()).filter(f -> f.getType() == clsViewStatus).findFirst().orElse(null);
     }
 
     public static Class<?> loadAutoRebootClass(ClassLoader loader) throws Exception {

@@ -63,7 +63,7 @@ public class XMediaQuality extends XHookBase {
             XposedBridge.hookMethod(mediaQualityImageMethod, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    int p1 = (int) param.args[2];
+                    int p1 = (int) (param.args.length > 2 ? param.args[2] : param.args[1]);
                     int[] props = {1573, 1575, 1578, 1574, 1576, 1577};
                     int max = 10000;
                     int min = 1000;
