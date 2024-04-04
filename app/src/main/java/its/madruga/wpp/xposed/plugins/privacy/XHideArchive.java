@@ -25,7 +25,12 @@ public class XHideArchive extends XHookBase {
             return;
         var archiveHideViewMethod = Unobfuscator.loadArchiveHideViewMethod(loader);
         logDebug(Unobfuscator.getMethodDescriptor(archiveHideViewMethod));
-        XposedBridge.hookMethod(archiveHideViewMethod, XC_MethodReplacement.returnConstant(false));
+        XposedBridge.hookMethod(archiveHideViewMethod, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                param.args[0] = false;
+            }
+        });
         var onclickCapture = Unobfuscator.loadArchiveOnclickCaptureMethod(loader);
         logDebug(Unobfuscator.getMethodDescriptor(onclickCapture));
         XposedBridge.hookMethod(onclickCapture, new XC_MethodHook() {
