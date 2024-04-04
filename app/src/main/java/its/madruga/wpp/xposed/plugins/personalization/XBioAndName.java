@@ -20,6 +20,7 @@ import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import its.madruga.wpp.xposed.models.XHookBase;
+import its.madruga.wpp.xposed.plugins.privacy.XHideArchive;
 
 public class XBioAndName extends XHookBase {
     public XBioAndName(ClassLoader loader, XSharedPreferences preferences) {
@@ -31,7 +32,6 @@ public class XBioAndName extends XHookBase {
         var showName = prefs.getBoolean("shownamehome", false);
         var showBio = prefs.getBoolean("showbiohome", false);
         var methodHook = new MethodHook(showName, showBio);
-        if (!showName && !showBio) return;
         XposedHelpers.findAndHookMethod("com.whatsapp.HomeActivity", loader, "onCreate", Bundle.class, methodHook);
     }
 
@@ -77,6 +77,12 @@ public class XBioAndName extends XHookBase {
                         }
                     }
                 });
+                logo.setOnLongClickListener((v) -> {
+                    if (XHideArchive.mOnClickListener != null) {
+                        XHideArchive.mOnClickListener.onClick(v);
+                    }
+                    return true;
+                });
                 return;
             }
             var parent = (LinearLayout) logo.getParent();
@@ -86,6 +92,12 @@ public class XBioAndName extends XHookBase {
             mTitle.setTextSize(20f);
             mTitle.setTextColor(0xffffffff);
             parent.addView(mTitle);
+            mTitle.setOnLongClickListener((v) -> {
+                if (XHideArchive.mOnClickListener != null) {
+                    XHideArchive.mOnClickListener.onClick(v);
+                }
+                return true;
+            });
 
             if (showBio) {
                 var mSubtitle = new TextView(homeActivity);

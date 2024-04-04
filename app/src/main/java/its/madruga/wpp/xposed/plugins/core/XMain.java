@@ -38,6 +38,7 @@ import its.madruga.wpp.xposed.plugins.personalization.XChatsFilter;
 import its.madruga.wpp.xposed.plugins.personalization.XSecondsToTime;
 import its.madruga.wpp.xposed.plugins.privacy.XFreezeLastSeen;
 import its.madruga.wpp.xposed.plugins.privacy.XGhostMode;
+import its.madruga.wpp.xposed.plugins.privacy.XHideArchive;
 import its.madruga.wpp.xposed.plugins.privacy.XHideReceipt;
 import its.madruga.wpp.xposed.plugins.privacy.XHideTag;
 import its.madruga.wpp.xposed.plugins.privacy.XHideView;
@@ -96,6 +97,7 @@ public class XMain {
                 XDndMode.class,
                 XFreezeLastSeen.class,
                 XGhostMode.class,
+                XHideArchive.class,
                 XHideReceipt.class,
                 XHideTag.class,
                 XHideView.class,
@@ -119,7 +121,7 @@ public class XMain {
                 list.add(classe.getSimpleName());
             }
         }
-        if (DEBUG)
-            XposedBridge.log("Loaded classes:\n\n" + String.join("\n", loadedClasses.toArray(new String[0])));
+//        if (DEBUG)
+//            XposedBridge.log("Loaded classes:\n\n" + String.join("\n", loadedClasses.toArray(new String[0])));
     }
 }

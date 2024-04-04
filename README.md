@@ -33,21 +33,22 @@ An Xposed module to customize your WhatsApp.
 | Download view once | ✅ |
 | Videos in high resolution | ✅ |
 | Images in high resolution | ✅ |
+| Send blue tick on reply | ✅ |
 
 ### Privacy
 
-|                         | Status |
-|-------------------------| ------------- |
-| Hide forwarding tag     | ✅ |
-| Remove forward limit    | ✅ |
-| Freeze last seen        | ✅ |
-| Hide status view        | ✅ |
-| Hide message view       | ✅ |
-| Hide receipt            | ✅ |
-| Hide typing             | ✅ |
-| Hide recording          | ✅ |
-| Disable view once       | ✅ |
-| Send blue tick on reply | ✅ |
+|                      | Status |
+|----------------------| ------------- |
+| Hide forwarding tag  | ✅ |
+| Remove forward limit | ✅ |
+| Freeze last seen     | ✅ |
+| Hide status view     | ✅ |
+| Hide message view    | ✅ |
+| Hide receipt         | ✅ |
+| Hide typing          | ✅ |
+| Hide recording       | ✅ |
+| Disable view once    | ✅ |
+| Hide archived chats  | ✅ |
 
 ## Compatibility
 

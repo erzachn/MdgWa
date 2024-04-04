@@ -3,6 +3,7 @@ package its.madruga.wpp.xposed;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -700,5 +701,17 @@ public class Unobfuscator {
         var method = Arrays.stream(result.getMethods()).filter(m -> m.getParameterCount() == 1 && m.getParameterTypes()[0] == job).findFirst().orElse(null);
         if (method == null) throw new Exception("BlueOnReplayWaJobManager method not found");
         return method;
+    }
+
+    public static Method loadArchiveHideViewMethod(ClassLoader loader) throws Exception {
+        var clazz = findFirstClassUsingStrings(loader, StringMatchType.Contains, "archive/set-content-indicator-to-empty");
+        if (clazz == null) throw new Exception("ArchiveHideView method not found");
+        return clazz.getMethod("setVisibility", boolean.class);
+    }
+
+    public static Method loadArchiveOnclickCaptureMethod(ClassLoader loader) throws Exception {
+        var clazz = findFirstClassUsingStrings(loader, StringMatchType.Contains, "archive/set-content-indicator-to-empty");
+        if (clazz == null) throw new Exception("ArchiveHideView method not found");
+        return clazz.getMethod("setOnClickListener", View.OnClickListener.class);
     }
 }
