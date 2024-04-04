@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
 import its.madruga.wpp.xposed.models.XHookBase;
+import its.madruga.wpp.xposed.plugins.core.XMain;
 
 public class XNewChat extends XHookBase {
     public XNewChat(@NonNull ClassLoader loader, @NonNull XSharedPreferences preferences) {
@@ -55,6 +56,7 @@ public class XNewChat extends XHookBase {
                                 Toast.makeText(home, numberFomatted, Toast.LENGTH_SHORT).show();
                                     var intent = new Intent(Intent.ACTION_VIEW);
                                     intent.setData(Uri.parse("https://wa.me/" + numberFomatted));
+                                    intent.setPackage(XMain.mApp.getPackageName());
                                     home.startActivity(intent);
                             })
                             .setNegativeButton("Cancel",null)
