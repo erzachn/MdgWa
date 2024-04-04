@@ -168,9 +168,21 @@ public class Unobfuscator {
     // TODO: Classes and Methods for HideView
     public static Method loadHideViewCollectionMethod(ClassLoader classLoader) throws Exception {
         Class<?> receiptsClass = loadReadReceiptsClass(classLoader);
-        Method method = Arrays.stream(receiptsClass.getMethods()).filter(m -> m.getParameterTypes().length > 0 && m.getParameterTypes()[0].equals(Collection.class)).findFirst().orElse(null);
+        Method method = Arrays.stream(receiptsClass.getMethods()).filter(m -> m.getParameterTypes().length > 0 && m.getParameterTypes()[0].equals(Collection.class) && m.getReturnType().equals(void.class)).findFirst().orElse(null);
         if (method == null) throw new Exception("HideViewCollection method not found");
         return method;
+    }
+
+    public static Method loadHideViewAudioMethod(ClassLoader loader) throws Exception {
+        var result = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "MessageStatusStore/update/nosuchmessage");
+        if (result == null) throw new Exception("HideViewAudio method not found");
+        return result;
+    }
+
+    public static Method loadHideOnceViewMethod(ClassLoader loader) throws Exception {
+        var result = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "presencestatemanager/setAvailable/new-state:");
+        if (result == null) throw new Exception("HideViewAudio method not found");
+        return result;
     }
 
     public static Class<?> loadReadReceiptsClass(ClassLoader classLoader) throws Exception {
@@ -714,4 +726,7 @@ public class Unobfuscator {
         if (clazz == null) throw new Exception("ArchiveHideView method not found");
         return clazz.getMethod("setOnClickListener", View.OnClickListener.class);
     }
+
+
+
 }

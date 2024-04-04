@@ -30,47 +30,33 @@ public class XHideView extends XHookBase {
         if (!hideread && !hidereadstatus) return;
 
         if (hideread) {
+
             Method methodHideViewCollection = Unobfuscator.loadHideViewCollectionMethod(loader);
             logDebug(Unobfuscator.getMethodDescriptor(methodHideViewCollection));
-            XposedBridge.hookMethod(methodHideViewCollection, new XC_MethodHook() {
+
+            var methodPlayerViewJid = Unobfuscator.loadHideViewAudioMethod(loader);
+            logDebug(Unobfuscator.getMethodDescriptor(methodPlayerViewJid));
+
+            var methodHideOnceViewMethod = Unobfuscator.loadHideOnceViewMethod(loader);
+            logDebug(Unobfuscator.getMethodDescriptor(methodHideOnceViewMethod));
+
+            XposedBridge.hookMethod(methodHideOnceViewMethod, new XC_MethodHook() {
                 @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    param.setResult(new HashMap<>());
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    if (param.args[1] instanceof Boolean) {
+                        param.args[1] = false;
+                    }
                 }
             });
 
-//            var receiptMethod = Unobfuscator.loadReceiptMethod(loader);
-//            logDebug(Unobfuscator.getMethodDescriptor(receiptMethod));
-//            XposedBridge.hookMethod(receiptMethod, new XC_MethodHook() {
-//                @Override
-//                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                    var p4 = param.args[4];
-//                    if (p4 != null && p4.equals("read")) {
-//                        param.args[4] = null;
-//                    }
-//                }
-//            });
-
+            XposedBridge.hookMethod(methodHideViewCollection, XC_MethodReplacement.DO_NOTHING);
+            XposedBridge.hookMethod(methodPlayerViewJid,XC_MethodReplacement.returnConstant(true));
         }
 
         if (hidereadstatus) {
             var methodHideViewJid = Unobfuscator.loadHideViewJidMethod(loader);
             logDebug(Unobfuscator.getMethodDescriptor(methodHideViewJid));
             XposedBridge.hookMethod(methodHideViewJid, XC_MethodReplacement.returnConstant(null));
-
-//            var methodHideViewJid = Unobfuscator.loadHideViewJidMethod2(loader);
-//            logDebug(Unobfuscator.getMethodDescriptor(methodHideViewJid));
-//            XposedBridge.hookMethod(methodHideViewJid, new XC_MethodHook() {
-//                @Override
-//                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                    var messageObj = param.args[0];
-//                    logDebug("Read Status: " + messageObj);
-//                    Class<?> deviceJidClass = XposedHelpers.findClass("com.whatsapp.jid.DeviceJid", loader);
-//                    var fDeviceJid = Arrays.stream(messageObj.getClass().getFields()).filter(m -> m.getType().equals(deviceJidClass)).findFirst().orElse(null);
-//                    fDeviceJid.setAccessible(true);
-//                    fDeviceJid.set(messageObj, null);
-//                }
-//            });
         }
     }
 
