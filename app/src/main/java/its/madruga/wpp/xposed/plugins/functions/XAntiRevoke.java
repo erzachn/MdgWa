@@ -6,9 +6,13 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.widget.TextView;
 
@@ -17,7 +21,9 @@ import androidx.annotation.NonNull;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Objects;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
@@ -29,7 +35,7 @@ import its.madruga.wpp.xposed.plugins.core.XMain;
 
 public class XAntiRevoke extends XHookBase {
 
-    private static HashSet<String> messageRevokedList = new HashSet<>();
+    private static final HashMap<String, HashSet<String>> messageRevokedMap = new HashMap<>();
     @SuppressLint("StaticFieldLeak")
     private static Activity mConversation;
     private static SharedPreferences mShared;
@@ -43,13 +49,8 @@ public class XAntiRevoke extends XHookBase {
         if (dateTextView == null) return;
         var fieldMessageDetails = XposedHelpers.getObjectField(objMessage, fieldMessageKey.getName());
         var messageKey = (String) XposedHelpers.getObjectField(fieldMessageDetails, "A01");
-        var stripJID = stripJID(getJidAuthor(objMessage));
-        if (messageRevokedList.isEmpty()) {
-            String[] currentRevokedMessages = getRevokedMessages(objMessage);
-            if (currentRevokedMessages == null) currentRevokedMessages = new String[]{""};
-            Collections.addAll(messageRevokedList, currentRevokedMessages);
-        }
-        if (messageRevokedList != null && messageRevokedList.contains(messageKey)) {
+        var messageRevokedList = getRevokedMessages(objMessage);
+        if (messageRevokedList.contains(messageKey)) {
             var antirevokeValue = prefs.getInt(antirevokeType, 0);
             if (antirevokeValue == 1) {
                 // Text
@@ -59,6 +60,7 @@ public class XAntiRevoke extends XHookBase {
                 // Icon
                 var iconId = mApp.getResources().getIdentifier("msg_status_client_revoked", "drawable", mApp.getPackageName());
                 var drawable = mApp.getDrawable(iconId);
+                drawable = scaleImage(mApp.getResources(), drawable, 0.7f);
                 drawable.setColorFilter(new PorterDuffColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP));
                 dateTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
                 dateTextView.setCompoundDrawablePadding(5);
@@ -72,6 +74,18 @@ public class XAntiRevoke extends XHookBase {
             }
         }
     }
+
+    public static Drawable scaleImage(Resources resources, Drawable image, float scaleFactor) {
+        if (!(image instanceof BitmapDrawable)) {
+            return image;
+        }
+        Bitmap b = ((BitmapDrawable) image).getBitmap();
+        int sizeX = Math.round(image.getIntrinsicWidth() * scaleFactor);
+        int sizeY = Math.round(image.getIntrinsicHeight() * scaleFactor);
+        Bitmap bitmapResized = Bitmap.createScaledBitmap(b, sizeX, sizeY, false);
+        return new BitmapDrawable(resources, bitmapResized);
+    }
+
 
     @Override
     public void doHook() throws Exception {
@@ -106,7 +120,7 @@ public class XAntiRevoke extends XHookBase {
         var unknownStatusPlaybackMethod = Unobfuscator.loadUnknownStatusPlaybackMethod(loader);
         logDebug(Unobfuscator.getMethodDescriptor(unknownStatusPlaybackMethod));
 
-        var statusPlaybackField = Unobfuscator.loadStatusPlaybackField(loader);
+        var statusPlaybackField = Unobfuscator.loadStatusPlaybackViewField(loader);
         logDebug(Unobfuscator.getFieldDescriptor(statusPlaybackField));
 
         XposedBridge.hookMethod(onStartMethod, new XC_MethodHook() {
@@ -165,6 +179,7 @@ public class XAntiRevoke extends XHookBase {
                     log("Could not find TextView");
                     return;
                 }
+                logDebug("fields = " + textViews.length);
                 int dateId = XMain.mApp.getResources().getIdentifier("date", "id", "com.whatsapp");
                 for (Field textView : textViews) {
                     TextView textView1 = (TextView) XposedHelpers.getObjectField(objView, textView.getName());
@@ -188,18 +203,11 @@ public class XAntiRevoke extends XHookBase {
 
     private static void saveRevokedMessage(String authorJid, String messageKey, Object objMessage) {
         String newRevokedMessages;
-        String[] revokedMessagesArray = getRevokedMessages(objMessage);
-        if (revokedMessagesArray != null) {
-            HashSet<String> newRevokedMessagesArray = new HashSet<>();
-            Collections.addAll(newRevokedMessagesArray, revokedMessagesArray);
-            newRevokedMessagesArray.add(messageKey);
-            messageRevokedList = newRevokedMessagesArray;
-            newRevokedMessages = Arrays.toString(newRevokedMessagesArray.toArray());
-        } else {
-            newRevokedMessages = "[" + messageKey + "]";
-            messageRevokedList = new HashSet<>(Collections.singleton(messageKey));
-        }
-        mShared.edit().putString(authorJid + "_revoked", newRevokedMessages).apply();
+        HashSet<String> messages = getRevokedMessages(objMessage);
+        messages.add(messageKey);
+        newRevokedMessages = Arrays.toString(messages.toArray());
+        mShared.edit().putString(authorJid + "_revoked",newRevokedMessages).apply();
+
     }
 
     private int antiRevoke(Object objMessage) {
@@ -207,6 +215,7 @@ public class XAntiRevoke extends XHookBase {
         var stripJID = stripJID(getJidAuthor(objMessage));
         var revokeboolean = stripJID.equals("status") ? prefs.getInt("antirevokestatus", 0) : prefs.getInt("antirevoke", 0);
         if (revokeboolean == 0) return revokeboolean;
+        var messageRevokedList = getRevokedMessages(objMessage);
         if (!messageRevokedList.contains(messageKey)) {
             try {
                 AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
@@ -234,17 +243,24 @@ public class XAntiRevoke extends XHookBase {
         return revokeboolean;
     }
 
-    private static String[] getRevokedMessages(Object objMessage) {
-        String stripJID = stripJID(getJidAuthor(objMessage));
-        try {
-            String revokedsString = mShared.getString(stripJID + "_revoked", "");
-            if (revokedsString.isEmpty()) {
-                return null;
-            } else return StringToStringArray(revokedsString);
-        } catch (Exception e) {
-            XposedBridge.log(e.getMessage());
-            return null;
+    private static HashSet<String> getRevokedMessages(Object objMessage) {
+        String jid = stripJID(getJidAuthor(objMessage));
+        if (messageRevokedMap.containsKey(jid)) {
+            return messageRevokedMap.get(jid);
         }
+        var messages = new HashSet<String>();
+        messageRevokedMap.put(jid, messages);
+        try {
+            String msg = mShared.getString(jid + "_revoked", "");
+            if (msg.isEmpty()) {
+                return messages;
+            }
+            Collections.addAll(messages, Objects.requireNonNull(StringToStringArray(msg)));
+        } catch (java.lang.Exception e4) {
+            XposedBridge.log(e4.getMessage());
+        }
+        return messages;
+
     }
 
     public static String stripJID(String str) {
