@@ -60,6 +60,12 @@ public class XBioAndName extends XHookBase {
             var mainPrefs = homeActivity.getSharedPreferences(homeActivity.getPackageName() + "_preferences_light", Context.MODE_PRIVATE);
             var name = startup_prefs.getString("push_name", "WhatsApp");
             var bio = mainPrefs.getString("my_current_status", "");
+            toolbar.setOnLongClickListener((v) -> {
+                if (XHideArchive.mOnClickListener != null) {
+                    XHideArchive.mOnClickListener.onClick(v);
+                }
+                return true;
+            });
 
             if (!(logo.getParent() instanceof LinearLayout)){
                 var methods = Arrays.stream(actionbar.getClass().getDeclaredMethods()).filter(m -> m.getParameterCount() == 1 && m.getParameterTypes()[0] == CharSequence.class).toArray(Method[]::new);
@@ -77,12 +83,6 @@ public class XBioAndName extends XHookBase {
                         }
                     }
                 });
-                logo.setOnLongClickListener((v) -> {
-                    if (XHideArchive.mOnClickListener != null) {
-                        XHideArchive.mOnClickListener.onClick(v);
-                    }
-                    return true;
-                });
                 return;
             }
             var parent = (LinearLayout) logo.getParent();
@@ -92,13 +92,6 @@ public class XBioAndName extends XHookBase {
             mTitle.setTextSize(20f);
             mTitle.setTextColor(0xffffffff);
             parent.addView(mTitle);
-            mTitle.setOnLongClickListener((v) -> {
-                if (XHideArchive.mOnClickListener != null) {
-                    XHideArchive.mOnClickListener.onClick(v);
-                }
-                return true;
-            });
-
             if (showBio) {
                 var mSubtitle = new TextView(homeActivity);
                 mSubtitle.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
