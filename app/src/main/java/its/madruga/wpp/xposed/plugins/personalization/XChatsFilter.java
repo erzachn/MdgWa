@@ -14,7 +14,9 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
@@ -30,10 +32,11 @@ public class XChatsFilter extends XHookBase {
     public final int STATUS = 300;
     public final int CALLS = 400;
     public final int COMMUNITY = 600;
-    public final int GROUPS = 800;
+    public final int GROUPS = 500;
     public final ArrayList<Integer> tabs = new ArrayList<>();
     public int tabCount = 0;
     private int idGroupId = 0;
+    public static HashMap<Integer, Object> tabInstances = new HashMap<>();
 
     public XChatsFilter(ClassLoader loader, XSharedPreferences preferences) {
         super(loader, preferences);
@@ -219,48 +222,39 @@ public class XChatsFilter extends XHookBase {
 
         XposedBridge.hookMethod(getTabMethod, new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 var tabId = ((Number) tabs.get((int) param.args[0])).intValue();
-
                 if (tabId == GROUPS || tabId == CHATS) {
-                    var convFragment = XposedHelpers.findConstructorExact(cFrag.getName(), loader).newInstance();
-                    var convFragmentClass = convFragment.getClass();
-                    XposedHelpers.setAdditionalInstanceField(convFragment, "isGroup", tabId == GROUPS);
-                    XposedBridge.hookMethod(methodTabInstance, new XC_MethodHook() {
-                        @Override
-                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                            var isGroup = false;
-                            var isGroupField = XposedHelpers.getAdditionalInstanceField(param.thisObject, "isGroup");
-
-                            // Temp fix for
-                            if (isGroupField == null) {
-                                logDebug("-----------------------------------");
-                                logDebug("isGroupTabCount: " + tabCount);
-                                logDebug("isGroupTabField: " + (isGroupField != null));
-                                logDebug("isGroupTabCount >= 2: " + (tabCount >= 2));
-                                logDebug("-----------------------------------");
-                                isGroup = tabCount >= 2;
-                                tabCount++;
-                                if (tabCount == 4) tabCount = 0;
-                            } else {
-                                isGroup = (boolean) isGroupField;
-                            }
-                            logDebug("[•] isGroup: " + isGroup);
-
-                            var chatsList = (List) param.getResult();
-                            var editableChatList = new ArrayList<>();
-                            var requiredServer = isGroup ? "g.us" : "s.whatsapp.net";
-                            for (var chat : chatsList) {
-                                var server = (String) callMethod(getObjectField(chat, "A00"), "getServer");
-                                if (server.equals(requiredServer)) {
-                                    editableChatList.add(chat);
-                                }
-                            }
-                            param.setResult(editableChatList);
-                        }
-                    });
+                    var convFragment = cFrag.newInstance();
                     param.setResult(convFragment);
                 }
+            }
+
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                var tabId = ((Number) tabs.get((int) param.args[0])).intValue();
+                tabInstances.remove(tabId);
+                tabInstances.put(tabId, param.getResult());
+            }
+        });
+
+        XposedBridge.hookMethod(methodTabInstance, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                var tabChat = tabInstances.get(CHATS);
+                var tabGroup = tabInstances.get(GROUPS);
+                if (!Objects.equals(tabChat, param.thisObject) && !Objects.equals(tabGroup, param.thisObject))
+                    return;
+                var chatsList = (List) param.getResult();
+                var editableChatList = new ArrayList<>();
+                var requiredServer = Objects.equals(tabGroup, param.thisObject) ? "g.us" : "s.whatsapp.net";
+                for (var chat : chatsList) {
+                    var server = (String) callMethod(getObjectField(chat, "A00"), "getServer");
+                    if (server.equals(requiredServer)) {
+                        editableChatList.add(chat);
+                    }
+                }
+                param.setResult(editableChatList);
             }
         });
 
