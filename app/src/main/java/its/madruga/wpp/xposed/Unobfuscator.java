@@ -681,13 +681,6 @@ public class Unobfuscator {
         Class<?> class2 = XposedHelpers.findClass("com.whatsapp.status.playback.fragment.StatusPlaybackBaseFragment", loader);
         return Arrays.stream(class2.getDeclaredFields()).filter(f -> f.getType() == clsViewStatus).findFirst().orElse(null);
     }
-
-    public static Class<?> loadAutoRebootClass(ClassLoader loader) throws Exception {
-        Class<?> classAutoReboot = findFirstClassUsingStrings(loader, StringMatchType.Contains, "app-init/application");
-        if (classAutoReboot == null) throw new Exception("AutoReboot class not found");
-        return classAutoReboot;
-    }
-
     public static Class<?> loadMessageStoreClass(ClassLoader loader) throws Exception {
         var result = findFirstClassUsingStrings(loader, StringMatchType.Contains, "databasehelper/createDatabaseTables");
         if (result == null) throw new Exception("MessageStore class not found");

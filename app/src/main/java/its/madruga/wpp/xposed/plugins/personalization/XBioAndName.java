@@ -103,7 +103,6 @@ public class XBioAndName extends XHookBase {
                 mSubtitle.setSingleLine();
                 mSubtitle.setSelected(true);
                 parent.addView(mSubtitle);
-
             } else {
                 mTitle.setGravity(Gravity.CENTER);
             }
