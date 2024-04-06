@@ -259,10 +259,7 @@ public class XChatsFilter extends XHookBase {
         XposedBridge.hookMethod(fabintMethod, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                var isGroup = false;
-                var isGroupField = XposedHelpers.getAdditionalInstanceField(param.thisObject, "isGroup");
-                if (isGroupField != null) isGroup = (boolean) isGroupField;
-                if (isGroup) {
+                if (Objects.equals(tabInstances.get(GROUPS), param.thisObject)) {
                     param.setResult(GROUPS);
                 }
             }
