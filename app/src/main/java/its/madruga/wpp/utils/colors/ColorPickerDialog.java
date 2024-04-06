@@ -1,7 +1,6 @@
 package its.madruga.wpp.utils.colors;
 
 import static androidx.core.content.ContextCompat.getSystemService;
-import static its.madruga.wpp.MainActivity.shell;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -28,9 +27,6 @@ import com.skydoves.colorpickerview.flag.FlagMode;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 import com.skydoves.colorpickerview.sliders.AlphaSlideBar;
 import com.skydoves.colorpickerview.sliders.BrightnessSlideBar;
-
-import java.io.DataOutputStream;
-import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import its.madruga.wpp.BuildConfig;
@@ -102,7 +98,7 @@ public class ColorPickerDialog extends Dialog {
                 editor.putString(tag, newColor).apply();
                 sumView.setText(String.format(String.valueOf(summary), newColor));
                 colorPickerV.setImageDrawable(new ColorDrawable(IColors.parseColor(newColor)));
-                if (sharedPreferences.getBoolean("autoreboot", false) && shell != null) {
+                if (sharedPreferences.getBoolean("autoreboot", false)) {
                     Intent intent = new Intent(BuildConfig.APPLICATION_ID + ".WHATSAPP.RESTART");
                     applyButton.getContext().sendBroadcast(intent);
                 }

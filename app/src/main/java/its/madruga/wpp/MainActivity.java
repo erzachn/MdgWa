@@ -40,7 +40,6 @@ import its.madruga.wpp.xposed.XposedChecker;
 public class MainActivity extends BaseActivity {
 
     public final static String TAG = "Debug-Main";
-    public static Process shell;
     public static boolean isLSPatched = false;
     public List<PackageInfo> lspatchPkgs = new ArrayList<>();
     public List<PackageInfo> wppPkgs = new ArrayList<>();
@@ -56,13 +55,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onPause() {
         if (requestingLSPosedScope) {
-            try {
-                var stdin = new DataOutputStream(shell.getOutputStream());
-                stdin.writeBytes("kill " + myPid() + "\n");
-                stdin.flush();
-            } catch (IOException e) {
-                killProcess(myPid());
-            }
+            killProcess(myPid());
         }
         super.onPause();
     }
@@ -79,7 +72,6 @@ public class MainActivity extends BaseActivity {
                 setContentViewMain();
             } else {
                 setContentViewError();
-                requestModuleScope();
             }
         } else {
             setContentViewMain();
@@ -163,17 +155,17 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    private void requestModuleScope() {
-        try {
-            var command = String.join(" ", new String[]{"am", "start", "-p", "com.android.shell", "-n", "com.android.shell/.BugreportWarningActivity", "-a", "android.intent.action.MAIN", "-f", "0x10000000", "-c", "org.lsposed.manager.LAUNCH_MANAGER", "-d", "module://" + getPackageName() + ":0/...\n"});
-            var stdin = new DataOutputStream(shell.getOutputStream());
-            stdin.writeBytes(command);
-            stdin.flush();
-            requestingLSPosedScope = true;
-        } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), R.string.xposedinit_error, Toast.LENGTH_SHORT).show();
-        }
-    }
+//    private void requestModuleScope() {
+//        try {
+//            var command = String.join(" ", new String[]{"am", "start", "-p", "com.android.shell", "-n", "com.android.shell/.BugreportWarningActivity", "-a", "android.intent.action.MAIN", "-f", "0x10000000", "-c", "org.lsposed.manager.LAUNCH_MANAGER", "-d", "module://" + getPackageName() + ":0/...\n"});
+//            var stdin = new DataOutputStream(shell.getOutputStream());
+//            stdin.writeBytes(command);
+//            stdin.flush();
+//            requestingLSPosedScope = true;
+//        } catch (IOException e) {
+//            Toast.makeText(getApplicationContext(), R.string.xposedinit_error, Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
     private void setWppPkgs() {
         var pm = getPackageManager();
