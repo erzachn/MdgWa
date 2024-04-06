@@ -24,30 +24,37 @@ public class XHideView extends XHookBase {
     @Override
     public void doHook() throws Exception {
 
-        var hideread = prefs.getBoolean("hideread", false);
-        var hidereadstatus = prefs.getBoolean("hidestatusview", false);
-        var hideonceseen = prefs.getBoolean("hideonceseen", false);
+        Method methodHideViewCollection = Unobfuscator.loadHideViewCollectionMethod(loader);
+        logDebug(Unobfuscator.getMethodDescriptor(methodHideViewCollection));
+        XposedBridge.hookMethod(methodHideViewCollection, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if (prefs.getBoolean("hideread", false))
+                    param.setResult(new HashMap<>());
+            }
+        });
 
-        if (hideread) {
 
-            Method methodHideViewCollection = Unobfuscator.loadHideViewCollectionMethod(loader);
-            logDebug(Unobfuscator.getMethodDescriptor(methodHideViewCollection));
+        var methodPlayerViewJid = Unobfuscator.loadHideViewAudioMethod(loader);
+        logDebug(Unobfuscator.getMethodDescriptor(methodPlayerViewJid));
+        XposedBridge.hookMethod(methodPlayerViewJid, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if (prefs.getBoolean("hideonceseen", false))
+                    param.setResult(true);
+            }
+        });
 
-            XposedBridge.hookMethod(methodHideViewCollection, XC_MethodReplacement.returnConstant(new HashMap<>()));
+        var methodHideViewJid = Unobfuscator.loadHideViewJidMethod(loader);
+        logDebug(Unobfuscator.getMethodDescriptor(methodHideViewJid));
+        XposedBridge.hookMethod(methodHideViewJid, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if (prefs.getBoolean("hidestatusview", false))
+                    param.setResult(null);
+            }
+        });
 
-        }
-
-        if (hideonceseen) {
-            var methodPlayerViewJid = Unobfuscator.loadHideViewAudioMethod(loader);
-            logDebug(Unobfuscator.getMethodDescriptor(methodPlayerViewJid));
-            XposedBridge.hookMethod(methodPlayerViewJid,XC_MethodReplacement.returnConstant(true));
-        }
-
-        if (hidereadstatus) {
-            var methodHideViewJid = Unobfuscator.loadHideViewJidMethod(loader);
-            logDebug(Unobfuscator.getMethodDescriptor(methodHideViewJid));
-            XposedBridge.hookMethod(methodHideViewJid, XC_MethodReplacement.returnConstant(null));
-        }
     }
 
     @NonNull
