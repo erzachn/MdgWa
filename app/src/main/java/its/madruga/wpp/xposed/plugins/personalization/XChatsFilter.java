@@ -76,6 +76,7 @@ public class XChatsFilter extends XHookBase {
         var pagerField = Unobfuscator.loadTabCountField(loader);
         XposedBridge.hookMethod(runMethod, new XC_MethodHook() {
             @Override
+            @SuppressLint({"Recycle", "Range"})
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 var id = (int) getObjectField(param.thisObject, idField.getName());
                 if (id != 32) return;
@@ -86,41 +87,44 @@ public class XChatsFilter extends XHookBase {
                 var groupCount = 0;
                 // Fiz ele pegar direto da database, esse metodo que dei hook, e chamado sempre q vc muda de tab, entra/sai de um chat ->
                 // ou quando a lista e atualizada, ent ele sempre vai atualizar
-                var db = SQLiteDatabase.openDatabase("/data/data/com.whatsapp/databases/msgstore.db", null, SQLiteDatabase.OPEN_READONLY);
-                // essa coluna que eu peguei, mostra a quantidade de mensagens n lidas (obvio ne).
-                // nao coloquei apenas > 0 pq quando vc marca um chat como nao lido, esse valor fica -1
-                // entao pra contar direitinho deixei != 0
-                var sql = "SELECT * FROM chat WHERE unseen_message_count != 0";
-                var cursor = db.rawQuery(sql, null);
-                while (cursor.moveToNext()) {
-                    // row da jid do chat
-                    @SuppressLint("Range") int jid = cursor.getInt(cursor.getColumnIndex("jid_row_id"));
-                    // verifica se esta arquivado ou n
-                    @SuppressLint("Range") int hidden = cursor.getInt(cursor.getColumnIndex("hidden"));
-                    if (hidden == 1) return;
-                    // aqui eu fiz pra verificar se e grupo ou n, ai ele pega as infos da jid de acordo com a row da jid ali de cima
-                    var sql2 = "SELECT * FROM jid WHERE _id == ?";
-                    var cursor1 = db.rawQuery(sql2, new String[]{String.valueOf(jid)});
-                    while (cursor1.moveToNext()) {
-                        // esse server armazena oq ele e, s.whatsapp.net, lid, ou g.us
-                        @SuppressLint("Range") var server = cursor1.getString(cursor1.getColumnIndex("server"));
-                        // separacao simples
-                        if (server.equals("g.us")) {
-                            groupCount++;
-                        } else {
-                            chatCount++;
+                try (SQLiteDatabase db = SQLiteDatabase.openDatabase(XMain.mApp.getCacheDir().getParentFile().getAbsolutePath() + "/databases/msgstore.db", null, SQLiteDatabase.OPEN_READONLY)) {
+                    // essa coluna que eu peguei, mostra a quantidade de mensagens n lidas (obvio ne).
+                    // nao coloquei apenas > 0 pq quando vc marca um chat como nao lido, esse valor fica -1
+                    // entao pra contar direitinho deixei != 0
+                    var sql = "SELECT * FROM chat WHERE unseen_message_count != 0";
+                    var cursor = db.rawQuery(sql, null);
+                    XposedBridge.log("cursor.getCount(): " + cursor.getCount());
+                    while (cursor.moveToNext()) {
+                        // row da jid do chat
+                       int jid = cursor.getInt(cursor.getColumnIndex("jid_row_id"));
+                        // verifica se esta arquivado ou n
+                        int hidden = cursor.getInt(cursor.getColumnIndex("hidden"));
+                        if (hidden == 1) continue;
+                        // aqui eu fiz pra verificar se e grupo ou n, ai ele pega as infos da jid de acordo com a row da jid ali de cima
+                        var sql2 = "SELECT * FROM jid WHERE _id == ?";
+                        var cursor1 = db.rawQuery(sql2, new String[]{String.valueOf(jid)});
+                        while (cursor1.moveToNext()) {
+                            // esse server armazena oq ele e, s.whatsapp.net, lid, ou g.us
+                            @SuppressLint("Range") var server = cursor1.getString(cursor1.getColumnIndex("server"));
+                            // separacao simples
+                            if (server.equals("g.us")) {
+                                groupCount++;
+                            } else {
+                                chatCount++;
+                            }
                         }
                     }
-                }
-                // cada tab tem sua classe, ent eu percorro todas pra funcionar dboa
-                for (int i = 0; i < tabs.size(); i++) {
-                    var q = XposedHelpers.callMethod(a1, "A00", a1, i);
 
-                    // deixei a de call pq a de gp nao aparece
-                    if (tabs.get(i) == CHATS) {
-                        setObjectField(q, "A01", groupCount);
-                    } else if (tabs.get(i) == CALLS) {
-                        setObjectField(q, "A01", chatCount);
+                    XposedBridge.log("chatCount: " + chatCount + " groupCount: " + groupCount);
+                    // cada tab tem sua classe, ent eu percorro todas pra funcionar dboa
+                    for (int i = 0; i < tabs.size(); i++) {
+                        var q = XposedHelpers.callMethod(a1, "A00", a1, i);
+                        XposedBridge.log("q: " + q);
+                        if (tabs.get(i) == CALLS) {
+                            setObjectField(q, "A01", chatCount);
+                        } else if (tabs.get(i) == CHATS) {
+                            setObjectField(q, "A01", groupCount);
+                        }
                     }
                 }
             }
@@ -128,7 +132,6 @@ public class XChatsFilter extends XHookBase {
 
         var enableCountMethod = Unobfuscator.loadEnableCountTabMethod(loader);
         logDebug(Unobfuscator.getMethodDescriptor(enableCountMethod));
-        //Issaq meio q ativa o contador da tab de grupo, mas fica totalmente igual ao chats
         XposedBridge.hookMethod(enableCountMethod, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -276,7 +279,7 @@ public class XChatsFilter extends XHookBase {
             @Override
             @SuppressWarnings("unchecked")
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                tabs = (ArrayList<Integer>)fieldTabsList.get(null);
+                tabs = (ArrayList<Integer>) fieldTabsList.get(null);
                 if (!tabs.contains(GROUPS))
                     tabs.add(1, GROUPS);
             }
