@@ -5,7 +5,6 @@
     <string-array name="scope">
         <item>com.whatsapp</item>
         <item>com.whatsapp.w4b</item>
-        <item>android</item>
     </string-array>
     <string name="antirevoke">Anti-Delete Messages</string>
     <string name="antirevoke_sum">When active, messages will not be deleted for you.</string>
