@@ -2,6 +2,7 @@ package its.madruga.wpp.xposed.plugins.core;
 
 import static its.madruga.wpp.BuildConfig.DEBUG;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Application;
@@ -20,6 +21,8 @@ import android.os.Looper;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 
@@ -99,11 +102,7 @@ public class XMain {
             }
         };
         var intentRestart = new IntentFilter(BuildConfig.APPLICATION_ID + ".WHATSAPP.RESTART");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            mApp.registerReceiver(restartReceiver, intentRestart, Context.RECEIVER_EXPORTED);
-        } else {
-            mApp.registerReceiver(restartReceiver, intentRestart);
-        }
+        ContextCompat.registerReceiver(mApp, restartReceiver, intentRestart, ContextCompat.RECEIVER_EXPORTED);
     }
 
     private static void plugins(@NonNull ClassLoader loader, @NonNull XSharedPreferences pref) {
