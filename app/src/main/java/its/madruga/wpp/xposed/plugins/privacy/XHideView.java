@@ -3,15 +3,11 @@ package its.madruga.wpp.xposed.plugins.privacy;
 import androidx.annotation.NonNull;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
 import its.madruga.wpp.xposed.Unobfuscator;
 import its.madruga.wpp.xposed.models.XHookBase;
 
@@ -24,15 +20,28 @@ public class XHideView extends XHookBase {
     @Override
     public void doHook() throws Exception {
 
-        Method methodHideViewCollection = Unobfuscator.loadHideViewCollectionMethod(loader);
-        logDebug(Unobfuscator.getMethodDescriptor(methodHideViewCollection));
-        XposedBridge.hookMethod(methodHideViewCollection, new XC_MethodHook() {
+        Method hideViewOpenChatMethod = Unobfuscator.loadHideViewOpenChatMethod(loader);
+        logDebug(Unobfuscator.getMethodDescriptor(hideViewOpenChatMethod));
+
+        XposedBridge.hookMethod(hideViewOpenChatMethod, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (prefs.getBoolean("hideread", false))
                     param.setResult(new HashMap<>());
             }
         });
+
+        Method hideViewInChatMethod = Unobfuscator.loadHideViewInChatMethod(loader);
+        logDebug(Unobfuscator.getMethodDescriptor(hideViewInChatMethod));
+
+        XposedBridge.hookMethod(hideViewInChatMethod, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if (prefs.getBoolean("hideread", false))
+                    param.setResult(null);
+            }
+        });
+
 
 
         var methodPlayerViewJid = Unobfuscator.loadHideViewAudioMethod(loader);
