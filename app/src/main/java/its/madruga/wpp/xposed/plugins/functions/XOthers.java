@@ -69,6 +69,10 @@ public class XOthers extends XHookBase {
                 var propValue = props.get(i);
 
                 if (propValue != null) {
+                    if (i == 2358){
+                        param.setResult(false);
+                        return;
+                    }
                     var stacktrace = Thread.currentThread().getStackTrace();
                     var stackTraceElement = stacktrace[6];
                     if (stackTraceElement != null) {

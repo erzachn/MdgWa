@@ -33,18 +33,13 @@ public class XChatsFilter extends XHookBase {
     public final int CALLS = 400;
     public final int COMMUNITY = 600;
     public final int GROUPS = 500;
-    public final ArrayList<Integer> tabs = new ArrayList<>();
+    public ArrayList<Integer> tabs = new ArrayList<>();
     public int tabCount = 0;
     private int idGroupId = 0;
     public static HashMap<Integer, Object> tabInstances = new HashMap<>();
 
     public XChatsFilter(ClassLoader loader, XSharedPreferences preferences) {
         super(loader, preferences);
-        tabs.add(CHATS);
-        tabs.add(GROUPS);
-        tabs.add(STATUS);
-        tabs.add(COMMUNITY);
-        tabs.add(CALLS);
     }
 
     public void doHook() throws Exception {
@@ -282,8 +277,11 @@ public class XChatsFilter extends XHookBase {
         fieldTabsList.setAccessible(true);
         XposedBridge.hookMethod(onCreateTabList, new XC_MethodHook() {
             @Override
+            @SuppressWarnings("unchecked")
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                fieldTabsList.set(null, tabs);
+                tabs = (ArrayList<Integer>)fieldTabsList.get(null);
+                if (!tabs.contains(GROUPS))
+                    tabs.add(1, GROUPS);
             }
         });
     }
