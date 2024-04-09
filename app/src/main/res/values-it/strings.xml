@@ -120,4 +120,6 @@
     <string name="hide_archived_chat_sum">Nascondi le chat archiviate e attiva il tap prolungato sulla barra degli strumenti per accedere alle chat archiviate</string>
 	  <string name="hide_once_view_seen">Nascondi Visualizzazione una volta sola e audio ascoltato</string>
     <string name="hide_once_view_seen_sum">Nascondi il fatto di aver visto la visualizzazione una volta sola e di aver ascoltato gli audio</string>
+    <string name="call_blocker">Call Blocker</string>
+    <string name="call_blocker_sum">Block WhatsApp calls based on privacy type</string>
 </resources>
