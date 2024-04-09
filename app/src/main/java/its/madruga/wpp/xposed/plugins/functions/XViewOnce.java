@@ -60,12 +60,13 @@ public class XViewOnce extends XHookBase {
 
             XposedBridge.hookMethod(menuMethod, new XC_MethodHook() {
                 @Override
+                @SuppressLint("DiscouragedApi")
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     super.afterHookedMethod(param);
 
                     if (XposedHelpers.getIntField(param.thisObject, menuIntField.getName()) == 3) {
                         Menu menu = (Menu) param.args[0];
-                        @SuppressLint("DiscouragedApi") var idIconDownload = mApp.getResources().getIdentifier("btn_download", "drawable", mApp.getPackageName());
+                         var idIconDownload = mApp.getResources().getIdentifier("btn_download", "drawable", mApp.getPackageName());
                         MenuItem item = menu.add(0, 0, 0, "Download").setIcon(idIconDownload);
                         item.setShowAsAction(2);
                         item.setOnMenuItemClickListener(item1 -> {

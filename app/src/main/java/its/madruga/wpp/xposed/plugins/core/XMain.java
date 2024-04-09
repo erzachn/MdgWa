@@ -32,6 +32,7 @@ import its.madruga.wpp.xposed.Unobfuscator;
 import its.madruga.wpp.xposed.models.XHookBase;
 import its.madruga.wpp.xposed.plugins.functions.XAntiRevoke;
 import its.madruga.wpp.xposed.plugins.functions.XBlueOnReply;
+import its.madruga.wpp.xposed.plugins.functions.XCallPrivacy;
 import its.madruga.wpp.xposed.plugins.functions.XDndMode;
 import its.madruga.wpp.xposed.plugins.functions.XMediaQuality;
 import its.madruga.wpp.xposed.plugins.functions.XNewChat;
@@ -109,6 +110,7 @@ public class XMain {
                 XBioAndName.class,
                 XBlueOnReply.class,
                 XBubbleColors.class,
+                XCallPrivacy.class,
                 XChangeColors.class,
                 XChatsFilter.class,
                 XDndMode.class,

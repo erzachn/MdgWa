@@ -10,10 +10,12 @@ import android.widget.TextView;
 import org.luckypray.dexkit.DexKitBridge;
 import org.luckypray.dexkit.query.FindClass;
 import org.luckypray.dexkit.query.FindMethod;
+import org.luckypray.dexkit.query.enums.OpCodeMatchType;
 import org.luckypray.dexkit.query.enums.StringMatchType;
 import org.luckypray.dexkit.query.matchers.ClassMatcher;
 import org.luckypray.dexkit.query.matchers.FieldMatcher;
 import org.luckypray.dexkit.query.matchers.MethodMatcher;
+import org.luckypray.dexkit.query.matchers.base.OpCodesMatcher;
 import org.luckypray.dexkit.result.ClassData;
 import org.luckypray.dexkit.result.ClassDataList;
 import org.luckypray.dexkit.result.MethodData;
@@ -103,7 +105,7 @@ public class Unobfuscator {
     }
 
     public static Field getFieldByType(Class<?> cls, Class<?> type) {
-        return Arrays.stream(cls.getFields()).filter(f -> f.getType().equals(type)).findFirst().orElse(null);
+        return Arrays.stream(cls.getDeclaredFields()).filter(f -> f.getType().equals(type)).findFirst().orElse(null);
     }
 
     public static Field getFieldByExtendType(Class<?> cls, Class<?> type) {
@@ -732,5 +734,37 @@ public class Unobfuscator {
         return clazz.getMethod("setOnClickListener", View.OnClickListener.class);
     }
 
+    public static Method loadAntiRevokeOnCallReceivedMethod(ClassLoader loader) throws Exception {
+        var method = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "VoiceService:callStateChangedOnUiThread");
+        if (method == null) throw new Exception("OnCallReceiver method not found");
+        return method;
+    }
+
+    public static Method loadAntiRevokeCallEndMethod(ClassLoader loader) throws Exception {
+        var method = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "voicefgservice/stop-service");
+        if (method == null) throw new Exception("CallEndReceiver method not found");
+        return method;
+    }
+
+    public static Field loadContactManagerField(ClassLoader loader) throws Exception {
+        Class<?> class1 = findFirstClassUsingStrings(loader, StringMatchType.Contains, "contactmanager/permission problem:");
+        if (class1 == null) throw new Exception("ContactManager field not found");
+        Class HomeActivity = XposedHelpers.findClass("com.whatsapp.HomeActivity", loader);
+        return getFieldByType(HomeActivity, class1);
+    }
+
+    public static Method loadGetContactInfoMethod(ClassLoader loader) throws Exception {
+        Class<?> class1 = findFirstClassUsingStrings(loader, StringMatchType.Contains, "contactmanager/permission problem:");
+        if (class1 == null) throw new Exception("GetContactInfo method not found");
+        var methods = class1.getMethods();
+        for (int i = 0; i < methods.length; i++) {
+            var method = methods[i];
+            if (method.getParameterCount() == 2 && method.getParameterTypes()[1] == boolean.class) {
+                if (methods[i-1].getParameterCount() == 1)
+                    return methods[i-1];
+            }
+        }
+        throw new Exception("GetContactInfo 2 method not found");
+    }
 
 }

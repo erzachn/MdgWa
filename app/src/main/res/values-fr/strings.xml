@@ -120,4 +120,5 @@
     <string name="hide_archived_chat_sum">Hide Archived chat and enable Toolbar on long click to access chat</string>
     <string name="hide_once_view_seen">Hide Once View and Audio Seen</string>
     <string name="hide_once_view_seen_sum">hide that once view and audio has been seen</string>
+    <string name="call_blocker">Call Blocker</string>
 </resources>

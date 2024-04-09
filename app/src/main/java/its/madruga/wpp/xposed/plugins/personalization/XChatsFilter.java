@@ -105,7 +105,7 @@ public class XChatsFilter extends XHookBase {
                         var cursor1 = db.rawQuery(sql2, new String[]{String.valueOf(jid)});
                         while (cursor1.moveToNext()) {
                             // esse server armazena oq ele e, s.whatsapp.net, lid, ou g.us
-                            @SuppressLint("Range") var server = cursor1.getString(cursor1.getColumnIndex("server"));
+                            var server = cursor1.getString(cursor1.getColumnIndex("server"));
                             // separacao simples
                             if (server.equals("g.us")) {
                                 groupCount++;
@@ -114,12 +114,9 @@ public class XChatsFilter extends XHookBase {
                             }
                         }
                     }
-
-                    XposedBridge.log("chatCount: " + chatCount + " groupCount: " + groupCount);
                     // cada tab tem sua classe, ent eu percorro todas pra funcionar dboa
                     for (int i = 0; i < tabs.size(); i++) {
                         var q = XposedHelpers.callMethod(a1, "A00", a1, i);
-                        XposedBridge.log("q: " + q);
                         if (tabs.get(i) == CALLS) {
                             setObjectField(q, "A01", chatCount);
                         } else if (tabs.get(i) == CHATS) {
