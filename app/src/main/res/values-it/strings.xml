@@ -125,7 +125,7 @@
     <string name="separate_groups_sum">Separa le tue chat per: gruppi, chat private, stato, chiamate, comunità</string>
     <string name="separate_groups">Gruppi separati</string>
     <string name="blueonreply">Invia spunta blu dopo la risposta</string>
-    <string name="blueonreply_sum">Abilita la possibilità in inviare la spunta blu dopo aver risposto al messaggio</string>
+    <string name="blueonreply_sum">Abilita la possibilità di inviare la spunta blu dopo aver risposto al messaggio</string>
     <string name="hide_archived_chat">Nascondi chat archiviate</string>
     <string name="hide_archived_chat_sum">Nascondi le chat archiviate e attiva il tap prolungato sulla barra degli strumenti per accedere alle chat archiviate</string>
     <string name="hide_once_view_seen">Nascondi Visualizza una volta e audio ascoltato</string>
