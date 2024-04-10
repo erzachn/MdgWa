@@ -96,6 +96,15 @@
                     other:reboot="true"
                     android:text="@string/novaconfig" />
 
+                <its.madruga.wpp.views.SwitchButton
+                    android:id="@+id/dotonline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:summary="@string/show_online_dot_in_conversation_list_sum"
+                    android:tag="dotonline"
+                    other:reboot="true"
+                    android:text="@string/show_online_dot_in_conversation_list" />
+
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>

@@ -1,5 +1,6 @@
 package its.madruga.wpp.xposed;
 
+import android.content.res.Resources;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,6 +33,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -110,6 +112,7 @@ public class Unobfuscator {
 
     public static Field getFieldByExtendType(Class<?> cls, Class<?> type) {
         return Arrays.stream(cls.getFields()).filter(f -> type.isAssignableFrom(f.getType())).findFirst().orElse(null);
+
     }
 
     public static String getMethodDescriptor(Method method) {
@@ -118,6 +121,28 @@ public class Unobfuscator {
 
     public static String getFieldDescriptor(Field field) {
         return field.getDeclaringClass().getName() + "->" + field.getName() + ":" + field.getType().getName();
+    }
+
+    private static final Map<String, Integer> reverseResourceMap = new HashMap<>();
+
+    private static void initializeReverseResourceMap() {
+        Resources resources = XMain.mApp.getResources();
+        for (int i = 0x7f120000; i < 0x7f12ffff; i++) {
+            try {
+                String resourceString = resources.getString(i);
+                reverseResourceMap.put(resourceString.toLowerCase().replaceAll("\\s",""),i);
+            } catch (Resources.NotFoundException ignored) {
+            }
+        }
+    }
+
+    public static int getOfuscateIdString(String search) {
+        if (reverseResourceMap.isEmpty())
+            initializeReverseResourceMap();
+        search = search.toLowerCase().replaceAll("\\s","");
+        var result = reverseResourceMap.get(search);
+        if (result != null) return result;
+        return -1;
     }
 
 
@@ -760,11 +785,36 @@ public class Unobfuscator {
         for (int i = 0; i < methods.length; i++) {
             var method = methods[i];
             if (method.getParameterCount() == 2 && method.getParameterTypes()[1] == boolean.class) {
-                if (methods[i-1].getParameterCount() == 1)
-                    return methods[i-1];
+                if (methods[i - 1].getParameterCount() == 1)
+                    return methods[i - 1];
             }
         }
         throw new Exception("GetContactInfo 2 method not found");
     }
 
+    public static Method loadOnChangeStatus(ClassLoader loader) throws Exception {
+        Method method = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "ConversationViewFillerRefactored/setParentGroupProfilePhoto/Unexpected class instance");
+        if (method == null) throw new Exception("OnChangeStatus method not found");
+        return method;
+    }
+
+    public static Field loadViewHolderField1(ClassLoader loader) throws Exception {
+        Class<?> class1 = loadOnChangeStatus(loader).getDeclaringClass().getSuperclass();
+        Class<?> classViewHolder = XposedHelpers.findClass("com.whatsapp.conversationslist.ViewHolder", loader);
+        return getFieldByType(class1, classViewHolder);
+    }
+
+    public static Method loadGetStatusUserMethod(ClassLoader loader) throws Exception {
+        var id = Unobfuscator.getOfuscateIdString("last seen sun %s");
+        XposedBridge.log(Integer.toHexString(id));
+        var result= dexkit.findMethod(new FindMethod().matcher(new MethodMatcher().addUsingNumber(id)));
+        if (result.isEmpty()) throw new Exception("GetStatusUser method not found");
+        return result.get(0).getMethodInstance(loader);
+    }
+
+    public static Method loadSendPresenceMethod(ClassLoader loader) throws Exception {
+        var method = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "app/send-presence-subscription jid=");
+        if (method == null) throw new Exception("SendPresence method not found");
+        return method;
+    }
 }

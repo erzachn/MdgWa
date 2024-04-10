@@ -27,11 +27,17 @@ public class SwitchListener implements CompoundButton.OnCheckedChangeListener {
         var switchButton = (AbstractSwitchButton) buttonView.getTag();
         if (switchButton.getId() == R.id.hidereceipt) {
             SwitchButton view = buttonView.getRootView().findViewById(R.id.blueonreply);
-            view.setEnabled(!isChecked);
+            SwitchButton view2 = buttonView.getRootView().findViewById(R.id.hideread);
+            view.setEnabled(!isChecked && view2.isChecked());
             if (isChecked) {
                 view.setChecked(false);
             }
+        }else if (switchButton.getId() == R.id.hideread) {
+            SwitchButton view = buttonView.getRootView().findViewById(R.id.blueonreply);
+            SwitchButton view2 = buttonView.getRootView().findViewById(R.id.hidereceipt);
+            view.setEnabled(isChecked && !view2.isChecked());
         }
+
         if (switchButton.isRebootEnabled() && mShared.getBoolean("autoreboot", false) && checkReboot) {
             Intent intent = new Intent(BuildConfig.APPLICATION_ID + ".WHATSAPP.RESTART");
             buttonView.getContext().sendBroadcast(intent);

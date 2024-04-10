@@ -52,4 +52,7 @@ public abstract class AbstractSwitchButton extends LinearLayout {
         return "true".equals(reboot);
     }
 
+    public boolean isChecked() {
+        return  ((MaterialSwitch) findViewById(R.id.switch_button)).isChecked();
+    }
 }

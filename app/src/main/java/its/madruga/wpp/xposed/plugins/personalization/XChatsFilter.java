@@ -34,8 +34,6 @@ public class XChatsFilter extends XHookBase {
     public final int COMMUNITY = 600;
     public final int GROUPS = 500;
     public ArrayList<Integer> tabs = new ArrayList<>();
-    public int tabCount = 0;
-    private int idGroupId = 0;
     public static HashMap<Integer, Object> tabInstances = new HashMap<>();
 
     public XChatsFilter(ClassLoader loader, XSharedPreferences preferences) {
@@ -173,7 +171,7 @@ public class XChatsFilter extends XHookBase {
     @SuppressLint("ResourceType")
     private void hookTabName(Class<?> home) throws Exception {
         var tabNameMethod = Unobfuscator.loadTabNameMethod(loader);
-        var idGroupId = getGroupId();
+        var idGroupId = Unobfuscator.getOfuscateIdString("Groups");
         logDebug(Unobfuscator.getMethodDescriptor(tabNameMethod));
         var activityField = Unobfuscator.getFieldByType(tabNameMethod.getDeclaringClass(), home);
         activityField.setAccessible(true);
@@ -192,21 +190,6 @@ public class XChatsFilter extends XHookBase {
                 }
             }
         });
-    }
-
-    private int getGroupId() {
-        Resources resources = XMain.mApp.getResources();
-        for (int i = 0x7f120500; i < 0x7f12ffff; i++) {
-            try {
-                if (resources.getString(i).equalsIgnoreCase("groups")) {
-                    idGroupId = i;
-                    XposedBridge.log("idGroupString: " + Integer.toHexString(idGroupId));
-                    break;
-                }
-            } catch (Resources.NotFoundException ignored) {
-            }
-        }
-        return idGroupId;
     }
 
     private void hookTabInstance(Class<?> cFrag) throws Exception {

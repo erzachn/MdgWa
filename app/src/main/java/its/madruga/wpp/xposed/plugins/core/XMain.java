@@ -44,6 +44,7 @@ import its.madruga.wpp.xposed.plugins.personalization.XBioAndName;
 import its.madruga.wpp.xposed.plugins.personalization.XBubbleColors;
 import its.madruga.wpp.xposed.plugins.personalization.XChangeColors;
 import its.madruga.wpp.xposed.plugins.personalization.XChatsFilter;
+import its.madruga.wpp.xposed.plugins.personalization.XShowOnline;
 import its.madruga.wpp.xposed.plugins.personalization.XSecondsToTime;
 import its.madruga.wpp.xposed.plugins.privacy.XFreezeLastSeen;
 import its.madruga.wpp.xposed.plugins.privacy.XGhostMode;
@@ -113,6 +114,7 @@ public class XMain {
                 XCallPrivacy.class,
                 XChangeColors.class,
                 XChatsFilter.class,
+                XShowOnline.class,
                 XDndMode.class,
                 XFreezeLastSeen.class,
                 XGhostMode.class,

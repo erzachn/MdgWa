@@ -121,4 +121,6 @@
     <string name="hide_archived_chat_sum">Arşivlenmiş sohbeti gizle ve sohbete erişmek için uzun dokunma menüsünü etkinleştir</string>
     <string name="hide_once_view_seen">Bir kez görüntülendikten ve işitildikten sonra mavi işareti gizle</string>
     <string name="hide_once_view_seen_sum">Bir kez görüntülendikten ve işitildikten sonra mavi işareti gizle</string>
+    <string name="show_online_dot_in_conversation_list">Show online dot in Conversation List</string>
+    <string name="show_online_dot_in_conversation_list_sum">Show a green online dot on the home screen (NOTE: you need to activate show online for everyone in the Whatsapp configuration menu)</string>
 </resources>
