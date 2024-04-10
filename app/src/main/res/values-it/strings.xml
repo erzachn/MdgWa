@@ -3,6 +3,18 @@
     <string name="app_desc">Un modulo Xposed per personalizzare il tuo WhatsApp.</string>
     <string name="antirevoke">Anti-eliminazione Messaggi</string>
     <string name="antirevoke_sum">Quando è attivo i messaggi non verranno eliminati per te.</string>
+    <string name="antirevokestatus">Anti-eliminazione Stato</string>
+    <string name="antirevokestatus_sum">Quando è attivo gli stati non verranno cancellati per te.</string>
+        <string-array name="antirevoke_buttons">
+        <item>Disabilitato</item>
+        <item>Mostra Testo</item>
+        <item>Mostra Icona</item>
+    </string-array>
+    <string-array name="antirevoke_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
     <string name="ghostmode">Nascondi digitazione</string>
     <string name="ghostmode_sum">Quando è attivo la persona non può vedere che stai digitando</string>
     <string name="ghostmode_r">Nascondi la registrazione di un audio...</string>
@@ -22,16 +34,14 @@
     <string name="segundosnahora_sum">Mostra i secondi accanto agli orari</string>
     <string name="textonahora">Aggiungi testo accanto all\'orario</string>
     <string name="no_active">Se ti trovi su questa schermata significa che non hai ancora il modulo attivo, non hai LSPosed installato o non hai alcun APK di WhatsApp patchato da LSPatch.\n\nCorreggi il problema, riavvia il modulo e riprova</string>
-    <string name="viewonce">Disabilita Visualizzazione Una Volta Sola</string>
+    <string name="viewonce">Disabilita Visualizza Una Volta</string>
     <string name="viewonce_sum">Quando è attivo ti consente di aprire i messaggi visualizzabili una volta sola, tutte le volte che vuoi.</string>
     <string name="novotema">Nuovo tema WhatsApp</string>
     <string name="novotema_sum">Quando attivato cambia il colore e il tema delle icone nel nuovo tema WhatsApp</string>
-    <string name="antirevokestatus">Anti-eliminazione Stato</string>
-    <string name="antirevokestatus_sum">Quando è attivo gli stati non verranno cancellati.</string>
     <string name="hidereceipt">Nascondi Ricevuta</string>
     <string name="hidereceipt_sum">Non dire agli utenti che hai ricevuto i messaggi</string>
     <string name="outros">Altri</string>
-    <string name="antirevoke_title">Anti Revoca</string>
+    <string name="antirevoke_title">Anti-eliminazione Messaggi</string>
     <string name="privacy_title">Privacy</string>
     <string name="settings_title">"Impostazioni"</string>
     <string name="autoreboot">Riavvio automatico</string>
@@ -98,8 +108,8 @@
     <string name="bubble_right">Bolla a destra</string>
     <string name="general_summary">Personalizzazioni implementate nativamente da Whatsapp</string>
     <string name="home_summary">Personalizza la schermata iniziale a tuo piacimento</string>
-    <string name="conversation_summary">Modifica alcuni elementi nella schermata della conversazione, come le bolle, la barra di digitazione e altro</string>
-    <string name="privacy_summary">Nascondi conferma di lettura, nascondi conferma, ultimo accesso e altro</string>
+    <string name="conversation_summary">Modifica alcuni elementi nella schermata della conversazione, come le bolle, la barra digitazione e altro</string>
+    <string name="privacy_summary">Nascondi conferma di lettura, nascondi ricezione, ultimo accesso e altro</string>
     <string name="media_summary">Download degli stati, impostazioni multimediali e altro</string>
     <string name="module_working_text">Modulo che funziona con %s</string>
     <string name="module_not_working">Modulo non funzionante</string>
@@ -110,16 +120,26 @@
     <string name="module_not_setted_text">Il modulo è abilitato, ma l\'ambito è vuoto</string>
     <string name="imagequality">Invia immagini in qualità HD</string>
     <string name="imagequality_sum">Abilita la possibilità di inviare immagini in qualità HD</string>
-    <string name="downloadviewonce">Download isualizza Una Volta Sola</string>
-    <string name="downloadviewonce_sum">Aggiungi un pulsante di download per la visualizzazione una volta sola</string>
+    <string name="downloadviewonce">Download Visualizza Una Volta</string>
+    <string name="downloadviewonce_sum">Aggiungi un pulsante di download per Visualizza una volta</string>
     <string name="separate_groups_sum">Separa le tue chat per: gruppi, chat private, stato, chiamate, comunità</string>
     <string name="separate_groups">Gruppi separati</string>
     <string name="blueonreply">Invia spunta blu dopo la risposta</string>
-    <string name="blueonreply_sum">Abilita la possibilità in inviare la spunta blu dopo aver risposto al messaggio</string>
+    <string name="blueonreply_sum">Abilita la possibilità di inviare la spunta blu dopo aver risposto al messaggio</string>
     <string name="hide_archived_chat">Nascondi chat archiviate</string>
     <string name="hide_archived_chat_sum">Nascondi le chat archiviate e attiva il tap prolungato sulla barra degli strumenti per accedere alle chat archiviate</string>
-	  <string name="hide_once_view_seen">Nascondi Visualizzazione una volta sola e audio ascoltato</string>
-    <string name="hide_once_view_seen_sum">Nascondi il fatto di aver visto la visualizzazione una volta sola e di aver ascoltato gli audio</string>
-    <string name="call_blocker">Call Blocker</string>
-    <string name="call_blocker_sum">Block WhatsApp calls based on privacy type</string>
+    <string name="hide_once_view_seen">Nascondi Visualizza una volta e audio ascoltato</string>
+    <string name="hide_once_view_seen_sum">Nascondi il fatto di aver visto Visualizza una volta e di aver ascoltato gli audio</string>
+    <string name="call_blocker">Blocco Chiamate</string>
+    <string name="call_blocker_sum">Blocca le chiamate WhatsApp in base al tipo di privacy.</string>
+        <string-array name="call_blocker_buttons">
+        <item>Non bloccare</item>
+        <item>Blocca tutte le chiamate</item>
+        <item>Blocca solo numeri sconosciuti</item>
+    </string-array>
+    <string-array name="call_blocker_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources>
