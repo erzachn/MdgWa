@@ -793,7 +793,8 @@ public class Unobfuscator {
     }
 
     public static Method loadOnChangeStatus(ClassLoader loader) throws Exception {
-        Method method = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "ConversationViewFillerRefactored/setParentGroupProfilePhoto/Unexpected class instance");
+        Method[] methods = findAllMethodUsingStrings(loader, StringMatchType.Contains, "setParentGroupProfilePhoto");
+        var method = Arrays.stream(methods).filter(m -> m.getParameterCount() == 5).findFirst().orElse(null);
         if (method == null) throw new Exception("OnChangeStatus method not found");
         return method;
     }
