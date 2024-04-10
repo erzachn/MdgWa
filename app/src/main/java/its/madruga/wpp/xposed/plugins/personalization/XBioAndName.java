@@ -59,18 +59,19 @@ public class XBioAndName extends XHookBase {
             var name = startup_prefs.getString("push_name", "WhatsApp");
             var bio = mainPrefs.getString("my_current_status", "");
             toolbar.setOnLongClickListener((v) -> {
-                if (XHideArchive.mOnClickListener != null) {
-                    XHideArchive.mOnClickListener.onClick(v);
+                for (var onClick : XHideArchive.mClickListenerList) {
+                    onClick.onClick(v);
+                    break;
                 }
                 return true;
             });
 
-            if (!(logo.getParent() instanceof LinearLayout)){
+            if (!(logo.getParent() instanceof LinearLayout)) {
                 var methods = Arrays.stream(actionbar.getClass().getDeclaredMethods()).filter(m -> m.getParameterCount() == 1 && m.getParameterTypes()[0] == CharSequence.class).toArray(Method[]::new);
-                if (showName){
-                    methods[1].invoke(actionbar,  name);
+                if (showName) {
+                    methods[1].invoke(actionbar, name);
                 }
-                if (showBio){
+                if (showBio) {
                     methods[0].invoke(actionbar, bio);
                 }
                 XposedBridge.hookMethod(methods[1], new XC_MethodHook() {

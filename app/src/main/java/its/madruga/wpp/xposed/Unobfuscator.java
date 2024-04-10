@@ -744,19 +744,25 @@ public class Unobfuscator {
         return method;
     }
 
-    public static Method loadArchiveHideViewMethod(ClassLoader loader) throws Exception {
-        if (cache.containsKey("ArchiveHideView")) return (Method) cache.get("ArchiveHideView");
+    public static Method[] loadArchiveHideViewMethod(ClassLoader loader) throws Exception {
+        if (cache.containsKey("ArchiveHideView")) return (Method[]) cache.get("ArchiveHideView");
         var methods = findAllMethodUsingStrings(loader, StringMatchType.Contains, "archive/set-content-indicator-to-empty");
         if (methods.length == 0) throw new Exception("ArchiveHideView method not found");
-        var clazz = methods[methods.length - 1].getDeclaringClass();
-        var method = clazz.getMethod("setVisibility", boolean.class);
-        cache.put("ArchiveHideView", method);
-        return method;
+        ArrayList<Method> result = new ArrayList<>();
+        for (var m : methods) {
+            result.add(m.getDeclaringClass().getMethod("setVisibility", boolean.class));
+        }
+        var resultArray = result.toArray(new Method[0]);
+        cache.put("ArchiveHideView", resultArray);
+        return resultArray;
     }
 
-    public static Method loadArchiveOnclickCaptureMethod(ClassLoader loader) throws Exception {
-        var clazz = loadArchiveHideViewMethod(loader).getDeclaringClass();
-        return clazz.getMethod("setOnClickListener", View.OnClickListener.class);
+    public static Method[] loadArchiveOnclickCaptureMethod(ClassLoader loader) throws Exception {
+        ArrayList<Method> result = new ArrayList<>();
+        for (var m : loadArchiveHideViewMethod(loader)) {
+            result.add(m.getDeclaringClass().getMethod("setOnClickListener",  View.OnClickListener.class));
+        }
+        return result.toArray(new Method[0]);
     }
 
     public static Method loadAntiRevokeOnCallReceivedMethod(ClassLoader loader) throws Exception {
