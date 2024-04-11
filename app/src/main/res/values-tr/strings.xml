@@ -121,11 +121,11 @@
     <string name="hide_archived_chat_sum">Arşivlenmiş sohbeti gizle ve sohbete erişmek için uzun dokunma menüsünü etkinleştir</string>
     <string name="hide_once_view_seen">Bir kez görüntülendikten ve işitildikten sonra mavi işareti gizle</string>
     <string name="hide_once_view_seen_sum">Bir kez görüntülendikten ve işitildikten sonra mavi işareti gizle</string>
-    <string name="show_online_dot_in_conversation_list">Show online dot in Conversation List</string>
-    <string name="show_online_dot_in_conversation_list_sum">Show a green online dot on the home screen (NOTE: you need to activate show online for everyone in the Whatsapp configuration menu)</string>
-    <string name="show_dnd_button">Show DND Button</string>
-    <string name="show_dnd_button_sum">Enable button to DND Mode in Toolbar</string>
-    <string name="dev4mod">Dev4Mod (Contributor)</string>
-    <string name="disable_pinned_limit">Disable Pinned Limit</string>
-    <string name="disable_pinned_limit_sum">Disable pinned limit of 3 chats</string>
+    <string name="show_online_dot_in_conversation_list">Konuşma Listesinde Çevrimiçi Noktasını Göster</string>
+    <string name="show_online_dot_in_conversation_list_sum">Ana ekranda yeşil bir çevrimiçi noktası göster (NOT: Whatsapp yapılandırma menüsünde herkes için çevrimiçi göstermeyi etkinleştirmeniz gerekir)</string>
+    <string name="show_dnd_button">DND Düğmesini Göster</string>
+    <string name="show_dnd_button_sum">Araç çubuğunda DND Modu düğmesini etkinleştir</string>
+    <string name="dev4mod">Dev4Mod (Katkıda Bulunan)</string>
+    <string name="disable_pinned_limit">Sabitleme Sınırını Devre Dışı Bırak</string>
+    <string name="disable_pinned_limit_sum">Sadece 3 sohbet sabitleme sınırını devre dışı bırak</string>
 </resources>
