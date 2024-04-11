@@ -14,7 +14,7 @@ public class XFreezeLastSeen extends XHookBase {
     }
 
     @Override
-    public void doHook() {
+    public void doHook() throws Exception {
             var method = Unobfuscator.loadFreezeSeenMethod(loader);
             logDebug(Unobfuscator.getMethodDescriptor(method));
             XposedBridge.hookMethod(method, new XC_MethodHook() {
