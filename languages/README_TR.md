@@ -1,4 +1,4 @@
-[English](../README.md) | [Português](./README_PTBR.md) | **Turkish**
+[English](../README.md) | [Português](./README_PTBR.md) | **Turkish** | [Italiano](languages/README_IT.md)
 
 # MdgWa
 
