@@ -147,4 +147,6 @@
     <string name="show_dnd_button">Show DND Button</string>
     <string name="show_dnd_button_sum">Enable button to DND Mode in Toolbar</string>
     <string name="dev4mod">Dev4Mod (Contributor)</string>
+    <string name="disable_pinned_limit">Disable Pinned Limit</string>
+    <string name="disable_pinned_limit_sum">Disable pinned limit of 3 chats</string>
 </resources>

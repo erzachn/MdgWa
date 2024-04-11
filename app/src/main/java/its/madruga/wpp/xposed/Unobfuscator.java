@@ -834,4 +834,18 @@ public class Unobfuscator {
         if (method == null) throw new Exception("SendPresence method not found");
         return method;
     }
+
+    public static Method loadPinnedLimitMethod(ClassLoader loader) throws Exception {
+        var method = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "count_progress");
+        if (method == null) throw new Exception("PinnedLimit method not found");
+        return method;
+    }
+
+    public static Method loadPinnedLimit2Method(ClassLoader loader) throws Exception {
+        var id = Unobfuscator.getOfuscateIdString("Unpin All");
+        MethodDataList result = dexkit.findMethod(new FindMethod().matcher(new MethodMatcher().addUsingNumber(id)));
+        if (result.isEmpty()) throw new Exception("PinnedLimit2 method not found");
+        var clazz = result.get(0).getDeclaredClass().getInstance(loader);
+        return Arrays.stream(clazz.getDeclaredMethods()).filter(m -> m.getReturnType().equals(boolean.class)).findFirst().orElse(null);
+    }
 }

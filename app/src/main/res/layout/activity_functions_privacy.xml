@@ -60,6 +60,14 @@
                     android:text="@string/removeforwardlimit" />
 
                 <its.madruga.wpp.views.SwitchButton
+                    android:id="@+id/pinnedlimit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:summary="@string/disable_pinned_limit_sum"
+                    android:tag="pinnedlimit"
+                    android:text="@string/disable_pinned_limit" />
+
+                <its.madruga.wpp.views.SwitchButton
                     android:id="@+id/freezelastseen"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

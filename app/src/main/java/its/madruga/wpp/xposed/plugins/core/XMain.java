@@ -37,6 +37,7 @@ import its.madruga.wpp.xposed.plugins.functions.XDndMode;
 import its.madruga.wpp.xposed.plugins.functions.XMediaQuality;
 import its.madruga.wpp.xposed.plugins.functions.XNewChat;
 import its.madruga.wpp.xposed.plugins.functions.XOthers;
+import its.madruga.wpp.xposed.plugins.functions.XPinnedLimit;
 import its.madruga.wpp.xposed.plugins.functions.XShareLimit;
 import its.madruga.wpp.xposed.plugins.functions.XStatusDownload;
 import its.madruga.wpp.xposed.plugins.functions.XViewOnce;
@@ -125,6 +126,7 @@ public class XMain {
                 XMediaQuality.class,
                 XNewChat.class,
                 XOthers.class,
+                XPinnedLimit.class,
                 XSecondsToTime.class,
                 XShareLimit.class,
                 XStatusDownload.class,
