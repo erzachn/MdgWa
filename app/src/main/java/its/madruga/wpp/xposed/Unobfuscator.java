@@ -66,18 +66,17 @@ public class Unobfuscator {
     }
 
     // TODO: Functions to find classes and methods
-    public static Method findFirstMethodUsingStrings(ClassLoader classLoader, StringMatchType type, String... strings) {
+    public static Method findFirstMethodUsingStrings(ClassLoader classLoader, StringMatchType type, String... strings) throws Exception {
         MethodMatcher matcher = new MethodMatcher();
         for (String string : strings) {
             matcher.addUsingString(string, type);
         }
         MethodDataList result = dexkit.findMethod(new FindMethod().matcher(matcher));
         if (result.isEmpty()) return null;
-        try {
-            return result.get(0).getMethodInstance(classLoader);
-        } catch (NoSuchMethodException e) {
-            return null;
+        for (MethodData methodData : result) {
+            if (methodData.isMethod()) return methodData.getMethodInstance(classLoader);
         }
+        throw new NoSuchMethodException();
     }
 
     public static Method[] findAllMethodUsingStrings(ClassLoader classLoader, StringMatchType type, String... strings) {
@@ -147,7 +146,7 @@ public class Unobfuscator {
 
 
     // TODO: Classes and Methods for FreezeSeen
-    public static Method loadFreezeSeenMethod(ClassLoader classLoader) {
+    public static Method loadFreezeSeenMethod(ClassLoader classLoader) throws Exception {
         return findFirstMethodUsingStrings(classLoader, StringMatchType.Contains, "presencestatemanager/setAvailable/new-state");
     }
 
@@ -202,6 +201,12 @@ public class Unobfuscator {
     public static Method loadHideViewInChatMethod(ClassLoader classLoader) throws Exception {
         Method method = findFirstMethodUsingStrings(classLoader, StringMatchType.Contains, "ReadReceipts/PrivacyTokenDecisionNotComputed");
         if (method == null) throw new Exception("HideViewInChat method not found");
+        return method;
+    }
+
+    public static Method loadHideViewMethod(ClassLoader classLoader) throws Exception {
+        Method method = findFirstMethodUsingStrings(classLoader, StringMatchType.Contains, "privacy_token", "false", "recipient");
+        if (method == null) throw new Exception("HideViewMethod method not found");
         return method;
     }
 

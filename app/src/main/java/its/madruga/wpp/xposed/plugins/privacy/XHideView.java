@@ -3,6 +3,7 @@ package its.madruga.wpp.xposed.plugins.privacy;
 import androidx.annotation.NonNull;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -34,13 +35,34 @@ public class XHideView extends XHookBase {
         Method hideViewInChatMethod = Unobfuscator.loadHideViewInChatMethod(loader);
         logDebug(Unobfuscator.getMethodDescriptor(hideViewInChatMethod));
 
-        XposedBridge.hookMethod(hideViewInChatMethod, new XC_MethodHook() {
+        Method hideViewMethod = Unobfuscator.loadHideViewMethod(loader);
+        logDebug(Unobfuscator.getMethodDescriptor(hideViewMethod));
+
+        XposedBridge.hookMethod(hideViewMethod, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if (prefs.getBoolean("hideread", false))
-                    param.setResult(null);
+                if (prefs.getBoolean("hideread", false)){
+                    var stacktrace = Thread.currentThread().getStackTrace();
+                    for (StackTraceElement stackTraceElement : stacktrace) {
+                        if (stackTraceElement.getClassName().equals(hideViewInChatMethod.getDeclaringClass().getName())
+                                && stackTraceElement.getMethodName().equals(hideViewInChatMethod.getName())) {
+                            if (param.args[4] != null && ((String) param.args[4]).equals("read")) {
+                                param.args[4] = null;
+                            }
+                            break;
+                        }
+                    }
+                }
             }
         });
+
+//        XposedBridge.hookMethod(hideViewInChatMethod, new XC_MethodHook() {
+//            @Override
+//            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                if (prefs.getBoolean("hideread", false))
+//                    param.setResult(null);
+//            }
+//        });
 
 
 
