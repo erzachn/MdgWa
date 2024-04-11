@@ -8,20 +8,20 @@ An Xposed module to customize your WhatsApp.
 
 ### Customization
 
-|  | Status |
-| ------------- | ------------- |
-| New WhatsApp theme | ✅ |
-| New settings style | ✅ |
-| Filter chats | ✅ |
-| Buttons stroke | ✅ |
-| Menu icons | ✅ |
-| Outlined icons | ✅ |
-| Show name and bio | ✅ |
-| AM:PM Time Format | ✅ |
-| Seconds in time | ✅ |
-| Change color global | ✅ |
+|                         | Status |
+|-------------------------| ------------- |
+| New WhatsApp theme      | ✅ |
+| New settings style      | ✅ |
+| Filter chats            | ✅ |
+| Buttons stroke          | ✅ |
+| Menu icons              | ✅ |
+| Outlined icons          | ✅ |
+| Show name and bio       | ✅ |
+| AM:PM Time Format       | ✅ |
+| Seconds in time         | ✅ |
+| Change color global     | ✅ |
 | Separe chats and groups | ✅ |
-
+| Show dot online in Home | ✅ |
 
 ### Functions
 
@@ -49,10 +49,12 @@ An Xposed module to customize your WhatsApp.
 | Hide recording       | ✅ |
 | Disable view once    | ✅ |
 | Hide archived chats  | ✅ |
+| Remove Pinned Limit  | ✅ |
 
 ## Compatibility
 
 - WhatsApp Stable
+- WhatsApp Beta
 
 ## Use
 

@@ -29,6 +29,7 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import its.madruga.wpp.BuildConfig;
 import its.madruga.wpp.xposed.Unobfuscator;
+import its.madruga.wpp.xposed.UnobfuscatorCache;
 import its.madruga.wpp.xposed.models.XHookBase;
 import its.madruga.wpp.xposed.plugins.functions.XAntiRevoke;
 import its.madruga.wpp.xposed.plugins.functions.XBlueOnReply;
@@ -68,9 +69,10 @@ public class XMain {
             @SuppressWarnings("deprecation")
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 mApp = (Application) param.args[0];
+                new UnobfuscatorCache(mApp,pref);
                 PackageManager packageManager = mApp.getPackageManager();
                 pref.registerOnSharedPreferenceChangeListener((sharedPreferences, s) -> pref.reload());
-                PackageInfo packageInfo = packageManager.getPackageInfo("com.whatsapp", 0);
+                PackageInfo packageInfo = packageManager.getPackageInfo(mApp.getPackageName(), 0);
                 XposedBridge.log(packageInfo.versionName);
                 plugins(loader, pref);
                 registerReceivers();

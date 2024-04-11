@@ -154,6 +154,11 @@ public class MainActivity extends BaseActivity {
                 listView.setVisibility(View.GONE);
             }
         });
+
+        try{
+            var pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            mEditor.putLong("lastUpdateTime", pInfo.lastUpdateTime).commit();
+        }catch (Exception e){}
     }
 
 //    private void requestModuleScope() {

@@ -41,9 +41,10 @@ public class XposedMain implements IXposedHookLoadPackage {
 
         XposedBridge.log("[•] This package: " + lpparam.packageName);
         XposedBridge.log("[•] Loaded packages: " + getPref().getStringSet("whatsapp_packages", new HashSet<>()));
-        if (getPref().getStringSet("whatsapp_packages", new HashSet<>()).contains(lpparam.packageName)) {
+        if (getPref().getStringSet("whatsapp_packages", new HashSet<>()).contains(lpparam.packageName))
+        {
             XMain.Initialize(classLoader, getPref(), sourceDir);
-            XDatabases.Initialize(classLoader, getPref());
+//            XDatabases.Initialize(classLoader, getPref());
         }
         disableSecureFlag();
     }
