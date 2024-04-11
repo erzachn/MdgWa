@@ -135,4 +135,5 @@
     <string name="show_online_dot_in_conversation_list_sum">Show a green online dot on the home screen (NOTE: you need to activate show online for everyone in the Whatsapp configuration menu)</string>
     <string name="show_dnd_button">Show DND Button</string>
     <string name="show_dnd_button_sum">Enable button to DND Mode in Toolbar</string>
+    <string name="dev4mod">Dev4Mod (Contributor)</string>
 </resources>
