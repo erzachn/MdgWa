@@ -91,7 +91,6 @@ public class XChatsFilter extends XHookBase {
                     // entao pra contar direitinho deixei != 0
                     var sql = "SELECT * FROM chat WHERE unseen_message_count != 0";
                     var cursor = db.rawQuery(sql, null);
-                    XposedBridge.log("cursor.getCount(): " + cursor.getCount());
                     while (cursor.moveToNext()) {
                         // row da jid do chat
                        int jid = cursor.getInt(cursor.getColumnIndex("jid_row_id"));

@@ -17,9 +17,6 @@ public class XHideTag extends XHookBase {
 
     @Override
     public void doHook() throws Exception {
-        var hidetag = prefs.getBoolean("hidetag", false);
-        if (!hidetag)
-            return;
         Method method = Unobfuscator.loadForwardTagMethod(loader);
         logDebug(Unobfuscator.getMethodDescriptor(method));
         Class<?> forwardClass = Unobfuscator.loadForwardClassMethod(loader);
@@ -28,11 +25,11 @@ public class XHideTag extends XHookBase {
         XposedBridge.hookMethod(method, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if(!prefs.getBoolean("hidetag", false))return;
                 var arg = (int) param.args[0];
                 if (arg == 1) {
                     var stacktrace = Thread.currentThread().getStackTrace();
                     var stackTraceElement = stacktrace[6];
-                    log(stackTraceElement);
                     if (stackTraceElement != null) {
                         var callerName = stackTraceElement.getClassName();
                         if (callerName.equals(forwardClass.getName())) {

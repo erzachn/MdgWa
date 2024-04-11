@@ -129,7 +129,7 @@ public class Unobfuscator {
         for (int i = 0x7f120000; i < 0x7f12ffff; i++) {
             try {
                 String resourceString = resources.getString(i);
-                reverseResourceMap.put(resourceString.toLowerCase().replaceAll("\\s",""),i);
+                reverseResourceMap.put(resourceString.toLowerCase().replaceAll("\\s", ""), i);
             } catch (Resources.NotFoundException ignored) {
             }
         }
@@ -138,7 +138,7 @@ public class Unobfuscator {
     public static int getOfuscateIdString(String search) {
         if (reverseResourceMap.isEmpty())
             initializeReverseResourceMap();
-        search = search.toLowerCase().replaceAll("\\s","");
+        search = search.toLowerCase().replaceAll("\\s", "");
         var result = reverseResourceMap.get(search);
         if (result != null) return result;
         return -1;
@@ -175,14 +175,19 @@ public class Unobfuscator {
 
     public static Method loadForwardTagMethod(ClassLoader classLoader) throws Exception {
         Class<?> messageInfoClass = loadThreadMessageClass(classLoader);
-        if (messageInfoClass == null) throw new Exception("MessageInfo class not found");
-        Method result = Arrays.stream(messageInfoClass.getMethods()).filter(m ->
-                m.getParameterTypes().length > 0 &&
-                        m.getParameterTypes()[0] == int.class &&
-                        m.getReturnType().equals(void.class) &&
-                        Modifier.isPublic(m.getModifiers())).findFirst().orElse(null);
-        if (result == null) throw new Exception("ForwardTag method not found");
-        return result;
+        var methodList = dexkit.findMethod(new FindMethod().matcher(new MethodMatcher().addUsingString("chatInfo/incrementUnseenImportantMessageCount")));
+        if (methodList.isEmpty()) throw new Exception("ForwardTag method support not found");
+        var invokes = methodList.get(0).getInvokes();
+        for (var invoke : invokes) {
+            var method = invoke.getMethodInstance(classLoader);
+            if (method.getParameterCount() == 1
+                    && method.getParameterTypes()[0] == int.class
+                    && method.getDeclaringClass() == messageInfoClass
+                    && method.getReturnType() == void.class) {
+                return method;
+            }
+        }
+        throw new Exception("ForwardTag method not found");
     }
 
     public static Class<?> loadForwardClassMethod(ClassLoader classLoader) throws Exception {
@@ -765,7 +770,7 @@ public class Unobfuscator {
     public static Method[] loadArchiveOnclickCaptureMethod(ClassLoader loader) throws Exception {
         ArrayList<Method> result = new ArrayList<>();
         for (var m : loadArchiveHideViewMethod(loader)) {
-            result.add(m.getDeclaringClass().getMethod("setOnClickListener",  View.OnClickListener.class));
+            result.add(m.getDeclaringClass().getMethod("setOnClickListener", View.OnClickListener.class));
         }
         return result.toArray(new Method[0]);
     }
@@ -819,7 +824,7 @@ public class Unobfuscator {
     public static Method loadGetStatusUserMethod(ClassLoader loader) throws Exception {
         var id = Unobfuscator.getOfuscateIdString("last seen sun %s");
         XposedBridge.log(Integer.toHexString(id));
-        var result= dexkit.findMethod(new FindMethod().matcher(new MethodMatcher().addUsingNumber(id)));
+        var result = dexkit.findMethod(new FindMethod().matcher(new MethodMatcher().addUsingNumber(id)));
         if (result.isEmpty()) throw new Exception("GetStatusUser method not found");
         return result.get(0).getMethodInstance(loader);
     }

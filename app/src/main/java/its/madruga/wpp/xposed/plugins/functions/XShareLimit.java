@@ -15,7 +15,6 @@ public class XShareLimit extends XHookBase {
     }
 
     public void doHook() throws Exception {
-        var removeForwardLimit = prefs.getBoolean("removeforwardlimit", false);
         var shareLimitMethod = Unobfuscator.loadShareLimitMethod(loader);
         logDebug(Unobfuscator.getMethodDescriptor(shareLimitMethod));
         var shareLimitField = Unobfuscator.loadShareLimitField(loader);
@@ -26,7 +25,7 @@ public class XShareLimit extends XHookBase {
                 new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                        if (removeForwardLimit) {
+                        if (prefs.getBoolean("removeforwardlimit", false)) {
                             XposedHelpers.setBooleanField(param.thisObject, shareLimitField.getName(), true);
                         }
                         super.beforeHookedMethod(param);

@@ -99,7 +99,6 @@ public class XShowOnline extends XHookBase {
                 var jidFiled = Unobfuscator.getFieldByExtendType(object.getClass(), jidClass);
                 var jidObject = jidFiled.get(object);
                 var jid = (String) XposedHelpers.callMethod(jidObject, "getRawString");
-                logDebug("Jid: " + jid);
                 if (jid.contains("@g.us")) return;
                 var clazz = sendPresenceMethod.getParameterTypes()[1];
                 var instance = XposedHelpers.newInstance(clazz, new Object[]{null, null});
@@ -108,7 +107,6 @@ public class XShowOnline extends XHookBase {
                 if (!TextUtils.isEmpty(status) && !status.matches(".*\\d.*")) {
                     csDot.setVisibility(View.VISIBLE);
                 }
-                logDebug("Jid: " + jid + "Status: " + status);
             }
         });
     }
