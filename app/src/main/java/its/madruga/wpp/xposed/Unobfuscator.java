@@ -1,5 +1,6 @@
 package its.madruga.wpp.xposed;
 
+import android.annotation.SuppressLint;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -226,6 +227,7 @@ public class Unobfuscator {
     }
 
     // TODO: Classes and Methods for BubbleColors
+    @SuppressLint("DiscouragedApi")
     private static ClassDataList loadBubbleColorsClass() throws Exception {
         if (cache.containsKey("balloon")) return (ClassDataList) cache.get("balloon");
         var balloonIncomingNormal = XMain.mApp.getResources().getIdentifier(BUBBLE_COLORS_BALLOON_INCOMING_NORMAL, "drawable", XMain.mApp.getPackageName());
@@ -242,13 +244,12 @@ public class Unobfuscator {
         return clsBubbleColors;
     }
 
+    @SuppressLint("DiscouragedApi")
     public static Method loadBubbleColorsMethod(ClassLoader classLoader, String name) throws Exception {
-        return UnobfuscatorCache.getInstance().getMethod(classLoader, () -> {
-            var clsBubbleColors = loadBubbleColorsClass();
-            var id = XMain.mApp.getResources().getIdentifier(name, "drawable", XMain.mApp.getPackageName());
-            var result = dexkit.findMethod(new FindMethod().searchInClass(clsBubbleColors).matcher(new MethodMatcher().addUsingNumber(id)));
-            return result.get(0).getMethodInstance(classLoader);
-        });
+        var clsBubbleColors = loadBubbleColorsClass();
+        var id = XMain.mApp.getResources().getIdentifier(name, "drawable", XMain.mApp.getPackageName());
+        var result = dexkit.findMethod(new FindMethod().searchInClass(clsBubbleColors).matcher(new MethodMatcher().addUsingNumber(id)));
+        return result.get(0).getMethodInstance(classLoader);
     }
 
 
@@ -453,9 +454,7 @@ public class Unobfuscator {
     }
 
     public static Method loadShareLimitMethod(ClassLoader classLoader) throws Exception {
-        return UnobfuscatorCache.getInstance().getMethod(classLoader, () -> {
-            return loadShareLimitMethodData().getMethodInstance(classLoader);
-        });
+        return UnobfuscatorCache.getInstance().getMethod(classLoader, () -> loadShareLimitMethodData().getMethodInstance(classLoader));
     }
 
     public static Field loadShareLimitField(ClassLoader classLoader) throws Exception {
