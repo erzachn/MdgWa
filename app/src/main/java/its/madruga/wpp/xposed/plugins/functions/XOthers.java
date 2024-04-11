@@ -3,10 +3,12 @@ package its.madruga.wpp.xposed.plugins.functions;
 import static de.robv.android.xposed.XposedHelpers.findClass;
 import static its.madruga.wpp.xposed.plugins.core.XMain.mApp;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.view.Menu;
 
 import androidx.annotation.NonNull;
@@ -49,6 +51,7 @@ public class XOthers extends XHookBase {
         var strokeButtons = prefs != null && prefs.getBoolean("strokebuttons", false);
         var outlinedIcons = prefs != null && prefs.getBoolean("outlinedicons", false);
         var separateGroups = prefs != null && prefs.getBoolean("separategroups", false);
+        var showDnd = prefs != null && prefs.getBoolean("show_dndmode", false);
 
         props.put(4524, novoTema);
         props.put(4497, menuWIcons);
@@ -69,7 +72,7 @@ public class XOthers extends XHookBase {
                 var propValue = props.get(i);
 
                 if (propValue != null) {
-                    if (i == 2358){
+                    if (i == 2358) {
                         param.setResult(false);
                         return;
                     }
@@ -96,65 +99,58 @@ public class XOthers extends XHookBase {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 Menu menu = (Menu) param.args[0];
                 Activity home = (Activity) param.thisObject;
-                if (!newSettings) {
-                    var menuItem = menu.add(0, 0, 0, "Restart WhatsApp").setOnMenuItemClickListener(item -> {
-                        Intent intent = mApp.getPackageManager().getLaunchIntentForPackage(mApp.getPackageName());
-                        if (mApp != null) {
-
-                            home.finishAffinity();
-                            mApp.startActivity(intent);
-                        }
-                        Runtime.getRuntime().exit(0);
-                        return true;
-                    });
-
-                    if (menuItem.getActionView() != null) {
-                        var root = menuItem.getActionView().getRootView();
-                        logDebug("Instance of MenuItem view: " + root.getClass().getName());
-                        logDebug("Instance of MenuItem backg: " + root.getBackground().getClass().getName());
-                    }
-                }
-                var shared = mApp.getSharedPreferences(mApp.getPackageName() + "_mdgwa_preferences", Context.MODE_PRIVATE);
-                var dndmode = shared.getBoolean("dndmode", false);
-                var idIconOn = mApp.getResources().getIdentifier("ic_location_nearby", "drawable", mApp.getPackageName());
-                var iconDraw = mApp.getDrawable(idIconOn);
-                if (dndmode) {
-                    var idIconOff = mApp.getResources().getIdentifier("ic_location_nearby_disabled", "drawable", mApp.getPackageName());
-                    iconDraw = mApp.getDrawable(idIconOff);
-                }
-                var item = menu.add(0, 0, 1, "Dnd Mode " + dndmode);
-                item.setIcon(iconDraw);
-                item.setShowAsAction(2);
-                item.setOnMenuItemClickListener(menuItem -> {
-                    if (!dndmode) {
-                        new AlertDialog.Builder(home)
-                                .setTitle("DND Mode")
-                                .setMessage("When Do Not Disturb mode is on, you won't be able to send or receive messages.")
-                                .setPositiveButton("Activate", (dialog, which) -> {
-                                    shared.edit().putBoolean("dndmode", true).commit();
-                                    XposedBridge.log(String.valueOf(shared.getBoolean("dndmode", false)));
-
-                                    Intent intent = mApp.getPackageManager().getLaunchIntentForPackage(mApp.getPackageName());
-                                    if (mApp != null) {
-                                        home.finishAffinity();
-                                        mApp.startActivity(intent);
-                                    }
-                                    Runtime.getRuntime().exit(0);
-                                })
-                                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
-                                .create().show();
-                        return true;
-                    }
-                    shared.edit().putBoolean("dndmode", false).commit();
-                    Intent intent = mApp.getPackageManager().getLaunchIntentForPackage(mApp.getPackageName());
-                    if (mApp != null) {
-                        home.finishAffinity();
-                        mApp.startActivity(intent);
-                    }
-                    Runtime.getRuntime().exit(0);
+                menu.add(0, 0, 0, "Restart WhatsApp").setOnMenuItemClickListener(item -> {
+                    restartApp(home);
                     return true;
                 });
+                if (showDnd) {
+                    InsertDNDOption(menu, home);
+                } else {
+                    mApp.getSharedPreferences(mApp.getPackageName() + "_mdgwa_preferences", Context.MODE_PRIVATE).edit().putBoolean("dndmode", false).commit();
+                }
             }
+        });
+    }
+
+    private static void restartApp(Activity home) {
+        Intent intent = mApp.getPackageManager().getLaunchIntentForPackage(mApp.getPackageName());
+        if (mApp != null) {
+            home.finishAffinity();
+            mApp.startActivity(intent);
+        }
+        Runtime.getRuntime().exit(0);
+    }
+
+    @SuppressLint({"DiscouragedApi", "UseCompatLoadingForDrawables"})
+    private static void InsertDNDOption(Menu menu, Activity home) {
+        var shared = mApp.getSharedPreferences(mApp.getPackageName() + "_mdgwa_preferences", Context.MODE_PRIVATE);
+        var dndmode = shared.getBoolean("dndmode", false);
+        Drawable iconDraw;
+        if (dndmode) {
+            iconDraw = mApp.getDrawable(mApp.getResources().getIdentifier("ic_location_nearby_disabled", "drawable", mApp.getPackageName()));
+        } else {
+            iconDraw = mApp.getDrawable(mApp.getResources().getIdentifier("ic_location_nearby", "drawable", mApp.getPackageName()));
+        }
+        var item = menu.add(0, 0, 1, "Dnd Mode " + dndmode);
+        item.setIcon(iconDraw);
+        item.setShowAsAction(2);
+        item.setOnMenuItemClickListener(menuItem -> {
+            if (!dndmode) {
+                new AlertDialog.Builder(home)
+                        .setTitle("DND Mode")
+                        .setMessage("When Do Not Disturb mode is on, you won't be able to send or receive messages.")
+                        .setPositiveButton("Activate", (dialog, which) -> {
+                            shared.edit().putBoolean("dndmode", true).commit();
+                            XposedBridge.log(String.valueOf(shared.getBoolean("dndmode", false)));
+                            restartApp(home);
+                        })
+                        .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                        .create().show();
+                return true;
+            }
+            shared.edit().putBoolean("dndmode", false).commit();
+            restartApp(home);
+            return true;
         });
     }
 

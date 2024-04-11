@@ -97,6 +97,15 @@
                     android:text="@string/novaconfig" />
 
                 <its.madruga.wpp.views.SwitchButton
+                    android:id="@+id/showdndbutton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:summary="@string/show_dnd_button_sum"
+                    android:tag="show_dndmode"
+                    other:reboot="true"
+                    android:text="@string/show_dnd_button" />
+
+                <its.madruga.wpp.views.SwitchButton
                     android:id="@+id/dotonline"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
