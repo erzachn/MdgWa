@@ -5,8 +5,10 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -32,7 +34,9 @@ public class XPinnedLimit extends XHookBase {
         logDebug(Unobfuscator.getMethodDescriptor(pinnedLimitMethod));
         var pinnedLimit2Method = Unobfuscator.loadPinnedLimit2Method(loader);
         logDebug(Unobfuscator.getMethodDescriptor(pinnedLimit2Method));
-         var idPin = XMain.mApp.getResources().getIdentifier("menuitem_conversations_pin", "id", XMain.mApp.getPackageName());
+        var pinnedSetMethod = Unobfuscator.loadPinnedHashSetMethod(loader);
+
+        var idPin = XMain.mApp.getResources().getIdentifier("menuitem_conversations_pin", "id", XMain.mApp.getPackageName());
         var idSelectAll = XMain.mApp.getResources().getIdentifier("menuitem_conversations_select_all", "id", XMain.mApp.getPackageName());
 
 
@@ -41,8 +45,9 @@ public class XPinnedLimit extends XHookBase {
 
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if (!prefs.getBoolean("pinnedlimit", false))return;
+                if (!prefs.getBoolean("pinnedlimit", false)) return;
                 if (param.args.length > 0 && param.args[0] instanceof MenuItem menuItem) {
+                    logDebug("menuItem.getItemId() = " + menuItem.getItemId());
                     if (menuItem.getItemId() != idPin && menuItem.getItemId() != idSelectAll)
                         return;
                     hooked = XposedHelpers.findAndHookMethod(HashSet.class, "size", XC_MethodReplacement.returnConstant(-57));
@@ -56,17 +61,27 @@ public class XPinnedLimit extends XHookBase {
         });
 
         XposedBridge.hookMethod(pinnedLimit2Method, new XC_MethodHook() {
+            private LinkedHashSet fakeHash;
+            private Set realHash;
             private Unhook hooked;
 
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if (!prefs.getBoolean("pinnedlimit", false))return;
-                hooked = XposedHelpers.findAndHookMethod(HashSet.class, "size", XC_MethodReplacement.returnConstant(-57));
+                if (!prefs.getBoolean("pinnedlimit", false)) return;
+                var field = Unobfuscator.getFieldByType(param.thisObject.getClass(), pinnedSetMethod.getDeclaringClass());
+                realHash = (Set) pinnedSetMethod.invoke(field.get(param.thisObject));
+                fakeHash = new LinkedHashSet<>();
+                logDebug(pinnedSetMethod.getReturnType());
+                hooked = XposedBridge.hookMethod(pinnedSetMethod, XC_MethodReplacement.returnConstant(fakeHash));
             }
 
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (hooked != null) hooked.unhook();
+                if (fakeHash != null && !fakeHash.isEmpty()) realHash.addAll(fakeHash);
+                fakeHash.clear();
+                fakeHash = null;
+                realHash = null;
             }
         });
 
