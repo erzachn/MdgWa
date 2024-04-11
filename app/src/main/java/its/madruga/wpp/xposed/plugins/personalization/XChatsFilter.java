@@ -23,6 +23,7 @@ import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import its.madruga.wpp.xposed.Unobfuscator;
+import its.madruga.wpp.xposed.UnobfuscatorCache;
 import its.madruga.wpp.xposed.models.XHookBase;
 import its.madruga.wpp.xposed.plugins.core.XMain;
 
@@ -170,7 +171,7 @@ public class XChatsFilter extends XHookBase {
     @SuppressLint("ResourceType")
     private void hookTabName(Class<?> home) throws Exception {
         var tabNameMethod = Unobfuscator.loadTabNameMethod(loader);
-        var idGroupId = Unobfuscator.getOfuscateIdString("Groups");
+        var idGroupId = UnobfuscatorCache.getInstance().getOfuscateIdString("Groups");
         logDebug(Unobfuscator.getMethodDescriptor(tabNameMethod));
         var activityField = Unobfuscator.getFieldByType(tabNameMethod.getDeclaringClass(), home);
         activityField.setAccessible(true);
