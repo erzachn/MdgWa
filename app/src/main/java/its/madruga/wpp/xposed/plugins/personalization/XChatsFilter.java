@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.view.MenuItem;
+import android.widget.BaseAdapter;
 import android.widget.Filter;
 
 import androidx.annotation.NonNull;
@@ -248,12 +249,22 @@ public class XChatsFilter extends XHookBase {
                 var filters = param.args[1];
                 var chatsList = (List) XposedHelpers.getObjectField(filters, "values");
                 logDebug("PublishResults: " + chatsList.size());
-                var resultList = filterChat(param.thisObject, chatsList);
+                Object thiz;
+                var convField = Unobfuscator.getFieldByType(publishResultsMethod.getDeclaringClass(), cFrag);
+                if (convField != null) {
+                    thiz = convField.get(param.thisObject);
+                } else {
+                    var baseField = Unobfuscator.getFieldByExtendType(publishResultsMethod.getDeclaringClass(), BaseAdapter.class);
+                    if (baseField == null) return;
+                    convField = Unobfuscator.getFieldByType(baseField.getType(), cFrag);
+                    thiz = convField.get(baseField.get(param.thisObject));
+                }
+                if (thiz == null) return;
+                var resultList = filterChat(thiz, chatsList);
                 XposedHelpers.setObjectField(filters, "values", resultList);
                 XposedHelpers.setIntField(filters, "count", resultList.size());
             }
         });
-
     }
 
     private List filterChat(Object thiz, List chatsList) {
@@ -265,8 +276,13 @@ public class XChatsFilter extends XHookBase {
         var editableChatList = new ArrayList<>();
         var requiredServer = Objects.equals(tabGroup, thiz) ? "g.us" : "s.whatsapp.net";
         for (var chat : chatsList) {
-            var server = (String) callMethod(getObjectField(chat, "A00"), "getServer");
-            if (server.equals(requiredServer)) {
+            var jid = getObjectField(chat, "A00");
+            if (XposedHelpers.findMethodExactIfExists(jid.getClass(), "getServer") != null){
+                var server = (String) callMethod(jid, "getServer");
+                if (server.equals(requiredServer)) {
+                    editableChatList.add(chat);
+                }
+            } else {
                 editableChatList.add(chat);
             }
         }
