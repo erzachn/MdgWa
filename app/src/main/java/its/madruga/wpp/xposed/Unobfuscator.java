@@ -933,4 +933,12 @@ public class Unobfuscator {
             return method;
         });
     }
+
+    public static Method loadGetFiltersMethod(ClassLoader loader) throws Exception {
+        return UnobfuscatorCache.getInstance().getMethod(loader, () -> {
+            var clazzFilters = findFirstClassUsingStrings(loader, StringMatchType.Contains, "conversations/filter/performFiltering");
+            if (clazzFilters == null) throw new RuntimeException("Filters class not found");
+            return Arrays.stream(clazzFilters.getDeclaredMethods()).filter(m -> m.getName().equals("publishResults")).findFirst().orElse(null);
+        });
+    }
 }

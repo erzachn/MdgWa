@@ -88,6 +88,7 @@ public class UnobfuscatorCache {
         String value = mShared.getString(methodName, null);
         if (value == null) {
             Field result = (Field) functionCall.call();
+            if (result == null) throw new Exception("Field is null");
             saveField(methodName, result);
             return result;
         }
@@ -101,6 +102,7 @@ public class UnobfuscatorCache {
         String value = mShared.getString(methodName, null);
         if (value == null) {
             Method result = (Method) functionCall.call();
+            if (result == null) throw new Exception("Method is null");
             saveMethod(methodName, result);
             return result;
         }
@@ -119,6 +121,7 @@ public class UnobfuscatorCache {
         String value = mShared.getString(methodName, null);
         if (value == null) {
             Class<?> result = (Class<?>) functionCall.call();
+            if (result == null) throw new Exception("Class is null");
             saveClass(methodName, result);
             return result;
         }
