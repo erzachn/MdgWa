@@ -39,3 +39,17 @@ jobs:
       with:
         name: debug-app ${{ steps.version.outputs.builddate }}
         path: app/build/outputs/apk/debug/app-debug.apk
+    - name: Post to channel
+      if: ${{ success() && github.ref == 'refs/heads/dexkit' && github.ref_type != 'tag' }}
+      env:
+          CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_URL: ${{ github.event.head_commit.url }}
+      run: |
+          if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
+            mv app/build/outputs/apk/debug/app-debug.apk app/MdgWa_${{ github.sha }}.apk
+            export output=app/MdgWa_${{ github.sha }}.apk
+            ESCAPED=`python3 -c 'import json,os,urllib.parse; msg = json.dumps(os.environ["COMMIT_MESSAGE"]); print(urllib.parse.quote(msg if len(msg) <= 1024 else json.dumps(os.environ["COMMIT_URL"])))'`
+            curl -v "https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup?chat_id=${CHANNEL_ID}&media=%5B%7B%22type%22%3A%22document%22%2C%20%22media%22%3A%22attach%3A%2F%2Foutput%22%2C%22caption%22:${ESCAPED}%7D%5D" -F output="@$output"
+          fi
