@@ -32,7 +32,7 @@ import its.madruga.wpp.xposed.Unobfuscator;
 import its.madruga.wpp.xposed.UnobfuscatorCache;
 import its.madruga.wpp.xposed.models.XHookBase;
 import its.madruga.wpp.xposed.plugins.functions.XAntiRevoke;
-import its.madruga.wpp.xposed.plugins.functions.XBlueOnReply;
+import its.madruga.wpp.xposed.plugins.functions.XBlueTick;
 import its.madruga.wpp.xposed.plugins.functions.XCallPrivacy;
 import its.madruga.wpp.xposed.plugins.functions.XDndMode;
 import its.madruga.wpp.xposed.plugins.functions.XMediaQuality;
@@ -112,7 +112,7 @@ public class XMain {
         var classes = new Class<?>[]{
                 XAntiRevoke.class,
                 XBioAndName.class,
-                XBlueOnReply.class,
+                XBlueTick.class,
                 XBubbleColors.class,
                 XCallPrivacy.class,
                 XChangeColors.class,
