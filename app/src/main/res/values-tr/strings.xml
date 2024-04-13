@@ -115,8 +115,8 @@
     <string name="separate_groups">Grupları Ayır</string>
     <string name="blueonreply">Cevaplarken mavi tik gönder</string>
     <string name="blueonreply_sum">Mesaja cevap verirken mavi tik gönderir</string>
-    <string name="call_blocker">Call Blocker</string>
-    <string name="call_blocker_sum">Block WhatsApp calls based on privacy type</string>
+    <string name="call_blocker">Aramaları Engelle</string>
+    <string name="call_blocker_sum">Gizlilik türüne göre WhatsApp aramalarını engelle</string>
     <string name="hide_archived_chat">Arşivlenmiş sohbeti gizle</string>
     <string name="hide_archived_chat_sum">Arşivlenmiş sohbeti gizle ve sohbete erişmek için uzun dokunma menüsünü etkinleştir</string>
     <string name="hide_once_view_seen">Bir kez görüntülendikten ve işitildikten sonra mavi işareti gizle</string>
