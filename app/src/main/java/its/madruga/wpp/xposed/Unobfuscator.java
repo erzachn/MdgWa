@@ -943,18 +943,42 @@ public class Unobfuscator {
     }
 
     public static Method loadBlueOnReplayCreateMenuConversationMethod(ClassLoader loader) throws Exception {
-        return  UnobfuscatorCache.getInstance().getMethod(loader, () -> {
+        return UnobfuscatorCache.getInstance().getMethod(loader, () -> {
             var conversationClass = XposedHelpers.findClass("com.whatsapp.Conversation", loader);
-            if (conversationClass == null) throw new RuntimeException("BlueOnReplayCreateMenuConversation class not found");
+            if (conversationClass == null)
+                throw new RuntimeException("BlueOnReplayCreateMenuConversation class not found");
             var method = Arrays.stream(conversationClass.getDeclaredMethods()).filter(m -> m.getParameterCount() == 1 && m.getParameterTypes()[0].equals(Menu.class)).findFirst().orElse(null);
-            if (method == null) throw new RuntimeException("BlueOnReplayCreateMenuConversation method not found");
+            if (method == null)
+                throw new RuntimeException("BlueOnReplayCreateMenuConversation method not found");
             return method;
         });
     }
 
     public static Method loadBlueOnReplayViewButtonMethod(ClassLoader loader) throws Exception {
-        var method = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "PLAYBACK_PAGE_ITEM_ON_CREATE_VIEW_END");
-        if (method == null) throw new RuntimeException("BlueOnReplayViewButton method not found");
-        return method;
+        return UnobfuscatorCache.getInstance().getMethod(loader, () -> {
+            var method = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "PLAYBACK_PAGE_ITEM_ON_CREATE_VIEW_END");
+            if (method == null)
+                throw new RuntimeException("BlueOnReplayViewButton method not found");
+            return method;
+        });
     }
+
+    public static Method loadChatLimitDeleteMethod(ClassLoader loader) throws Exception {
+        return UnobfuscatorCache.getInstance().getMethod(loader, () -> {
+            var clazz = findFirstClassUsingStrings(loader, StringMatchType.Contains, "app/time server update processed");
+            if (clazz == null) throw new RuntimeException("ChatLimitDelete class not found");
+            var method = Arrays.stream(clazz.getDeclaredMethods()).filter(m -> m.getReturnType().equals(long.class) && Modifier.isStatic(m.getModifiers())).findFirst().orElse(null);
+            if (method == null) throw new RuntimeException("ChatLimitDelete method not found");
+            return method;
+        });
+    }
+
+    public static Method loadChatLimitDelete2Method(ClassLoader loader) throws Exception {
+        return UnobfuscatorCache.getInstance().getMethod(loader, () -> {
+            var method = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "pref_revoke_admin_nux", "dialog/delete no messages");
+            if (method == null) throw new RuntimeException("ChatLimitDelete2 method not found");
+            return method;
+        });
+    }
+
 }

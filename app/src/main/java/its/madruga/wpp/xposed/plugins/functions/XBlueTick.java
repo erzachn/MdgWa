@@ -219,7 +219,7 @@ public class XBlueTick extends XHookBase {
 
     private void sendBlueTickMsg(String currentJid) {
         logDebug("messages: " + Arrays.toString(messages.toArray(new String[0])));
-        if (messages.isEmpty() || currentJid == null) return;
+        if (messages.isEmpty() || currentJid == null || currentJid.contains(getMyNumber())) return;
         try {
             logDebug("Blue on Reply: " + currentJid);
             var arr_s = messages.toArray(new String[0]);
@@ -235,7 +235,7 @@ public class XBlueTick extends XHookBase {
 
     private void sendBlueTickStatus(String currentJid) {
         logDebug("messages: " + Arrays.toString(messages.toArray(new String[0])));
-        if (messages.isEmpty() || currentJid == null) return;
+        if (messages.isEmpty() || currentJid == null || currentJid.equals("status_me")) return;
         try {
             logDebug("sendBlue: " + currentJid);
             var arr_s = messages.toArray(new String[0]);
@@ -259,5 +259,9 @@ public class XBlueTick extends XHookBase {
     public static float dipToPixels(float dipValue){
         DisplayMetrics metrics = XMain.mApp.getResources().getDisplayMetrics();
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,  dipValue, metrics);
+    }
+
+    public static String getMyNumber() {
+        return XMain.mApp.getSharedPreferences(XMain.mApp.getPackageName() + "_preferences_light", Context.MODE_PRIVATE).getString("ph", "");
     }
 }
