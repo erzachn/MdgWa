@@ -149,4 +149,6 @@
     <string name="dev4mod">Dev4Mod (Collaboratore)</string>
     <string name="disable_pinned_limit">Disabilita limite appuntati</string>
     <string name="disable_pinned_limit_sum">Disabilita il limite di 3 chat appuntate</string>
+    <string name="delete_for_everyone_all_messages">Delete for everyone all messages</string>
+    <string name="delete_for_everyone_all_messages_sum">Remove the 24-hour limit to be able to delete the message for everyone.</string>
 </resources>

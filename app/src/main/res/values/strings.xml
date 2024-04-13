@@ -138,4 +138,6 @@
     <string name="dev4mod">Dev4Mod (Contributor)</string>
     <string name="disable_pinned_limit">Disable Pinned Limit</string>
     <string name="disable_pinned_limit_sum">Disable pinned limit of 3 chats</string>
+    <string name="delete_for_everyone_all_messages">Delete for everyone all messages</string>
+    <string name="delete_for_everyone_all_messages_sum">Remove the 24-hour limit to be able to delete the message for everyone.</string>
 </resources>

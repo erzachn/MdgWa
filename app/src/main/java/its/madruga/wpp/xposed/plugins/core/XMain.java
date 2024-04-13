@@ -34,6 +34,7 @@ import its.madruga.wpp.xposed.models.XHookBase;
 import its.madruga.wpp.xposed.plugins.functions.XAntiRevoke;
 import its.madruga.wpp.xposed.plugins.functions.XBlueTick;
 import its.madruga.wpp.xposed.plugins.functions.XCallPrivacy;
+import its.madruga.wpp.xposed.plugins.functions.XChatLimit;
 import its.madruga.wpp.xposed.plugins.functions.XDndMode;
 import its.madruga.wpp.xposed.plugins.functions.XMediaQuality;
 import its.madruga.wpp.xposed.plugins.functions.XNewChat;
@@ -116,6 +117,7 @@ public class XMain {
                 XBubbleColors.class,
                 XCallPrivacy.class,
                 XChangeColors.class,
+                XChatLimit.class,
                 XChatsFilter.class,
                 XShowOnline.class,
                 XDndMode.class,

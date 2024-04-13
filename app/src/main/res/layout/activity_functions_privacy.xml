@@ -147,6 +147,14 @@
                     other:reboot="true"
                     android:text="@string/hide_archived_chat" />
 
+                <its.madruga.wpp.views.SwitchButton
+                    android:id="@+id/revokeallmessages"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:summary="@string/delete_for_everyone_all_messages_sum"
+                    android:tag="revokeallmessages"
+                    android:text="@string/delete_for_everyone_all_messages" />
+
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
