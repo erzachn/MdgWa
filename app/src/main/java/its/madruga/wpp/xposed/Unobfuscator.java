@@ -933,4 +933,28 @@ public class Unobfuscator {
             return method;
         });
     }
+
+    public static Method loadGetFiltersMethod(ClassLoader loader) throws Exception {
+        return UnobfuscatorCache.getInstance().getMethod(loader, () -> {
+            var clazzFilters = findFirstClassUsingStrings(loader, StringMatchType.Contains, "conversations/filter/performFiltering");
+            if (clazzFilters == null) throw new RuntimeException("Filters class not found");
+            return Arrays.stream(clazzFilters.getDeclaredMethods()).filter(m -> m.getName().equals("publishResults")).findFirst().orElse(null);
+        });
+    }
+
+    public static Method loadBlueOnReplayCreateMenuConversationMethod(ClassLoader loader) throws Exception {
+        return  UnobfuscatorCache.getInstance().getMethod(loader, () -> {
+            var conversationClass = XposedHelpers.findClass("com.whatsapp.Conversation", loader);
+            if (conversationClass == null) throw new RuntimeException("BlueOnReplayCreateMenuConversation class not found");
+            var method = Arrays.stream(conversationClass.getDeclaredMethods()).filter(m -> m.getParameterCount() == 1 && m.getParameterTypes()[0].equals(Menu.class)).findFirst().orElse(null);
+            if (method == null) throw new RuntimeException("BlueOnReplayCreateMenuConversation method not found");
+            return method;
+        });
+    }
+
+    public static Method loadBlueOnReplayViewButtonMethod(ClassLoader loader) throws Exception {
+        var method = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "PLAYBACK_PAGE_ITEM_ON_CREATE_VIEW_END");
+        if (method == null) throw new RuntimeException("BlueOnReplayViewButton method not found");
+        return method;
+    }
 }

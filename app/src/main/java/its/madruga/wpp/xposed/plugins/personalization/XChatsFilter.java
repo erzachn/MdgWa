@@ -9,6 +9,8 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.view.MenuItem;
+import android.widget.BaseAdapter;
+import android.widget.Filter;
 
 import androidx.annotation.NonNull;
 
@@ -94,7 +96,7 @@ public class XChatsFilter extends XHookBase {
                     var cursor = db.rawQuery(sql, null);
                     while (cursor.moveToNext()) {
                         // row da jid do chat
-                       int jid = cursor.getInt(cursor.getColumnIndex("jid_row_id"));
+                        int jid = cursor.getInt(cursor.getColumnIndex("jid_row_id"));
                         // verifica se esta arquivado ou n
                         int hidden = cursor.getInt(cursor.getColumnIndex("hidden"));
                         if (hidden == 1) continue;
@@ -219,20 +221,10 @@ public class XChatsFilter extends XHookBase {
         XposedBridge.hookMethod(methodTabInstance, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                var tabChat = tabInstances.get(CHATS);
-                var tabGroup = tabInstances.get(GROUPS);
-                if (!Objects.equals(tabChat, param.thisObject) && !Objects.equals(tabGroup, param.thisObject))
-                    return;
                 var chatsList = (List) param.getResult();
-                var editableChatList = new ArrayList<>();
-                var requiredServer = Objects.equals(tabGroup, param.thisObject) ? "g.us" : "s.whatsapp.net";
-                for (var chat : chatsList) {
-                    var server = (String) callMethod(getObjectField(chat, "A00"), "getServer");
-                    if (server.equals(requiredServer)) {
-                        editableChatList.add(chat);
-                    }
-                }
-                param.setResult(editableChatList);
+                logDebug("GetChatsList: " + chatsList.size());
+                var resultList = filterChat(param.thisObject, chatsList);
+                param.setResult(resultList);
             }
         });
 
@@ -247,6 +239,54 @@ public class XChatsFilter extends XHookBase {
                 }
             }
         });
+
+        var publishResultsMethod = Unobfuscator.loadGetFiltersMethod(loader);
+        logDebug(Unobfuscator.getMethodDescriptor(publishResultsMethod));
+
+        XposedBridge.hookMethod(publishResultsMethod, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                var filters = param.args[1];
+                var chatsList = (List) XposedHelpers.getObjectField(filters, "values");
+                logDebug("PublishResults: " + chatsList.size());
+                Object thiz;
+                var convField = Unobfuscator.getFieldByType(publishResultsMethod.getDeclaringClass(), cFrag);
+                if (convField != null) {
+                    thiz = convField.get(param.thisObject);
+                } else {
+                    var baseField = Unobfuscator.getFieldByExtendType(publishResultsMethod.getDeclaringClass(), BaseAdapter.class);
+                    if (baseField == null) return;
+                    convField = Unobfuscator.getFieldByType(baseField.getType(), cFrag);
+                    thiz = convField.get(baseField.get(param.thisObject));
+                }
+                if (thiz == null) return;
+                var resultList = filterChat(thiz, chatsList);
+                XposedHelpers.setObjectField(filters, "values", resultList);
+                XposedHelpers.setIntField(filters, "count", resultList.size());
+            }
+        });
+    }
+
+    private List filterChat(Object thiz, List chatsList) {
+        var tabChat = tabInstances.get(CHATS);
+        var tabGroup = tabInstances.get(GROUPS);
+        if (!Objects.equals(tabChat, thiz) && !Objects.equals(tabGroup, thiz)) {
+            return chatsList;
+        }
+        var editableChatList = new ArrayList<>();
+        var requiredServer = Objects.equals(tabGroup, thiz) ? "g.us" : "s.whatsapp.net";
+        for (var chat : chatsList) {
+            var jid = getObjectField(chat, "A00");
+            if (XposedHelpers.findMethodExactIfExists(jid.getClass(), "getServer") != null){
+                var server = (String) callMethod(jid, "getServer");
+                if (server.equals(requiredServer)) {
+                    editableChatList.add(chat);
+                }
+            } else {
+                editableChatList.add(chat);
+            }
+        }
+        return editableChatList;
     }
 
     private void hookTabList(Class<?> home) throws Exception {
