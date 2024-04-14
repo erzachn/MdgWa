@@ -354,7 +354,7 @@
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:layout_width="35dp"
                             android:layout_height="35dp"
-                            android:src="@drawable/darker_icon" />
+                            android:src="@drawable/dev4mod_icon" />
 
                         <com.google.android.material.textview.MaterialTextView
                             android:layout_width="match_parent"
