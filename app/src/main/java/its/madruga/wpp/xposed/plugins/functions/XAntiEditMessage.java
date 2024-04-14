@@ -32,6 +32,7 @@ public class XAntiEditMessage extends XHookBase {
         XposedBridge.hookMethod(originalMessageMethod, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                if (!prefs.getBoolean("antieditmessages", false)) return;
                 var oNewMessage = param.args[0];
                 var callObject = param.getResult();
                 XposedBridge.hookMethod(setMessageMethod, new XC_MethodHook() {

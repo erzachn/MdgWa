@@ -160,7 +160,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:summary="Show orginal message in edited message!"
-                    android:tag="revokeallmessages"
+                    android:tag="antieditmessages"
                     android:text="Anti Edit Messages" />
 
             </LinearLayout>
