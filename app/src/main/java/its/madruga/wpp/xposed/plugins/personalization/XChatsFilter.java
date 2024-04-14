@@ -6,16 +6,15 @@ import static de.robv.android.xposed.XposedHelpers.setObjectField;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.view.MenuItem;
 import android.widget.BaseAdapter;
-import android.widget.Filter;
 
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -273,19 +272,8 @@ public class XChatsFilter extends XHookBase {
         if (!Objects.equals(tabChat, thiz) && !Objects.equals(tabGroup, thiz)) {
             return chatsList;
         }
-        var editableChatList = new ArrayList<>();
-        var requiredServer = Objects.equals(tabGroup, thiz) ? "g.us" : "s.whatsapp.net";
-        for (var chat : chatsList) {
-            var jid = getObjectField(chat, "A00");
-            if (XposedHelpers.findMethodExactIfExists(jid.getClass(), "getServer") != null){
-                var server = (String) callMethod(jid, "getServer");
-                if (server.equals(requiredServer)) {
-                    editableChatList.add(chat);
-                }
-            } else {
-                editableChatList.add(chat);
-            }
-        }
+        var editableChatList = new ArrayListFilter(Objects.equals(tabGroup, thiz));
+        editableChatList.addAll(chatsList);
         return editableChatList;
     }
 
@@ -305,4 +293,50 @@ public class XChatsFilter extends XHookBase {
             }
         });
     }
+
+    public class ArrayListFilter extends ArrayList {
+
+        private final boolean isGroup;
+
+        public ArrayListFilter(boolean isGroup) {
+            this.isGroup = isGroup;
+        }
+
+
+        @Override
+        public void add(int index, Object element) {
+            if (checkGroup(element)) {
+                super.add(index, element);
+            }
+        }
+
+        @Override
+        public boolean add(Object object) {
+            if (checkGroup(object)) {
+                return super.add(object);
+            }
+            return true;
+        }
+
+        @Override
+        public boolean addAll(@NonNull Collection c) {
+            for (var chat : c) {
+                if (checkGroup(chat)) {
+                    super.add(chat);
+                }
+            }
+            return true;
+        }
+
+        private boolean checkGroup(Object chat) {
+            var requiredServer = isGroup ? "g.us" : "s.whatsapp.net";
+            var jid = getObjectField(chat, "A00");
+            if (XposedHelpers.findMethodExactIfExists(jid.getClass(), "getServer") != null) {
+                var server = (String) callMethod(jid, "getServer");
+                return server.equals(requiredServer);
+            }
+            return true;
+        }
+    }
+
 }

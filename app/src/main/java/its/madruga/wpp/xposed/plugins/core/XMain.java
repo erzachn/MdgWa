@@ -31,6 +31,7 @@ import its.madruga.wpp.BuildConfig;
 import its.madruga.wpp.xposed.Unobfuscator;
 import its.madruga.wpp.xposed.UnobfuscatorCache;
 import its.madruga.wpp.xposed.models.XHookBase;
+import its.madruga.wpp.xposed.plugins.functions.XAntiEditMessage;
 import its.madruga.wpp.xposed.plugins.functions.XAntiRevoke;
 import its.madruga.wpp.xposed.plugins.functions.XBlueTick;
 import its.madruga.wpp.xposed.plugins.functions.XCallPrivacy;
@@ -111,6 +112,7 @@ public class XMain {
     private static void plugins(@NonNull ClassLoader loader, @NonNull XSharedPreferences pref) {
 
         var classes = new Class<?>[]{
+                XAntiEditMessage.class,
                 XAntiRevoke.class,
                 XBioAndName.class,
                 XBlueTick.class,

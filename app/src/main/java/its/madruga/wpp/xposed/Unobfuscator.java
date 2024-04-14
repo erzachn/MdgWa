@@ -981,4 +981,27 @@ public class Unobfuscator {
         });
     }
 
+    public static Method loadOriginalMessageMethod(ClassLoader loader) throws Exception {
+        return UnobfuscatorCache.getInstance().getMethod(loader, () -> {
+            var method = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "fmessage-clone-comparison-failed");
+            if (method == null) throw new RuntimeException("OriginalMessage method not found");
+            return method;
+        });
+    }
+
+    public static Method loadNewMessageMethod(ClassLoader loader) throws Exception {
+        return UnobfuscatorCache.getInstance().getMethod(loader, () -> {
+            var clazzMessage = loadThreadMessageClass(loader);
+            var methodData = dexkit.findMethod(new FindMethod().searchInClass(List.of(dexkit.getClassData(clazzMessage))).matcher(new MethodMatcher().addUsingString("\n").returnType(String.class)));
+            if (methodData.isEmpty()) throw new RuntimeException("NewMessage method not found");
+            return methodData.get(0).getMethodInstance(loader);
+        });
+    }
+
+    public static Method loadSetMessageMethod(ClassLoader loader) throws Exception {
+        return UnobfuscatorCache.getInstance().getMethod(loader, () -> {
+            var clazz = loadThreadMessageClass(loader);
+            return Arrays.stream(clazz.getDeclaredMethods()).filter(m -> m.getParameterCount() == 1 && m.getParameterTypes()[0].equals(String.class)).findFirst().orElse(null);
+        });
+    }
 }
