@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="antirevoke_buttons">
+        <item>Devre Dışı</item>
+        <item>Metin Göster</item>
+        <item>İcon Göster</item>
+    </string-array>
+    <string-array name="antirevoke_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="call_blocker_buttons">
+        <item>Engelleme</item>
+        <item>Tüm Aramaları Engelle</item>
+        <item>Sadece Bilinmeyen Numaraları Engelle</item>
+    </string-array>
+    <string-array name="call_blocker_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+</resources>
