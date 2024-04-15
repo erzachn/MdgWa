@@ -109,7 +109,7 @@ public class XAntiEditMessage extends XHookBase {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 var textView = (TextView)editMessageViewField.get(param.thisObject);
-                if (textView != null) {
+                if (textView != null && !textView.getText().toString().contains("\uD83D\uDCDD")) {
                     textView.getPaint().setUnderlineText(true);
                     textView.append("\uD83D\uDCDD");
                     textView.setOnClickListener((v) -> {
