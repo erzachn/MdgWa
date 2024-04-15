@@ -27,6 +27,7 @@ import de.robv.android.xposed.XposedHelpers;
 import its.madruga.wpp.utils.colors.IColors;
 import its.madruga.wpp.xposed.Unobfuscator;
 import its.madruga.wpp.xposed.models.XHookBase;
+import its.madruga.wpp.xposed.plugins.core.DesignUtils;
 
 public class XChangeColors extends XHookBase {
 

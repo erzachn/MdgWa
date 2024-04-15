@@ -72,6 +72,7 @@ public class XMain {
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 mApp = (Application) param.args[0];
                 new UnobfuscatorCache(mApp,pref);
+                XDatabases.Initialize(loader, pref);
                 PackageManager packageManager = mApp.getPackageManager();
                 pref.registerOnSharedPreferenceChangeListener((sharedPreferences, s) -> pref.reload());
                 PackageInfo packageInfo = packageManager.getPackageInfo(mApp.getPackageName(), 0);
@@ -102,7 +103,7 @@ public class XMain {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Toast.makeText(context, "Rebooting " + context.getPackageManager().getApplicationLabel(context.getApplicationInfo()) + "...", Toast.LENGTH_SHORT).show();
-                new Handler(Looper.getMainLooper()).postDelayed(() -> doRestart(context), 1000);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> Utils.doRestart(context), 1000);
             }
         };
         var intentRestart = new IntentFilter(BuildConfig.APPLICATION_ID + ".WHATSAPP.RESTART");
@@ -151,13 +152,5 @@ public class XMain {
         }
     }
 
-    public static void doRestart(Context context) {
-        PackageManager packageManager = context.getPackageManager();
-        Intent intent = packageManager.getLaunchIntentForPackage(context.getPackageName());
-        ComponentName componentName = intent.getComponent();
-        Intent mainIntent = Intent.makeRestartActivityTask(componentName);
-        mainIntent.setPackage(context.getPackageName());
-        context.startActivity(mainIntent);
-        new Handler(Looper.getMainLooper()).postDelayed(() -> Runtime.getRuntime().exit(0), 100);
-    }
+
 }

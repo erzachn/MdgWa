@@ -36,6 +36,7 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import its.madruga.wpp.xposed.Unobfuscator;
 import its.madruga.wpp.xposed.models.XHookBase;
+import its.madruga.wpp.xposed.plugins.core.Utils;
 import its.madruga.wpp.xposed.plugins.core.XMain;
 
 public class XBlueTick extends XHookBase {
@@ -196,9 +197,9 @@ public class XBlueTick extends XHookBase {
                 @SuppressLint("UseCompatLoadingForDrawables")
                 var drawable = XMain.mApp.getDrawable(XMain.mApp.getResources().getIdentifier("ic_notif_mark_read", "drawable", XMain.mApp.getPackageName()));
                 var buttonImage = new ImageView(XMain.mApp);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) dipToPixels(32), (int) dipToPixels(32));
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) Utils.dipToPixels(32), (int) Utils.dipToPixels(32));
                 params.gravity = Gravity.END;
-                params.setMargins(0, 0, (int) dipToPixels(8), 0);
+                params.setMargins(0, 0, (int) Utils.dipToPixels(8), 0);
                 buttonImage.setLayoutParams(params);
                 buttonImage.setImageDrawable(drawable);
                 GradientDrawable border = new GradientDrawable();
@@ -208,7 +209,7 @@ public class XBlueTick extends XHookBase {
                 border.setColor(Color.parseColor("#80000000"));
                 buttonImage.setBackground(border);
                 contentView.addView(buttonImage,0);
-                contentView.setPadding(0, contentView.getPaddingTop()- (int) dipToPixels(32),0, 0);
+                contentView.setPadding(0, contentView.getPaddingTop()- (int) Utils.dipToPixels(32),0, 0);
                 buttonImage.setOnClickListener(v -> {
                     new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(XMain.mApp, "Sending read blue tick..", Toast.LENGTH_SHORT).show());
                     sendBlueTickStatus(currentJid);
@@ -219,7 +220,7 @@ public class XBlueTick extends XHookBase {
 
     private void sendBlueTickMsg(String currentJid) {
         logDebug("messages: " + Arrays.toString(messages.toArray(new String[0])));
-        if (messages.isEmpty() || currentJid == null || currentJid.contains(getMyNumber())) return;
+        if (messages.isEmpty() || currentJid == null || currentJid.contains(Utils.getMyNumber())) return;
         try {
             logDebug("Blue on Reply: " + currentJid);
             var arr_s = messages.toArray(new String[0]);
@@ -256,12 +257,5 @@ public class XBlueTick extends XHookBase {
         return "Blue Tick";
     }
 
-    public static float dipToPixels(float dipValue){
-        DisplayMetrics metrics = XMain.mApp.getResources().getDisplayMetrics();
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,  dipValue, metrics);
-    }
 
-    public static String getMyNumber() {
-        return XMain.mApp.getSharedPreferences(XMain.mApp.getPackageName() + "_preferences_light", Context.MODE_PRIVATE).getString("ph", "");
-    }
 }

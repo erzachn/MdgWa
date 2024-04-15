@@ -11,9 +11,9 @@ public class XDatabases {
     public static Axolotl axolotl;
 
     public static void Initialize(ClassLoader loader, XSharedPreferences pref) throws Exception {
-        var msgstoreClass = Unobfuscator.loadMessageStoreClass(loader);
-        var axolotlClass = Unobfuscator.loadAxolotlClass(loader);
+        var msgstoreClass = Unobfuscator.loadMessageStoreClass2(loader);
+       // var axolotlClass = Unobfuscator.loadAxolotlClass(loader);
         msgstore = new MessageStore(msgstoreClass.getName(), loader);
-        axolotl = new Axolotl(axolotlClass.getName(), loader);
+//        axolotl = new Axolotl(axolotlClass.getName(), loader);
     }
 }

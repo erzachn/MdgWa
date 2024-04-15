@@ -10,8 +10,7 @@ import de.robv.android.xposed.XposedBridge;
 
 
 public class DatabaseModel {
-    public SQLiteOpenHelper database;
-    public SQLiteDatabase writetableDb;
+    public static SQLiteOpenHelper database;
 
     public DatabaseModel(String dbName, ClassLoader loader) {
         get(dbName, loader);
@@ -22,8 +21,6 @@ public class DatabaseModel {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 database = (SQLiteOpenHelper) param.thisObject;
-                writetableDb = database.getWritableDatabase();
-                super.afterHookedMethod(param);
             }
         });
     }

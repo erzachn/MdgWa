@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import org.luckypray.dexkit.DexKitBridge;
@@ -20,6 +21,7 @@ import org.luckypray.dexkit.result.ClassDataList;
 import org.luckypray.dexkit.result.MethodData;
 import org.luckypray.dexkit.result.MethodDataList;
 import org.luckypray.dexkit.result.UsingFieldData;
+import org.luckypray.dexkit.util.DexSignUtil;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import its.madruga.wpp.xposed.plugins.core.Utils;
 import its.madruga.wpp.xposed.plugins.core.XMain;
 
 public class Unobfuscator {
@@ -774,7 +777,7 @@ public class Unobfuscator {
         });
     }
 
-    public static Class<?> loadMessageStoreClass(ClassLoader loader) throws Exception {
+    public static Class<?> loadMessageStoreClass2(ClassLoader loader) throws Exception {
         return UnobfuscatorCache.getInstance().getClass(loader, () -> {
             var result = findFirstClassUsingStrings(loader, StringMatchType.Contains, "databasehelper/createDatabaseTables");
             if (result == null) throw new Exception("MessageStore class not found");
@@ -998,10 +1001,79 @@ public class Unobfuscator {
         });
     }
 
-    public static Method loadSetMessageMethod(ClassLoader loader) throws Exception {
+    public static Method loadMessageEditMethod(ClassLoader loader) throws Exception {
         return UnobfuscatorCache.getInstance().getMethod(loader, () -> {
-            var clazz = loadThreadMessageClass(loader);
-            return Arrays.stream(clazz.getDeclaredMethods()).filter(m -> m.getParameterCount() == 1 && m.getParameterTypes()[0].equals(String.class)).findFirst().orElse(null);
+            var method = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "MessageEditInfoStore/insertEditInfo/missing");
+            if (method == null) throw new RuntimeException("MessageEdit method not found");
+            return method;
+        });
+    }
+
+    public static Method loadGetEditMessageMethod(ClassLoader loader) throws Exception {
+        return UnobfuscatorCache.getInstance().getMethod(loader, () -> {
+            var method = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "MessageEditInfoStore/insertEditInfo/missing");
+            var methodData = dexkit.getMethodData(DexSignUtil.getMethodDescriptor(method));
+            var invokes = methodData.getInvokes();
+            for (var invoke : invokes) {
+                if (invoke.getParamTypes().isEmpty() && invoke.getDeclaredClass().equals(methodData.getParamTypes().get(0))) {
+                    return invoke.getMethodInstance(loader);
+                }
+            }
+            throw new RuntimeException("GetEditMessage method not found");
+        });
+    }
+
+    public static Field loadSetEditMessageField(ClassLoader loader) throws Exception {
+        return UnobfuscatorCache.getInstance().getField(loader, () -> {
+            var method = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "CoreMessageStore/updateCheckoutMessageWithTransactionInfo");
+            var classData = dexkit.getClassData(loadThreadMessageClass(loader));
+            var methodData = dexkit.getMethodData(DexSignUtil.getMethodDescriptor(method));
+            var usingFields = methodData.getUsingFields();
+            for (var f : usingFields) {
+                var field = f.getField();
+                if (field.getDeclaredClass().equals(classData) && field.getType().getName().equals(long.class.getName())) {
+                    return field.getFieldInstance(loader);
+                }
+            }
+            throw new RuntimeException("GetEditMessage method not found");
+        });
+    }
+
+    public static Method loadEditMessageShowMethod(ClassLoader loader) throws Exception {
+        return UnobfuscatorCache.getInstance().getMethod(loader, () -> {
+            var clazz = findFirstClassUsingStrings(loader, StringMatchType.Contains, "newsletter_reaction_sheet");
+            var fields = Arrays.stream(clazz.getDeclaredFields()).filter(f -> f.getType().equals(TextView.class)).toArray(Field[]::new);
+            var classData = dexkit.getClassData(clazz);
+            if (fields.length == 0) throw new RuntimeException("EditMessageShow method not found");
+            for (var field : fields) {
+                var result = dexkit.findMethod(new FindMethod().matcher(new MethodMatcher().addUsingField(DexSignUtil.getFieldDescriptor(field)).paramCount(1)).searchInClass(List.of(classData)));
+                if (!result.isEmpty()) return result.get(0).getMethodInstance(loader);
+            }
+            throw new RuntimeException("EditMessageShow method not found");
+        });
+    }
+
+    public static Field loadEditMessageViewField(ClassLoader loader) throws Exception {
+        return UnobfuscatorCache.getInstance().getField(loader, () -> {
+            var method = loadEditMessageShowMethod(loader);
+            var methodData = dexkit.getMethodData(DexSignUtil.getMethodDescriptor(method));
+            var fields = methodData.getUsingFields();
+            for (var ufield : fields) {
+                var field = ufield.getField();
+                if (field.getType().getName().equals(TextView.class.getName())) {
+                    return field.getFieldInstance(loader);
+                }
+            }
+            throw new RuntimeException("EditMessageView method not found");
+        });
+    }
+
+    public static Class loadDialogViewClass(ClassLoader loader) throws Exception {
+        return UnobfuscatorCache.getInstance().getClass(loader, () -> {
+            var id = Utils.getID("touch_outside", "id");
+            var result = dexkit.findMethod(new FindMethod().matcher(new MethodMatcher().addUsingNumber(id).returnType(FrameLayout.class)));
+            if (result.isEmpty()) throw new RuntimeException("DialogView class not found");
+            return result.get(0).getDeclaredClass().getInstance(loader);
         });
     }
 }

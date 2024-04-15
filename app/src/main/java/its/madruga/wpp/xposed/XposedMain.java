@@ -14,7 +14,6 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import its.madruga.wpp.BuildConfig;
-import its.madruga.wpp.xposed.plugins.core.XDatabases;
 import its.madruga.wpp.xposed.plugins.core.XMain;
 
 public class XposedMain implements IXposedHookLoadPackage {
@@ -44,7 +43,6 @@ public class XposedMain implements IXposedHookLoadPackage {
         if (getPref().getStringSet("whatsapp_packages", new HashSet<>()).contains(lpparam.packageName))
         {
             XMain.Initialize(classLoader, getPref(), sourceDir);
-//            XDatabases.Initialize(classLoader, getPref());
         }
         disableSecureFlag();
     }

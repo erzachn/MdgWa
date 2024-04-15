@@ -247,17 +247,10 @@ public class XChatsFilter extends XHookBase {
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 var filters = param.args[1];
                 var chatsList = (List) XposedHelpers.getObjectField(filters, "values");
-                logDebug("PublishResults: " + chatsList.size());
-                Object thiz;
-                var convField = Unobfuscator.getFieldByType(publishResultsMethod.getDeclaringClass(), cFrag);
-                if (convField != null) {
-                    thiz = convField.get(param.thisObject);
-                } else {
-                    var baseField = Unobfuscator.getFieldByExtendType(publishResultsMethod.getDeclaringClass(), BaseAdapter.class);
-                    if (baseField == null) return;
-                    convField = Unobfuscator.getFieldByType(baseField.getType(), cFrag);
-                    thiz = convField.get(baseField.get(param.thisObject));
-                }
+                var baseField = Unobfuscator.getFieldByExtendType(publishResultsMethod.getDeclaringClass(), BaseAdapter.class);
+                if (baseField == null) return;
+                var convField = Unobfuscator.getFieldByType(baseField.getType(), cFrag);
+                Object thiz = convField.get(baseField.get(param.thisObject));
                 if (thiz == null) return;
                 var resultList = filterChat(thiz, chatsList);
                 XposedHelpers.setObjectField(filters, "values", resultList);
@@ -267,8 +260,11 @@ public class XChatsFilter extends XHookBase {
     }
 
     private List filterChat(Object thiz, List chatsList) {
+        logDebug("GetChatsListObject: " + thiz);
         var tabChat = tabInstances.get(CHATS);
         var tabGroup = tabInstances.get(GROUPS);
+        logDebug("Chats: " + tabChat);
+        logDebug("Groups: " + tabGroup);
         if (!Objects.equals(tabChat, thiz) && !Objects.equals(tabGroup, thiz)) {
             return chatsList;
         }
