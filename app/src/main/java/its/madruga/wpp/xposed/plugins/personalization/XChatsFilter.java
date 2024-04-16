@@ -196,8 +196,32 @@ public class XChatsFilter extends XHookBase {
     private void hookTabInstance(Class<?> cFrag) throws Exception {
         var getTabMethod = Unobfuscator.loadGetTabMethod(loader);
         logDebug(Unobfuscator.getMethodDescriptor(getTabMethod));
+
         var methodTabInstance = Unobfuscator.loadTabFragmentMethod(loader);
         logDebug(Unobfuscator.getMethodDescriptor(methodTabInstance));
+
+        var recreateFragmentMethod = Unobfuscator.loadRecreateFragmentConstructor(loader);
+
+        XposedBridge.hookMethod(recreateFragmentMethod, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                var object = param.args[2];
+                var desc = XposedHelpers.getObjectField(object, "A06");
+                if (desc == null) return;
+                var split = desc.toString().split(":");
+                var id = 0;
+                try {
+                    id = Integer.parseInt(split[split.length - 1]);
+                }catch (Exception ignored){
+                    return;
+                }
+                if (id == GROUPS || id == CHATS) {
+                    var convFragment = XposedHelpers.getObjectField(param.thisObject,"A02");
+                    tabInstances.remove(id);
+                    tabInstances.put(id, convFragment);
+                }
+            }
+        });
 
         XposedBridge.hookMethod(getTabMethod, new XC_MethodHook() {
             @Override

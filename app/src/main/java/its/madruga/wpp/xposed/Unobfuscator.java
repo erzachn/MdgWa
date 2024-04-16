@@ -24,6 +24,7 @@ import org.luckypray.dexkit.result.UsingFieldData;
 import org.luckypray.dexkit.util.DexSignUtil;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -1075,5 +1076,12 @@ public class Unobfuscator {
             if (result.isEmpty()) throw new RuntimeException("DialogView class not found");
             return result.get(0).getDeclaredClass().getInstance(loader);
         });
+    }
+
+    public static Constructor loadRecreateFragmentConstructor(ClassLoader loader) throws Exception {
+        var data = dexkit.findMethod(new FindMethod().matcher(new MethodMatcher().addUsingString("Instantiated fragment")));
+        if (data.isEmpty()) throw new RuntimeException("RecreateFragment method not found");
+        if (!data.single().isConstructor()) throw new RuntimeException("RecreateFragment method not found");
+        return data.single().getConstructorInstance(loader);
     }
 }

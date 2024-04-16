@@ -121,7 +121,7 @@ public class XAntiEditMessage extends XHookBase {
                             if (messages == null) {
                                 messages = new ArrayList<>();
                             }else {
-                                messages.add(msg);
+                                messages.add(0, msg);
                             }
                             showBottomDialog(dialogViewClass, messages);
                         } catch (Exception exception0) {
