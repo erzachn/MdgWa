@@ -136,4 +136,10 @@
     <string name="call_blocker_buttons_only_unknown_block">Block only unknown numbers</string>
     <string name="show_edited_message_history">Show edited message history</string>
     <string name="show_edited_message_history_sum">Display edited message history upon clicking on \'edited\' in the message</string>
+    <string name="dnd_message">When Do Not Disturb mode is on, you won\'t be able to send or receive messages.</string>
+    <string name="dnd_mode_title">DND Mode</string>
+    <string name="activate">Activate</string>
+    <string name="cancel">Cancel</string>
+    <string name="edited_history">Edited History</string>
+    <string name="message_original">Message Original</string>
 </resources>
