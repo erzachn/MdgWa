@@ -134,6 +134,6 @@
     <string name="call_blocker_buttons_no_block">Nessun Blocco</string>
     <string name="call_blocker_buttons_all_block">Blocca tutte le chiamate</string>
     <string name="call_blocker_buttons_only_unknown_block">Blocca solo i numeri sconosciuti</string>
-    <string name="show_edited_message_history">Show edited message history</string>
-    <string name="show_edited_message_history_sum">Display edited message history upon clicking on \'edited\' in the message</string>
+    <string name="show_edited_message_history">Mostra la cronologia dei messaggi modificati</string>
+    <string name="show_edited_message_history_sum">Visualizza la cronologia dei messaggi modificati facendo clic su \"modificato\" nel messaggio</string>
 </resources>
