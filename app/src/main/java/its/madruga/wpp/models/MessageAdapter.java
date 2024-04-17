@@ -9,8 +9,10 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import its.madruga.wpp.R;
 import its.madruga.wpp.core.databases.MessageHistory;
 import its.madruga.wpp.xposed.plugins.core.DesignUtils;
+import its.madruga.wpp.xposed.plugins.core.ResId;
 import its.madruga.wpp.xposed.plugins.core.Utils;
 
 public class MessageAdapter extends ArrayAdapter {
@@ -51,7 +53,7 @@ public class MessageAdapter extends ArrayAdapter {
         textView1.setTypeface(null, Typeface.ITALIC);
         textView1.setTextColor(DesignUtils.getPrimaryTextColor(view1.getContext()));
         var timestamp = this.items.get(position).timestamp;
-        textView1.setText((timestamp == 0L ? "Message Original" : "✏️ " + Utils.getDateTimeFromMillis(timestamp)));
+        textView1.setText((timestamp == 0L ? context.getString(ResId.string.message_original) : "✏️ " + Utils.getDateTimeFromMillis(timestamp)));
         return view1;
     }
 

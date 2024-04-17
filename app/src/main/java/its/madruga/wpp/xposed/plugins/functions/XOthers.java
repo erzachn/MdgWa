@@ -22,6 +22,7 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import its.madruga.wpp.xposed.Unobfuscator;
 import its.madruga.wpp.xposed.models.XHookBase;
+import its.madruga.wpp.xposed.plugins.core.ResId;
 
 public class XOthers extends XHookBase {
 
@@ -137,14 +138,14 @@ public class XOthers extends XHookBase {
         item.setOnMenuItemClickListener(menuItem -> {
             if (!dndmode) {
                 new AlertDialog.Builder(home)
-                        .setTitle("DND Mode")
-                        .setMessage("When Do Not Disturb mode is on, you won't be able to send or receive messages.")
-                        .setPositiveButton("Activate", (dialog, which) -> {
+                        .setTitle(ResId.string.dnd_mode_title)
+                        .setMessage(ResId.string.dnd_message)
+                        .setPositiveButton(ResId.string.activate, (dialog, which) -> {
                             shared.edit().putBoolean("dndmode", true).commit();
                             XposedBridge.log(String.valueOf(shared.getBoolean("dndmode", false)));
                             restartApp(home);
                         })
-                        .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                        .setNegativeButton(ResId.string.cancel, (dialog, which) -> dialog.dismiss())
                         .create().show();
                 return true;
             }

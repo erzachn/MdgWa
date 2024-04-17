@@ -26,6 +26,7 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import its.madruga.wpp.R;
 import its.madruga.wpp.core.databases.MessageHistory;
 import its.madruga.wpp.core.databases.MessageStore;
 import its.madruga.wpp.models.MessageAdapter;
@@ -33,6 +34,7 @@ import its.madruga.wpp.views.NoScrollListView;
 import its.madruga.wpp.xposed.Unobfuscator;
 import its.madruga.wpp.xposed.models.XHookBase;
 import its.madruga.wpp.xposed.plugins.core.DesignUtils;
+import its.madruga.wpp.xposed.plugins.core.ResId;
 import its.madruga.wpp.xposed.plugins.core.Utils;
 import its.madruga.wpp.xposed.plugins.core.XMain;
 
@@ -166,7 +168,7 @@ public class XAntiEditMessage extends XHookBase {
             titleView.setTextSize(16.0f);
             titleView.setTextColor(DesignUtils.getPrimaryTextColor(ctx));
             titleView.setTypeface(null, Typeface.BOLD);
-            titleView.setText("Edited History");
+            titleView.setText(ResId.string.edited_history);
             // List View
             var adapter = new MessageAdapter(Utils.getApplication(), messages);
             ListView listView = new NoScrollListView(ctx);
