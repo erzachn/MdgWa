@@ -20,17 +20,20 @@ import androidx.annotation.NonNull;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Objects;
+import java.util.Map;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import its.madruga.wpp.core.databases.DelMessageStore;
+import its.madruga.wpp.core.databases.MessageStore;
 import its.madruga.wpp.xposed.Unobfuscator;
+import its.madruga.wpp.xposed.UnobfuscatorCache;
 import its.madruga.wpp.xposed.models.XHookBase;
+import its.madruga.wpp.xposed.plugins.core.Utils;
 import its.madruga.wpp.xposed.plugins.core.XMain;
 
 public class XAntiRevoke extends XHookBase {
@@ -40,56 +43,16 @@ public class XAntiRevoke extends XHookBase {
     private static Activity mConversation;
     private static SharedPreferences mShared;
     private static Field fieldMessageKey;
+    private static Field getFieldIdMessage;
 
     public XAntiRevoke(ClassLoader loader, XSharedPreferences preferences) {
         super(loader, preferences);
     }
 
-    private void isMRevoked(Object objMessage, TextView dateTextView, String antirevokeType) {
-        if (dateTextView == null) return;
-        var fieldMessageDetails = XposedHelpers.getObjectField(objMessage, fieldMessageKey.getName());
-        var messageKey = (String) XposedHelpers.getObjectField(fieldMessageDetails, "A01");
-        var messageRevokedList = getRevokedMessages(objMessage);
-        if (messageRevokedList.contains(messageKey)) {
-            var antirevokeValue = prefs.getInt(antirevokeType, 0);
-            if (antirevokeValue == 1) {
-                // Text
-                var newTextData = "Deleted Message" + " | " + dateTextView.getText();
-                dateTextView.setText(newTextData);
-            } else if (antirevokeValue == 2) {
-                // Icon
-                var iconId = mApp.getResources().getIdentifier("msg_status_client_revoked", "drawable", mApp.getPackageName());
-                var drawable = mApp.getDrawable(iconId);
-                drawable = scaleImage(mApp.getResources(), drawable, 0.7f);
-                drawable.setColorFilter(new PorterDuffColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP));
-                dateTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
-                dateTextView.setCompoundDrawablePadding(5);
-            }
-        } else {
-            dateTextView.setCompoundDrawables(null, null, null, null);
-            var revokeNotice = "Deleted Message" + " | ";
-            var dateText = dateTextView.getText().toString();
-            if (dateText.contains(revokeNotice)) {
-                dateTextView.setText(dateText.replace(revokeNotice, ""));
-            }
-        }
-    }
-
-    public static Drawable scaleImage(Resources resources, Drawable image, float scaleFactor) {
-        if (!(image instanceof BitmapDrawable)) {
-            return image;
-        }
-        Bitmap b = ((BitmapDrawable) image).getBitmap();
-        int sizeX = Math.round(image.getIntrinsicWidth() * scaleFactor);
-        int sizeY = Math.round(image.getIntrinsicHeight() * scaleFactor);
-        Bitmap bitmapResized = Bitmap.createScaledBitmap(b, sizeX, sizeY, false);
-        return new BitmapDrawable(resources, bitmapResized);
-    }
-
-
     @Override
     public void doHook() throws Exception {
         mShared = mApp.getSharedPreferences(mApp.getPackageName() + "_mdgwa_preferences", Context.MODE_PRIVATE);
+        migrateMessages();
 
         var onStartMethod = Unobfuscator.loadAntiRevokeOnStartMethod(loader);
         logDebug(Unobfuscator.getMethodDescriptor(onStartMethod));
@@ -111,6 +74,10 @@ public class XAntiRevoke extends XHookBase {
 
         fieldMessageKey = Unobfuscator.loadAntiRevokeMessageKeyField(loader);
         logDebug(Unobfuscator.getFieldDescriptor(fieldMessageKey));
+
+        getFieldIdMessage = Unobfuscator.loadSetEditMessageField(loader);
+        logDebug(Unobfuscator.getFieldDescriptor(getFieldIdMessage));
+
 
         var bubbleMethod = Unobfuscator.loadAntiRevokeBubbleMethod(loader);
         logDebug(Unobfuscator.getMethodDescriptor(bubbleMethod));
@@ -148,7 +115,8 @@ public class XAntiRevoke extends XHookBase {
                 var fieldMessageDetails = XposedHelpers.getObjectField(objMessage, fieldMessageKey.getName());
                 var fieldIsFromMe = XposedHelpers.getBooleanField(fieldMessageDetails, "A02");
                 if (!fieldIsFromMe) {
-                    if (antiRevoke(objMessage) != 0) param.setResult(true);
+                    if (antiRevoke(objMessage) != 0)
+                        param.setResult(true);
                 }
             }
         });
@@ -174,13 +142,11 @@ public class XAntiRevoke extends XHookBase {
                     log("Could not find TextView");
                     return;
                 }
-                logDebug("fields = " + textViews.length);
+                @SuppressLint("DiscouragedApi")
                 int dateId = XMain.mApp.getResources().getIdentifier("date", "id", "com.whatsapp");
                 for (Field textView : textViews) {
                     TextView textView1 = (TextView) XposedHelpers.getObjectField(objView, textView.getName());
                     if (textView1 == null || textView1.getId() == dateId) {
-                        logDebug("textView = " + textView.getName());
-                        logDebug("keyMessage = " + param.args[0]);
                         isMRevoked(objMessage, textView1, "antirevokestatus");
                         break;
                     }
@@ -196,13 +162,112 @@ public class XAntiRevoke extends XHookBase {
         return "Anti Revoke";
     }
 
+    public static Drawable scaleImage(Resources resources, Drawable image, float scaleFactor) {
+        if (!(image instanceof BitmapDrawable)) {
+            return image;
+        }
+        Bitmap b = ((BitmapDrawable) image).getBitmap();
+        int sizeX = Math.round(image.getIntrinsicWidth() * scaleFactor);
+        int sizeY = Math.round(image.getIntrinsicHeight() * scaleFactor);
+        Bitmap bitmapResized = Bitmap.createScaledBitmap(b, sizeX, sizeY, false);
+        return new BitmapDrawable(resources, bitmapResized);
+    }
+
     private static void saveRevokedMessage(String authorJid, String messageKey, Object objMessage) {
-        String newRevokedMessages;
         HashSet<String> messages = getRevokedMessages(objMessage);
         messages.add(messageKey);
-        newRevokedMessages = Arrays.toString(messages.toArray());
-        mShared.edit().putString(authorJid + "_revoked", newRevokedMessages).apply();
+        DelMessageStore.getInstance(mApp).insertMessage(authorJid, messageKey);
+    }
 
+    private static HashSet<String> getRevokedMessages(Object objMessage) {
+        String jid = stripJID(getJidAuthor(objMessage));
+        if (messageRevokedMap.containsKey(jid)) {
+            return messageRevokedMap.get(jid);
+        }
+        var messages = DelMessageStore.getInstance(mApp).getMessagesByJid(jid);
+        if (messages == null) messages = new HashSet<>();
+        messageRevokedMap.put(jid, messages);
+        return messages;
+    }
+
+    public static String stripJID(String str) {
+        try {
+            return (str.contains("@g.us") || str.contains("@s.whatsapp.net") || str.contains("@broadcast")) ? str.substring(0, str.indexOf("@")) : str;
+        } catch (Exception e) {
+            XposedBridge.log(e.getMessage());
+            return str;
+        }
+    }
+
+    public static String getJidAuthor(Object objMessage) {
+        Object fieldMessageDetails = XposedHelpers.getObjectField(objMessage, fieldMessageKey.getName());
+        Object fieldMessageAuthorJid = XposedHelpers.getObjectField(fieldMessageDetails, "A00");
+        if (fieldMessageAuthorJid == null) return "";
+        else return getRawString(fieldMessageAuthorJid);
+    }
+
+    public static String getRawString(Object objJid) {
+        if (objJid == null) return "";
+        else return (String) XposedHelpers.callMethod(objJid, "getRawString");
+    }
+
+    private static String getCurrentJid() {
+        if (mShared == null) return "";
+        else return mShared.getString("jid", "");
+    }
+
+    private static void setCurrentJid(String jid) {
+        if (jid == null || mShared == null) return;
+        mShared.edit().putString("jid", jid).apply();
+    }
+
+    @SuppressLint({"DiscouragedApi","UseCompatLoadingForDrawables"})
+    private void isMRevoked(Object objMessage, TextView dateTextView, String antirevokeType) {
+        if (dateTextView == null) return;
+        var fieldMessageDetails = XposedHelpers.getObjectField(objMessage, fieldMessageKey.getName());
+        var messageKey = (String) XposedHelpers.getObjectField(fieldMessageDetails, "A01");
+        var messageRevokedList = getRevokedMessages(objMessage);
+        var id = XposedHelpers.getLongField(objMessage, getFieldIdMessage.getName());
+        if (messageRevokedList.contains(messageKey) || messageRevokedList.contains(MessageStore.getOriginalMessageKey(id))) {
+            var antirevokeValue = prefs.getInt(antirevokeType, 0);
+            if (antirevokeValue == 1) {
+                // Text
+                var newTextData = UnobfuscatorCache.getInstance().getString("messagedeleted") + " | " + dateTextView.getText();
+                dateTextView.setText(newTextData);
+            } else if (antirevokeValue == 2) {
+                // Icon
+                var iconId = mApp.getResources().getIdentifier("msg_status_client_revoked", "drawable", mApp.getPackageName());
+                var drawable = mApp.getDrawable(iconId);
+                drawable = scaleImage(mApp.getResources(), drawable, 0.7f);
+                drawable.setColorFilter(new PorterDuffColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP));
+                dateTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+                dateTextView.setCompoundDrawablePadding(5);
+            }
+        } else {
+            dateTextView.setCompoundDrawables(null, null, null, null);
+            var revokeNotice = UnobfuscatorCache.getInstance().getString("messagedeleted") + " | ";
+            var dateText = dateTextView.getText().toString();
+            if (dateText.contains(revokeNotice)) {
+                dateTextView.setText(dateText.replace(revokeNotice, ""));
+            }
+        }
+    }
+
+    private void migrateMessages() {
+        Map<String, ?> map = mShared.getAll();
+        for (Map.Entry<String, ?> entry : map.entrySet()) {
+            String key = entry.getKey();
+            if (key == null || !key.contains("revoked")) continue;
+            var jid = key.replace("_revoked", "");
+            var msg = (String)entry.getValue();
+            var messages = Utils.StringToStringArray(msg);
+            if (messages != null) {
+                for (var message : messages) {
+                    DelMessageStore.getInstance(mApp).insertMessage(jid, message);
+                }
+            }
+            mShared.edit().remove(key).apply();
+        }
     }
 
     private int antiRevoke(Object objMessage) {
@@ -210,6 +275,7 @@ public class XAntiRevoke extends XHookBase {
         var stripJID = stripJID(getJidAuthor(objMessage));
         var revokeboolean = stripJID.equals("status") ? prefs.getInt("antirevokestatus", 0) : prefs.getInt("antirevoke", 0);
         if (revokeboolean == 0) return revokeboolean;
+
         var messageRevokedList = getRevokedMessages(objMessage);
         if (!messageRevokedList.contains(messageKey)) {
             try {
@@ -236,65 +302,6 @@ public class XAntiRevoke extends XHookBase {
             }
         }
         return revokeboolean;
-    }
-
-    private static HashSet<String> getRevokedMessages(Object objMessage) {
-        String jid = stripJID(getJidAuthor(objMessage));
-        if (messageRevokedMap.containsKey(jid)) {
-            return messageRevokedMap.get(jid);
-        }
-        var messages = new HashSet<String>();
-        messageRevokedMap.put(jid, messages);
-        try {
-            String msg = mShared.getString(jid + "_revoked", "");
-            if (msg.isEmpty()) {
-                return messages;
-            }
-            Collections.addAll(messages, Objects.requireNonNull(StringToStringArray(msg)));
-        } catch (java.lang.Exception e4) {
-            XposedBridge.log(e4.getMessage());
-        }
-        return messages;
-
-    }
-
-    public static String stripJID(String str) {
-        try {
-            return (str.contains("@g.us") || str.contains("@s.whatsapp.net") || str.contains("@broadcast")) ? str.substring(0, str.indexOf("@")) : str;
-        } catch (Exception e) {
-            XposedBridge.log(e.getMessage());
-            return str;
-        }
-    }
-
-    public static String getJidAuthor(Object objMessage) {
-        Object fieldMessageDetails = XposedHelpers.getObjectField(objMessage, fieldMessageKey.getName());
-        Object fieldMessageAuthorJid = XposedHelpers.getObjectField(fieldMessageDetails, "A00");
-        if (fieldMessageAuthorJid == null) return "";
-        else return getRawString(fieldMessageAuthorJid);
-    }
-
-    public static String getRawString(Object objJid) {
-        if (objJid == null) return "";
-        else return (String) XposedHelpers.callMethod(objJid, "getRawString");
-    }
-
-    private static void setCurrentJid(String jid) {
-        if (jid == null || mShared == null) return;
-        mShared.edit().putString("jid", jid).apply();
-    }
-
-    private static String getCurrentJid() {
-        if (mShared == null) return "";
-        else return mShared.getString("jid", "");
-    }
-
-    private static String[] StringToStringArray(String str) {
-        try {
-            return str.substring(1, str.length() - 1).replaceAll("\\s", "").split(",");
-        } catch (Exception unused) {
-            return null;
-        }
     }
 
 }
