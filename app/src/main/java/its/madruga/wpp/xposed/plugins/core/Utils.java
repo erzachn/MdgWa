@@ -56,10 +56,16 @@ public class Utils {
         return XMain.mApp.getSharedPreferences(XMain.mApp.getPackageName() + "_preferences_light", Context.MODE_PRIVATE).getString("ph", "");
     }
 
-
-
     public static String getDateTimeFromMillis(long timestamp) {
         return new SimpleDateFormat("hh:mm:ss a", Locale.ENGLISH).format(new Date(timestamp));
+    }
+
+    public static String[] StringToStringArray(String str) {
+        try {
+            return str.substring(1, str.length() - 1).replaceAll("\\s", "").split(",");
+        } catch (Exception unused) {
+            return null;
+        }
     }
 
 

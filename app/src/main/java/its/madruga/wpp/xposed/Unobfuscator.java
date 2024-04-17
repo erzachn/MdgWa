@@ -125,16 +125,18 @@ public class Unobfuscator {
 
     // TODO: Classes and Methods for FreezeSeen
     public static Method loadFreezeSeenMethod(ClassLoader classLoader) throws Exception {
-        return UnobfuscatorCache.getInstance().getMethod(classLoader, () -> findFirstMethodUsingStrings(classLoader, StringMatchType.Contains, "presencestatemanager/setAvailable/new-state"));
+        return UnobfuscatorCache.getInstance().getMethod(classLoader, () -> UnobfuscatorCache.getInstance().getMethod(classLoader, () -> findFirstMethodUsingStrings(classLoader, StringMatchType.Contains, "presencestatemanager/setAvailable/new-state")));
     }
 
     // TODO: Classes and Methods for GhostMode
     public static Method loadGhostModeMethod(ClassLoader classLoader) throws Exception {
-        Method method = findFirstMethodUsingStrings(classLoader, StringMatchType.Contains, "HandleMeComposing/sendComposing");
-        if (method == null) throw new Exception("GhostMode method not found");
-        if (method.getParameterTypes().length > 2 && method.getParameterTypes()[2] == int.class)
-            return method;
-        throw new Exception("GhostMode method not found parameter type");
+        return UnobfuscatorCache.getInstance().getMethod(classLoader, () -> {
+            Method method = findFirstMethodUsingStrings(classLoader, StringMatchType.Contains, "HandleMeComposing/sendComposing");
+            if (method == null) throw new Exception("GhostMode method not found");
+            if (method.getParameterTypes().length > 2 && method.getParameterTypes()[2] == int.class)
+                return method;
+            throw new Exception("GhostMode method not found parameter type");
+        });
     }
 
     // TODO: Classes and Methods for Receipt
@@ -152,61 +154,67 @@ public class Unobfuscator {
     // TODO: Classes and Methods for HideForward
 
     public static Method loadForwardTagMethod(ClassLoader classLoader) throws Exception {
-        Class<?> messageInfoClass = loadThreadMessageClass(classLoader);
-        var methodList = dexkit.findMethod(new FindMethod().matcher(new MethodMatcher().addUsingString("chatInfo/incrementUnseenImportantMessageCount")));
-        if (methodList.isEmpty()) throw new Exception("ForwardTag method support not found");
-        var invokes = methodList.get(0).getInvokes();
-        for (var invoke : invokes) {
-            var method = invoke.getMethodInstance(classLoader);
-            if (method.getParameterCount() == 1
-                    && method.getParameterTypes()[0] == int.class
-                    && method.getDeclaringClass() == messageInfoClass
-                    && method.getReturnType() == void.class) {
-                return method;
+        return UnobfuscatorCache.getInstance().getMethod(classLoader, () -> {
+            Class<?> messageInfoClass = loadThreadMessageClass(classLoader);
+            var methodList = dexkit.findMethod(new FindMethod().matcher(new MethodMatcher().addUsingString("chatInfo/incrementUnseenImportantMessageCount")));
+            if (methodList.isEmpty()) throw new Exception("ForwardTag method support not found");
+            var invokes = methodList.get(0).getInvokes();
+            for (var invoke : invokes) {
+                var method = invoke.getMethodInstance(classLoader);
+                if (method.getParameterCount() == 1
+                        && method.getParameterTypes()[0] == int.class
+                        && method.getDeclaringClass() == messageInfoClass
+                        && method.getReturnType() == void.class) {
+                    return method;
+                }
             }
-        }
-        throw new Exception("ForwardTag method not found");
+            throw new Exception("ForwardTag method not found");
+        });
     }
 
     public static Class<?> loadForwardClassMethod(ClassLoader classLoader) throws Exception {
-        return findFirstClassUsingStrings(classLoader, StringMatchType.Contains, "UserActions/userActionForwardMessage");
+        return UnobfuscatorCache.getInstance().getClass(classLoader, () -> findFirstClassUsingStrings(classLoader, StringMatchType.Contains, "UserActions/userActionForwardMessage"));
     }
 
 
     // TODO: Classes and Methods for HideView
     public static Method loadHideViewOpenChatMethod(ClassLoader classLoader) throws Exception {
-        Class<?> receiptsClass = loadReadReceiptsClass(classLoader);
-        Method method = Arrays.stream(receiptsClass.getMethods()).filter(m -> m.getParameterTypes().length > 0 && m.getParameterTypes()[0].equals(Collection.class) && m.getReturnType().equals(HashMap.class)).findFirst().orElse(null);
-        if (method == null) throw new Exception("HideViewOpenChat method not found");
-        return method;
+        return UnobfuscatorCache.getInstance().getMethod(classLoader, () -> {
+            Class<?> receiptsClass = loadReadReceiptsClass(classLoader);
+            Method method = Arrays.stream(receiptsClass.getMethods()).filter(m -> m.getParameterTypes().length > 0 && m.getParameterTypes()[0].equals(Collection.class) && m.getReturnType().equals(HashMap.class)).findFirst().orElse(null);
+            if (method == null) throw new Exception("HideViewOpenChat method not found");
+            return method;
+        });
     }
 
     public static Method loadHideViewInChatMethod(ClassLoader classLoader) throws Exception {
-        Method method = findFirstMethodUsingStrings(classLoader, StringMatchType.Contains, "ReadReceipts/PrivacyTokenDecisionNotComputed");
-        if (method == null) throw new Exception("HideViewInChat method not found");
-        return method;
+        return UnobfuscatorCache.getInstance().getMethod(classLoader, () -> {
+            Method method = findFirstMethodUsingStrings(classLoader, StringMatchType.Contains, "ReadReceipts/PrivacyTokenDecisionNotComputed");
+            if (method == null) throw new Exception("HideViewInChat method not found");
+            return method;
+        });
     }
 
     public static Method loadHideViewMethod(ClassLoader classLoader) throws Exception {
-        Method method = findFirstMethodUsingStrings(classLoader, StringMatchType.Contains, "privacy_token", "false", "recipient");
-        if (method == null) throw new Exception("HideViewMethod method not found");
-        return method;
+        return UnobfuscatorCache.getInstance().getMethod(classLoader, () -> {
+            Method method = findFirstMethodUsingStrings(classLoader, StringMatchType.Contains, "privacy_token", "false", "recipient");
+            if (method == null) throw new Exception("HideViewMethod method not found");
+            return method;
+        });
     }
 
     public static Method loadHideViewAudioMethod(ClassLoader loader) throws Exception {
-        var result = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "MessageStatusStore/update/nosuchmessage");
-        if (result == null) throw new Exception("HideViewAudio method not found");
-        return result;
-    }
-
-    public static Method loadHideOnceViewMethod(ClassLoader loader) throws Exception {
-        var result = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "presencestatemanager/setAvailable/new-state:");
-        if (result == null) throw new Exception("HideViewAudio method not found");
-        return result;
+        return UnobfuscatorCache.getInstance().getMethod(loader, () -> {
+            var result = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "MessageStatusStore/update/nosuchmessage");
+            if (result == null) throw new Exception("HideViewAudio method not found");
+            return result;
+        });
     }
 
     public static Class<?> loadReadReceiptsClass(ClassLoader classLoader) throws Exception {
-        return findFirstClassUsingStrings(classLoader, StringMatchType.Contains, "acknowledgeMessageSilent");
+        return UnobfuscatorCache.getInstance().getClass(classLoader, () -> {
+            return findFirstClassUsingStrings(classLoader, StringMatchType.Contains, "acknowledgeMessageSilent");
+        });
     }
 
     public static Method loadHideViewJidMethod(ClassLoader classLoader) throws Exception {
@@ -577,8 +585,7 @@ public class Unobfuscator {
         return UnobfuscatorCache.getInstance().getField(classLoader, () -> {
             var method = loadViewOnceDownloadMenuMethod(classLoader);
             var clazz = XposedHelpers.findClass("com.whatsapp.mediaview.MediaViewFragment", classLoader);
-            var methodData = dexkit.findMethod(new FindMethod().matcher(new MethodMatcher().declaredClass(clazz).name(method.getName()))).get(0);
-            XposedBridge.log(methodData.getDescriptor());
+            var methodData = dexkit.getMethodData(method);
             var fields = methodData.getUsingFields();
             for (UsingFieldData field : fields) {
                 Field field1 = field.getField().getFieldInstance(classLoader);
@@ -618,6 +625,8 @@ public class Unobfuscator {
             return method.get();
         });
     }
+
+    // TODO: Methods and Classes for Change Colors
 
     public static Class<?> loadExpandableWidgetClass(ClassLoader loader) throws Exception {
         return UnobfuscatorCache.getInstance().getClass(loader, () -> {
@@ -662,7 +671,8 @@ public class Unobfuscator {
         });
     }
 
-    private static ClassData loadAntiRevokeImplClass(ClassLoader loader) throws Exception {
+
+    private static ClassData loadAntiRevokeImplClass() throws Exception {
         var classes = dexkit.findClass(new FindClass().matcher(new ClassMatcher().addUsingString("smb_eu_tos_update_url")));
         if (classes.isEmpty()) throw new Exception("AntiRevokeImpl class not found");
         return classes.get(0);
@@ -671,7 +681,7 @@ public class Unobfuscator {
     public static Method loadAntiRevokeOnStartMethod(ClassLoader loader) throws Exception {
         return UnobfuscatorCache.getInstance().getMethod(loader, () -> {
             Class<?> conversation = XposedHelpers.findClass("com.whatsapp.Conversation", loader);
-            var classData = loadAntiRevokeImplClass(loader);
+            var classData = loadAntiRevokeImplClass();
             MethodDataList mdOnStart = dexkit.findMethod(
                     FindMethod.create().searchInClass(List.of(dexkit.getClassData(conversation)))
                             .matcher(MethodMatcher.create().addInvoke(Objects.requireNonNull(classData).getDescriptor() + "->onStart()V"))
@@ -684,7 +694,7 @@ public class Unobfuscator {
     public static Method loadAntiRevokeOnResumeMethod(ClassLoader loader) throws Exception {
         return UnobfuscatorCache.getInstance().getMethod(loader, () -> {
             Class<?> conversation = XposedHelpers.findClass("com.whatsapp.Conversation", loader);
-            var classData = loadAntiRevokeImplClass(loader);
+            var classData = loadAntiRevokeImplClass();
             MethodDataList mdOnStart = dexkit.findMethod(
                     FindMethod.create().searchInClass(List.of(dexkit.getClassData(conversation)))
                             .matcher(MethodMatcher.create().addInvoke(Objects.requireNonNull(classData).getDescriptor() + "->onResume()V"))
@@ -1081,7 +1091,8 @@ public class Unobfuscator {
     public static Constructor loadRecreateFragmentConstructor(ClassLoader loader) throws Exception {
         var data = dexkit.findMethod(new FindMethod().matcher(new MethodMatcher().addUsingString("Instantiated fragment")));
         if (data.isEmpty()) throw new RuntimeException("RecreateFragment method not found");
-        if (!data.single().isConstructor()) throw new RuntimeException("RecreateFragment method not found");
+        if (!data.single().isConstructor())
+            throw new RuntimeException("RecreateFragment method not found");
         return data.single().getConstructorInstance(loader);
     }
 }

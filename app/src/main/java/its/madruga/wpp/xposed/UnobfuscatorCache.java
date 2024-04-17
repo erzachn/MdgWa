@@ -83,6 +83,11 @@ public class UnobfuscatorCache {
         return id == null ? -1 : Integer.parseInt(id);
     }
 
+    public String getString(String search) {
+        var id = getOfuscateIdString(search);
+        return id == -1 ? "" : mApp.getResources().getString(id);
+    }
+
     public Field getField(ClassLoader loader, FunctionCall functionCall) throws Exception {
         var methodName = getKeyName();
         String value = mShared.getString(methodName, null);

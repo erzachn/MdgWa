@@ -46,7 +46,7 @@ public class XHideView extends XHookBase {
                     for (StackTraceElement stackTraceElement : stacktrace) {
                         if (stackTraceElement.getClassName().equals(hideViewInChatMethod.getDeclaringClass().getName())
                                 && stackTraceElement.getMethodName().equals(hideViewInChatMethod.getName())) {
-                            if (param.args[4] != null && ((String) param.args[4]).equals("read")) {
+                            if (param.args[4] != null && param.args[4].equals("read")) {
                                 param.args[4] = null;
                             }
                             break;

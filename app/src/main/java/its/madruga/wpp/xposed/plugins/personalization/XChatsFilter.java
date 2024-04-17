@@ -23,6 +23,7 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import its.madruga.wpp.core.databases.MessageStore;
 import its.madruga.wpp.xposed.Unobfuscator;
 import its.madruga.wpp.xposed.UnobfuscatorCache;
 import its.madruga.wpp.xposed.models.XHookBase;
@@ -87,43 +88,43 @@ public class XChatsFilter extends XHookBase {
                 var groupCount = 0;
                 // Fiz ele pegar direto da database, esse metodo que dei hook, e chamado sempre q vc muda de tab, entra/sai de um chat ->
                 // ou quando a lista e atualizada, ent ele sempre vai atualizar
-                try (SQLiteDatabase db = SQLiteDatabase.openDatabase(XMain.mApp.getCacheDir().getParentFile().getAbsolutePath() + "/databases/msgstore.db", null, SQLiteDatabase.OPEN_READONLY)) {
-                    // essa coluna que eu peguei, mostra a quantidade de mensagens n lidas (obvio ne).
-                    // nao coloquei apenas > 0 pq quando vc marca um chat como nao lido, esse valor fica -1
-                    // entao pra contar direitinho deixei != 0
-                    var sql = "SELECT * FROM chat WHERE unseen_message_count != 0";
-                    var cursor = db.rawQuery(sql, null);
-                    while (cursor.moveToNext()) {
-                        // row da jid do chat
-                        int jid = cursor.getInt(cursor.getColumnIndex("jid_row_id"));
-                        // verifica se esta arquivado ou n
-                        int hidden = cursor.getInt(cursor.getColumnIndex("hidden"));
-                        if (hidden == 1) continue;
-                        // aqui eu fiz pra verificar se e grupo ou n, ai ele pega as infos da jid de acordo com a row da jid ali de cima
-                        var sql2 = "SELECT * FROM jid WHERE _id == ?";
-                        var cursor1 = db.rawQuery(sql2, new String[]{String.valueOf(jid)});
-                        while (cursor1.moveToNext()) {
-                            // esse server armazena oq ele e, s.whatsapp.net, lid, ou g.us
-                            var server = cursor1.getString(cursor1.getColumnIndex("server"));
-                            // separacao simples
-                            if (server.equals("g.us")) {
-                                groupCount++;
-                            } else {
-                                chatCount++;
-                            }
-                        }
-                    }
-                    // cada tab tem sua classe, ent eu percorro todas pra funcionar dboa
-                    for (int i = 0; i < tabs.size(); i++) {
-                        var q = XposedHelpers.callMethod(a1, "A00", a1, i);
-                        if (tabs.get(i) == CALLS) {
-                            setObjectField(q, "A01", chatCount);
-                        } else if (tabs.get(i) == CHATS) {
-                            setObjectField(q, "A01", groupCount);
+                var db = MessageStore.database.getReadableDatabase();
+                // essa coluna que eu peguei, mostra a quantidade de mensagens n lidas (obvio ne).
+                // nao coloquei apenas > 0 pq quando vc marca um chat como nao lido, esse valor fica -1
+                // entao pra contar direitinho deixei != 0
+                var sql = "SELECT * FROM chat WHERE unseen_message_count != 0";
+                var cursor = db.rawQuery(sql, null);
+                while (cursor.moveToNext()) {
+                    // row da jid do chat
+                    int jid = cursor.getInt(cursor.getColumnIndex("jid_row_id"));
+                    // verifica se esta arquivado ou n
+                    int hidden = cursor.getInt(cursor.getColumnIndex("hidden"));
+                    if (hidden == 1) continue;
+                    // aqui eu fiz pra verificar se e grupo ou n, ai ele pega as infos da jid de acordo com a row da jid ali de cima
+                    var sql2 = "SELECT * FROM jid WHERE _id == ?";
+                    var cursor1 = db.rawQuery(sql2, new String[]{String.valueOf(jid)});
+                    while (cursor1.moveToNext()) {
+                        // esse server armazena oq ele e, s.whatsapp.net, lid, ou g.us
+                        var server = cursor1.getString(cursor1.getColumnIndex("server"));
+                        // separacao simples
+                        if (server.equals("g.us")) {
+                            groupCount++;
+                        } else {
+                            chatCount++;
                         }
                     }
                 }
+                // cada tab tem sua classe, ent eu percorro todas pra funcionar dboa
+                for (int i = 0; i < tabs.size(); i++) {
+                    var q = XposedHelpers.callMethod(a1, "A00", a1, i);
+                    if (tabs.get(i) == CALLS) {
+                        setObjectField(q, "A01", chatCount);
+                    } else if (tabs.get(i) == CHATS) {
+                        setObjectField(q, "A01", groupCount);
+                    }
+                }
             }
+
         });
 
         var enableCountMethod = Unobfuscator.loadEnableCountTabMethod(loader);
@@ -212,11 +213,11 @@ public class XChatsFilter extends XHookBase {
                 var id = 0;
                 try {
                     id = Integer.parseInt(split[split.length - 1]);
-                }catch (Exception ignored){
+                } catch (Exception ignored) {
                     return;
                 }
                 if (id == GROUPS || id == CHATS) {
-                    var convFragment = XposedHelpers.getObjectField(param.thisObject,"A02");
+                    var convFragment = XposedHelpers.getObjectField(param.thisObject, "A02");
                     tabInstances.remove(id);
                     tabInstances.put(id, convFragment);
                 }
