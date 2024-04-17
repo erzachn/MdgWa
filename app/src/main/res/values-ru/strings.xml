@@ -5,6 +5,8 @@
     <string name="antirevoke_sum">Активирован, удаленные сообщения останутся у вас.</string>
     <string name="ghostmode">Скрыть ввод</string>
     <string name="ghostmode_sum">Когда этот режим активен, человек не может видеть, что вы печатаете.</string>
+    <string name="ghostmode_r">Скрыть запись звука...</string>
+    <string name="ghostmode_sum_r">Когда этот параметр активен, человек не видит, что вы записываете звук.</string>
     <string name="hidetag">Скрыть тег переадресации</string>
     <string name="hidetag_sum">Активирован, возможность пересылать сообщения без тега пересылки.</string>
     <string name="hidestatusview">Скрыть просмотр статуса</string>
@@ -34,14 +36,11 @@
     <string name="settings_title">"Настройки"</string>
     <string name="autoreboot">Автоматический перезапуск</string>
     <string name="autoreboot_sum">Для этой опции требуется root-доступ! Если эта функция включена, WhatsApp автоматически перезапустится, чтобы сохранить ранее внесенные изменения.</string>
-    <string name="root_needed">Нужен рут</string>
-    <string name="root_needed_message">Для этой опции требуется root-доступ, предоставьте root-права в вашем приложени Magisk-KSU.</string>
     <string name="xposedinit_error">Ошибка запуска Xposed</string>
-    <string name="no_root">Error granting SU permission</string>
     <string name="ampm">Время в 12-часовом формате</string>
     <string name="media_settings">Настройки мультимедиа</string>
     <string name="statusdowload">Загрузка статуса</string>
-    <string name="statusdowload_sum">" Активировать кнопку для скачивания статусов людей"</string>
+    <string name="statusdowload_sum"> Активировать кнопку для скачивания статусов людей</string>
     <string name="videoquality">Отправляйте видео в HD качестве</string>
     <string name="videoquality_sum">Отправляйте видео в HD-качестве</string>
     <string name="colors_title">Цвета</string>
@@ -112,8 +111,6 @@
     <string name="downloadviewonce_sum">Кнопка «Создать представление после загрузки»</string>
     <string name="separate_groups_sum">Разделяйте чаты по: группам, приватным чатам, статусу, звонкам, сообществам.</string>
     <string name="separate_groups">Отдельные группы</string>
-    <string name="ghostmode_r">Скрыть запись звука...</string>
-    <string name="ghostmode_sum_r">Когда этот параметр активен, человек не видит, что вы записываете звук.</string>
     <string name="blueonreply">Отправить синюю галочку в ответ</string>
     <string name="blueonreply_sum">Отправляет синюю галочку при ответе на сообщение</string>
     <string name="hide_archived_chat">Hide archived chat</string>
@@ -131,4 +128,12 @@
     <string name="disable_pinned_limit_sum">Disable pinned limit of 3 chats</string>
     <string name="delete_for_everyone_all_messages">Delete for everyone all messages</string>
     <string name="delete_for_everyone_all_messages_sum">Remove the 24-hour limit to be able to delete the message for everyone.</string>
+    <string name="antirevoke_buttons_desable">Desabled</string>
+    <string name="antirevoke_buttons_show_text">Show Text</string>
+    <string name="antirevoke_buttons_show_icon">Show Icon</string>
+    <string name="call_blocker_buttons_no_block">No Block</string>
+    <string name="call_blocker_buttons_all_block">Block all calls</string>
+    <string name="call_blocker_buttons_only_unknown_block">Block only unknown numbers</string>
+    <string name="show_edited_message_history">Show edited message history</string>
+    <string name="show_edited_message_history_sum">Display edited message history upon clicking on \'edited\' in the message</string>
 </resources>

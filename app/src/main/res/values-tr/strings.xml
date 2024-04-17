@@ -35,10 +35,7 @@
     <string name="settings_title">"Ayarlar"</string>
     <string name="autoreboot">Otomatik Yeniden Başlat</string>
     <string name="autoreboot_sum">Bu seçenek root erişimi gerektirir! Etkinleştirildiğinde, WhatsApp burada yapılan tüm değişiklikleri kaydetmek için otomatik olarak yeniden başlayacak</string>
-    <string name="root_needed">Root gereklidir</string>
-    <string name="root_needed_message">Bu seçenek root erişimi gerektirir, root izinlerini SU Çözümünüzde verin</string>
     <string name="xposedinit_error">Xposed başlatılırken hata oluştu</string>
-    <string name="no_root">SU izni verilirken hata oluştu</string>
     <string name="ampm">12 Saatlik Zaman Biçimi</string>
     <string name="media_settings">Medya Ayarları</string>
     <string name="statusdowload">Durumu İndir</string>
@@ -130,4 +127,12 @@
     <string name="disable_pinned_limit_sum">Sadece 3 sohbet sabitleme sınırını devre dışı bırak</string>
     <string name="delete_for_everyone_all_messages">Herkese için tüm mesajları sil</string>
     <string name="delete_for_everyone_all_messages_sum">Mesajları herkesten silmek için olan 24 saatlik sınırlamayı kaldırın.</string>
+    <string name="antirevoke_buttons_desable">Desabled</string>
+    <string name="antirevoke_buttons_show_text">Show Text</string>
+    <string name="antirevoke_buttons_show_icon">Show Icon</string>
+    <string name="call_blocker_buttons_no_block">No Block</string>
+    <string name="call_blocker_buttons_all_block">Block all calls</string>
+    <string name="call_blocker_buttons_only_unknown_block">Block only unknown numbers</string>
+    <string name="show_edited_message_history">Show edited message history</string>
+    <string name="show_edited_message_history_sum">Display edited message history upon clicking on \'edited\' in the message</string>
 </resources>

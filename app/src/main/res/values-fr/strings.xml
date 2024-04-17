@@ -4,13 +4,15 @@
     <string name="antirevoke">Anti-suppression de messages</string>
     <string name="antirevoke_sum">Lorsce qu\'activé, les messages ne seront pas effacé pour vous.</string>
     <string name="ghostmode">Masquer la saisie</string>
+    <string name="ghostmode_sum">Lorsqu\'elle est active, la personne ne peut pas voir que vous tapez</string>
+    <string name="ghostmode_r">Masquer l\'enregistrement audio...</string>
+    <string name="ghostmode_sum_r">Lorsqu\'elle est active, la personne ne peut pas voir que vous enregistrez de l\'audio</string>
     <string name="hidetag">Masquer la balise de transfère</string>
     <string name="hidetag_sum">Lors ce qu\'activé, vous permet de transférrer les messages sans la balise de transfert.</string>
     <string name="hidestatusview">Masquer visibilité de status</string>
     <string name="hidestatusview_sum">Lors ce qu\'activé, vous permet de voir les status sans que la personne ne puisse savoir que l\'avez vu.</string>
     <string name="hideread">Masquer visibilité des messages</string>
     <string name="hideread_sum">Lors ce qu\'activé, vous permet de lire les messages sans que la personne ne puisse savoir que vous les avez lu.</string>
-    <string name="ghostmode_sum">Lorsqu\'elle est active, la personne ne peut pas voir que vous tapez</string>
     <string name="danger">Notice</string>
     <string name="reboot">Chaque fois que vous modifiez quelque chose sur cet écran, redémarrez WhatsApp !</string>
     <string name="reboot_module">Redémarrer le module</string>
@@ -34,10 +36,7 @@
     <string name="settings_title">"Réglages"</string>
     <string name="autoreboot">Redémarrage automatique</string>
     <string name="autoreboot_sum">Cette option nécessite l\'accès à la racine! Lors ce qu\'activé, WhatsApp redémarrera automatiquement pour enregistrer tous les changements éffectués ici</string>
-    <string name="root_needed">Accès à la racine requise</string>
-    <string name="root_needed_message">Cette option nécessite l\'accès à la racine, accordez lui cette permission dans votre solution Solution</string>
     <string name="xposedinit_error">Erreur de démarrage Xposed</string>
-    <string name="no_root">Error granting SU permission</string>
     <string name="ampm">Heure au format 12 heures</string>
     <string name="media_settings">Réglages des médias</string>
     <string name="statusdowload">Status de téléchargement</string>
@@ -112,8 +111,6 @@
     <string name="downloadviewonce_sum">Créer une vue une fois le bouton de téléchargement</string>
     <string name="separate_groups_sum">Séparez vos discussions par : groupes, discussions privées, statut, appels, communautés</string>
     <string name="separate_groups">Groupes séparés</string>
-    <string name="ghostmode_r">Masquer l\'enregistrement audio...</string>
-    <string name="ghostmode_sum_r">Lorsqu\'elle est active, la personne ne peut pas voir que vous enregistrez de l\'audio</string>
     <string name="blueonreply">Envoyer une coche bleue lors de la réponse</string>
     <string name="blueonreply_sum">Envoie la coche bleue lors de la réponse au message</string>
     <string name="hide_archived_chat">Hide archived chat</string>
@@ -131,4 +128,12 @@
     <string name="disable_pinned_limit_sum">Disable pinned limit of 3 chats</string>
     <string name="delete_for_everyone_all_messages">Delete for everyone all messages</string>
     <string name="delete_for_everyone_all_messages_sum">Remove the 24-hour limit to be able to delete the message for everyone.</string>
+    <string name="antirevoke_buttons_desable">Desabled</string>
+    <string name="antirevoke_buttons_show_text">Show Text</string>
+    <string name="antirevoke_buttons_show_icon">Show Icon</string>
+    <string name="call_blocker_buttons_no_block">No Block</string>
+    <string name="call_blocker_buttons_all_block">Block all calls</string>
+    <string name="call_blocker_buttons_only_unknown_block">Block only unknown numbers</string>
+    <string name="show_edited_message_history">Show edited message history</string>
+    <string name="show_edited_message_history_sum">Display edited message history upon clicking on \'edited\' in the message</string>
 </resources>

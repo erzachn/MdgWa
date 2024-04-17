@@ -4,13 +4,15 @@
     <string name="antirevoke">رسائل مكافحة الحذف</string>
     <string name="antirevoke_sum">عند التنشيط، لن يتم حذف الرسائل نيابةً عنك.</string>
     <string name="ghostmode">إخفاء الكتابة</string>
+    <string name="ghostmode_sum">عندما يكون نشطًا، لا يستطيع الشخص رؤية أنك تكتب</string>
+    <string name="ghostmode_r">إخفاء تسجيل الصوت...</string>
+    <string name="ghostmode_sum_r">عندما يكون نشطًا، لا يستطيع الشخص رؤية أنك تقوم بتسجيل الصوت</string>
     <string name="hidetag">إخفاء علامة إعادة التوجيه</string>
     <string name="hidetag_sum">عندما يكون نشطًا، فإنه يسمح لك بإعادة توجيه الرسائل بدون علامة إعادة التوجيه.</string>
     <string name="hidestatusview">إخفاء عرض الحالة</string>
     <string name="hidestatusview_sum">عندما يكون نشطًا، فإنه يسمح لك بعرض الحالات دون أن يعلم الشخص أنك شاهدتها.</string>
     <string name="hideread">إخفاء عرض الرسائل</string>
     <string name="hideread_sum">عندما يكون نشطًا، فإنه يسمح لك بقراءة الرسائل دون أن يعلم الشخص أنك قرأتها.</string>
-    <string name="ghostmode_sum">عندما يكون نشطًا، لا يستطيع الشخص رؤية أنك تكتب</string>
     <string name="danger">ملاحظة</string>
     <string name="reboot">عندما تغير شيئًا ما على هذه الشاشة، أعد تشغيل WhatsApp!</string>
     <string name="reboot_module">وحدة إعادة التشغيل</string>
@@ -34,10 +36,7 @@
     <string name="settings_title">"الإعدادات"</string>
     <string name="autoreboot">إعادة التشغيل التلقائي</string>
     <string name="autoreboot_sum">يحتاج هذا الخيار إلى الوصول إلى الجذر! عند التمكين، سيتم إعادة تشغيل WhatsApp تلقائيًا لحفظ جميع التغييرات التي تم إجراؤها هنا</string>
-    <string name="root_needed">الجذر مطلوب</string>
-    <string name="root_needed_message">يتطلب هذا الخيار الوصول إلى الجذر، ومنح أذونات الجذر في جهازك حل SU</string>
     <string name="xposedinit_error">خطأ في بدء Xposed</string>
-    <string name="no_root">Error granting SU permission</string>
     <string name="ampm">الوقت بتنسيق 12 ساعة </string>
     <string name="media_settings">إعدادات الوسائط</string>
     <string name="statusdowload">حالة التنزيل</string>
@@ -112,8 +111,6 @@
     <string name="downloadviewonce_sum">قم بإنشاء عرض بمجرد زر التنزيل</string>
     <string name="separate_groups_sum">قم بفصل دردشاتك حسب: المجموعات، الدردشات الخاصة، الحالة، المكالمات، المجتمعات</string>
     <string name="separate_groups">مجموعات منفصلة</string>
-    <string name="ghostmode_r">إخفاء تسجيل الصوت...</string>
-    <string name="ghostmode_sum_r">عندما يكون نشطًا، لا يستطيع الشخص رؤية أنك تقوم بتسجيل الصوت</string>
     <string name="blueonreply">أرسل علامة زرقاء عند الرد</string>
     <string name="blueonreply_sum">أرسل العلامة الزرقاء عند الرد على الرسالة</string>
     <string name="hide_archived_chat">Hide archived chat</string>
@@ -131,4 +128,12 @@
     <string name="disable_pinned_limit_sum">Disable pinned limit of 3 chats</string>
     <string name="delete_for_everyone_all_messages">Delete for everyone all messages</string>
     <string name="delete_for_everyone_all_messages_sum">Remove the 24-hour limit to be able to delete the message for everyone.</string>
+    <string name="antirevoke_buttons_desable">Desabled</string>
+    <string name="antirevoke_buttons_show_text">Show Text</string>
+    <string name="antirevoke_buttons_show_icon">Show Icon</string>
+    <string name="call_blocker_buttons_no_block">No Block</string>
+    <string name="call_blocker_buttons_all_block">Block all calls</string>
+    <string name="call_blocker_buttons_only_unknown_block">Block only unknown numbers</string>
+    <string name="show_edited_message_history">Show edited message history</string>
+    <string name="show_edited_message_history_sum">Display edited message history upon clicking on \'edited\' in the message</string>
 </resources>

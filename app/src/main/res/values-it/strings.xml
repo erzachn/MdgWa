@@ -3,18 +3,6 @@
     <string name="app_desc">Un modulo Xposed per personalizzare il tuo WhatsApp.</string>
     <string name="antirevoke">Anti-eliminazione Messaggi</string>
     <string name="antirevoke_sum">Quando è attivo i messaggi non verranno eliminati per te.</string>
-    <string name="antirevokestatus">Anti-eliminazione Stato</string>
-    <string name="antirevokestatus_sum">Quando è attivo gli stati non verranno cancellati per te.</string>
-        <string-array name="antirevoke_buttons">
-        <item>Disabilitato</item>
-        <item>Mostra Testo</item>
-        <item>Mostra Icona</item>
-    </string-array>
-    <string-array name="antirevoke_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
     <string name="ghostmode">Nascondi digitazione</string>
     <string name="ghostmode_sum">Quando è attivo la persona non può vedere che stai digitando</string>
     <string name="ghostmode_r">Nascondi la registrazione di un audio...</string>
@@ -38,6 +26,8 @@
     <string name="viewonce_sum">Quando è attivo ti consente di aprire i messaggi visualizzabili una volta sola, tutte le volte che vuoi.</string>
     <string name="novotema">Nuovo tema WhatsApp</string>
     <string name="novotema_sum">Quando attivato cambia il colore e il tema delle icone nel nuovo tema WhatsApp</string>
+    <string name="antirevokestatus">Anti-eliminazione Stato</string>
+    <string name="antirevokestatus_sum">Quando è attivo gli stati non verranno cancellati per te.</string>
     <string name="hidereceipt">Nascondi Ricevuta</string>
     <string name="hidereceipt_sum">Non dire agli utenti che hai ricevuto i messaggi</string>
     <string name="outros">Altri</string>
@@ -46,10 +36,7 @@
     <string name="settings_title">"Impostazioni"</string>
     <string name="autoreboot">Riavvio automatico</string>
     <string name="autoreboot_sum">Questa opzione richiede l\'accesso root! Se abilitato, WhatsApp si riavvierà automaticamente per salvare tutte le modifiche apportate qui</string>
-    <string name="root_needed">Accesso Root necessario</string>
-    <string name="root_needed_message">Questa opzione richiede l\'accesso root, concedi i permessi root nella tua soluzione SU</string>
     <string name="xposedinit_error">Errore durante l\'avvio di Xposed</string>
-    <string name="no_root">Errore durante la concessione dell\'autorizzazione SU</string>
     <string name="ampm">Orario nel formato 12 ore</string>
     <string name="media_settings">Impostazioni Multimediali</string>
     <string name="statusdowload">Download Stato</string>
@@ -132,16 +119,6 @@
     <string name="hide_once_view_seen_sum">Nascondi di aver visto Visualizza una volta e aver ascoltato gli audio</string>
     <string name="call_blocker">Blocco Chiamate</string>
     <string name="call_blocker_sum">Blocca le chiamate WhatsApp in base al tipo di privacy.</string>
-        <string-array name="call_blocker_buttons">
-        <item>Non bloccare</item>
-        <item>Blocca tutte le chiamate</item>
-        <item>Blocca solo numeri sconosciuti</item>
-    </string-array>
-    <string-array name="call_blocker_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
     <string name="show_online_dot_in_conversation_list">Mostra il pallino online nell\'elenco delle conversazioni</string>
     <string name="show_online_dot_in_conversation_list_sum">Mostra un pallino verde online nella schermata principale (NOTA: è necessario attivare la visualizzazione online per tutti nel menu di configurazione di Whatsapp)</string>
     <string name="show_dnd_button">Mostra il pulsante DND</string>
@@ -151,4 +128,12 @@
     <string name="disable_pinned_limit_sum">Disabilita il limite di 3 chat appuntate</string>
     <string name="delete_for_everyone_all_messages">Elimina tutti i messaggi per tutti</string>
     <string name="delete_for_everyone_all_messages_sum">Rimuovi il limite di 24 ore per poter eliminare il messaggio per tutti.</string>
+    <string name="antirevoke_buttons_desable">Disabilitato</string>
+    <string name="antirevoke_buttons_show_text">Mostra Testo</string>
+    <string name="antirevoke_buttons_show_icon">Mostra Icona</string>
+    <string name="call_blocker_buttons_no_block">Nessun Blocco</string>
+    <string name="call_blocker_buttons_all_block">Blocca tutte le chiamate</string>
+    <string name="call_blocker_buttons_only_unknown_block">Blocca solo i numeri sconosciuti</string>
+    <string name="show_edited_message_history">Show edited message history</string>
+    <string name="show_edited_message_history_sum">Display edited message history upon clicking on \'edited\' in the message</string>
 </resources>

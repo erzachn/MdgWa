@@ -159,9 +159,9 @@
                     android:id="@+id/antieditmessages"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:summary="Show orginal message in edited message!"
+                    android:summary="@string/show_edited_message_history_sum"
                     android:tag="antieditmessages"
-                    android:text="Anti Edit Messages" />
+                    android:text="@string/show_edited_message_history" />
 
             </LinearLayout>
 
