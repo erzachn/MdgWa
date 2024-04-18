@@ -2,8 +2,10 @@ package its.madruga.wpp.xposed.plugins.functions;
 
 import static its.madruga.wpp.xposed.plugins.core.XMain.mApp;
 
+import android.app.Activity;
 import android.media.MediaScannerConnection;
 import android.os.Environment;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -30,9 +32,12 @@ import its.madruga.wpp.xposed.plugins.core.ResId;
 import its.madruga.wpp.xposed.plugins.core.Utils;
 
 public class XStatusDownload extends XHookBase {
+    private Object messageObj;
+
     public XStatusDownload(ClassLoader loader, XSharedPreferences preferences) {
         super(loader, preferences);
     }
+
 
     public void doHook() throws Exception {
         if (!prefs.getBoolean("downloadstatus", false)) return;
@@ -50,40 +55,38 @@ public class XStatusDownload extends XHookBase {
         logDebug("SubMenu class: " + clazzSubMenu.getName());
         var clazzMenu = Unobfuscator.loadStatusDownloadMenuClass(loader);
         logDebug("Menu class: " + clazzMenu.getName());
-        var menuField = Unobfuscator.getFieldByType(clazzSubMenu,clazzMenu);
+        var menuField = Unobfuscator.getFieldByType(clazzSubMenu, clazzMenu);
         logDebug("Menu field: " + menuField.getName());
 
-       XposedBridge.hookMethod(setPageActiveMethod, new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(menuStatusClass, "onClick", View.class, new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                if (messageObj == null) return;
+                var fileData = XposedHelpers.getObjectField(messageObj, "A01");
+                var file = (File) XposedHelpers.getObjectField(fileData, fieldFile.getName());
+                Field subMenuField = Arrays.stream(param.thisObject.getClass().getDeclaredFields()).filter(f -> f.getType() == Object.class && clazzSubMenu.isInstance(XposedHelpers.getObjectField(param.thisObject, f.getName()))).findFirst().orElse(null);
+                Object submenu = XposedHelpers.getObjectField(param.thisObject, subMenuField.getName());
+                var menu = (Menu) XposedHelpers.getObjectField(submenu, menuField.getName());
+                if (menu.findItem(ResId.string.download) != null) return;
+                menu.add(0, ResId.string.download, 0, ResId.string.download).setOnMenuItemClickListener(item -> {
+                    if (copyFile(file)) {
+                        Toast.makeText(mApp, Utils.getApplication().getString(ResId.string.saved_to) + getPathDestination(file), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(mApp, Utils.getApplication().getString(ResId.string.error_when_saving_try_again), Toast.LENGTH_SHORT).show();
+                    }
+                    return true;
+                });
+            }
+        });
+
+        XposedBridge.hookMethod(setPageActiveMethod, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 var position = (int) param.args[1];
                 var list = (List<?>) XposedHelpers.getObjectField(param.args[0], fieldList.getName());
                 var message = list.get(position);
                 if (message != null && mediaClass.isInstance(message)) {
-
-                    XposedHelpers.findAndHookMethod(menuStatusClass, "onClick", View.class, new XC_MethodHook() {
-                        @Override
-                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                            var fileData = XposedHelpers.getObjectField(message, "A01");
-                            var file = (File) XposedHelpers.getObjectField(fileData, fieldFile.getName());
-                            Field subMenuField = Arrays.stream(param.thisObject.getClass().getDeclaredFields()).filter(f -> f.getType() == Object.class && clazzSubMenu.isInstance(XposedHelpers.getObjectField(param.thisObject, f.getName()))).findFirst().orElse(null);
-                            Object submenu = XposedHelpers.getObjectField(param.thisObject, subMenuField.getName());
-                            Object menuObj = XposedHelpers.getObjectField(submenu, menuField.getName());
-                            var menu = (MenuItem) XposedHelpers.callMethod(menuObj, "findItem", 0x7f0b1009);
-                            if (menu != null) return;
-                            menu = (MenuItem) XposedHelpers.callMethod(menuObj, "add", 0, 0x7f0b1009, 0, Utils.getApplication().getString(ResId.string.download));
-                            menu.setOnMenuItemClickListener(item -> {
-                                if (copyFile(file)) {
-                                    Toast.makeText(mApp, "Saved to " + getPathDestination(file), Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(mApp, "Error when saving, try again", Toast.LENGTH_SHORT).show();
-                                }
-                                return true;
-                            });
-                        }
-                    });
-
+                    messageObj = message;
                 }
             }
         });
@@ -95,10 +98,12 @@ public class XStatusDownload extends XHookBase {
         return "Download Status";
     }
 
-    private static boolean copyFile(@NonNull File p) {
-        var destination = getPathDestination(p);
+    private static boolean copyFile(File file) {
+        if (file == null || !file.exists()) return false;
 
-        try (FileInputStream in = new FileInputStream(p);
+        var destination = getPathDestination(file);
+
+        try (FileInputStream in = new FileInputStream(file);
              FileOutputStream out = new FileOutputStream(destination)) {
             byte[] bArr = new byte[1024];
             while (true) {

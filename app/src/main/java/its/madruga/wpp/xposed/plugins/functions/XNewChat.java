@@ -38,6 +38,7 @@ public class XNewChat extends XHookBase {
                 var menu = (Menu) param.args[0];
 
                 var item = menu.add(0, 0, 0, ResId.string.new_chat);
+                item.setIcon(home.getResources().getIdentifier("vec_ic_chat_add", "drawable", home.getPackageName()));
                 item.setOnMenuItemClickListener(item1 -> {
                     var view = new LinearLayout(home);
                     view.setGravity(Gravity.CENTER);

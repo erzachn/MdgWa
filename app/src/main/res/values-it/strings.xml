@@ -146,4 +146,7 @@
     <string name="number_with_country_code">Numero con prefisso internazionale</string>
     <string name="message">Messaggio</string>
     <string name="download">Download</string>
+    <string name="reboot_whatsapp">(Riavvia WhatsApp)</string>
+    <string name="error_when_saving_try_again">Error when saving, try again</string>
+    <string name="saved_to">"Saved to "</string>
 </resources>

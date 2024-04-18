@@ -35,16 +35,16 @@ public class XOthers extends XHookBase {
     @Override
     public void doHook() throws Exception {
 
-        var deprecatedMethod = Unobfuscator.loadDeprecatedMethod(loader);
-        logDebug(Unobfuscator.getMethodDescriptor(deprecatedMethod));
-
-        XposedBridge.hookMethod(deprecatedMethod, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) {
-                Date date = new Date(10554803081056L);
-                param.setResult(date);
-            }
-        });
+//        var deprecatedMethod = Unobfuscator.loadDeprecatedMethod(loader);
+//        logDebug(Unobfuscator.getMethodDescriptor(deprecatedMethod));
+//
+//        XposedBridge.hookMethod(deprecatedMethod, new XC_MethodHook() {
+//            @Override
+//            protected void beforeHookedMethod(MethodHookParam param) {
+//                Date date = new Date(10554803081056L);
+//                param.setResult(date);
+//            }
+//        });
         var novoTema = prefs != null && prefs.getBoolean("novotema", false);
         var menuWIcons = prefs != null && prefs.getBoolean("menuwicon", false);
         var newSettings = prefs != null && prefs.getBoolean("novaconfig", false);
@@ -100,7 +100,9 @@ public class XOthers extends XHookBase {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 Menu menu = (Menu) param.args[0];
                 Activity home = (Activity) param.thisObject;
-                menu.add(0, 0, 0, "Restart WhatsApp").setOnMenuItemClickListener(item -> {
+                var iconDraw = home.getDrawable(home.getResources().getIdentifier("vec_account_switcher", "drawable", home.getPackageName()));
+                iconDraw.setTint(0xff8696a0);
+                menu.add(0, 0, 0, ResId.string.restart_whatsapp).setIcon(iconDraw).setOnMenuItemClickListener(item -> {
                     restartApp(home);
                     return true;
                 });

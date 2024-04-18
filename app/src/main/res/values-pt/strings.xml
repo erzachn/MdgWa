@@ -142,8 +142,11 @@
     <string name="cancel">Cancelar</string>
     <string name="edited_history">Histórico de Edição</string>
     <string name="message_original">Mensagem original</string>
-    <string name="new_chat">New Chat</string>
-    <string name="number_with_country_code">Number with country code</string>
-    <string name="message">Message</string>
-    <string name="download">Download</string>
+    <string name="new_chat">Novo Bate-Papo</string>
+    <string name="number_with_country_code">Número com código de país</string>
+    <string name="message">Mensagem</string>
+    <string name="download">Baixar</string>
+    <string name="reboot_whatsapp">(Reiniciar WhatsApp)</string>
+    <string name="error_when_saving_try_again">Erro ao salvar, tente novamente</string>
+    <string name="saved_to">"Salvo em: "</string>
 </resources>

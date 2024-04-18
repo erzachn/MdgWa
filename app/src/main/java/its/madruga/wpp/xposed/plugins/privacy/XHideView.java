@@ -56,16 +56,6 @@ public class XHideView extends XHookBase {
             }
         });
 
-//        XposedBridge.hookMethod(hideViewInChatMethod, new XC_MethodHook() {
-//            @Override
-//            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                if (prefs.getBoolean("hideread", false))
-//                    param.setResult(null);
-//            }
-//        });
-
-
-
         var methodPlayerViewJid = Unobfuscator.loadHideViewAudioMethod(loader);
         logDebug(Unobfuscator.getMethodDescriptor(methodPlayerViewJid));
         XposedBridge.hookMethod(methodPlayerViewJid, new XC_MethodHook() {

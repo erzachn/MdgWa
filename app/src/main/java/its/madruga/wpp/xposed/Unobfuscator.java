@@ -366,7 +366,7 @@ public class Unobfuscator {
         return UnobfuscatorCache.getInstance().getField(classLoader, () -> {
             Class<?> homeActivity = XposedHelpers.findClass("com.whatsapp.HomeActivity", classLoader);
             Class<?> pager = loadGetTabMethod(classLoader).getDeclaringClass();
-            return getFieldByType(homeActivity, pager);
+            return getFieldByExtendType(homeActivity, pager);
         });
     }
 

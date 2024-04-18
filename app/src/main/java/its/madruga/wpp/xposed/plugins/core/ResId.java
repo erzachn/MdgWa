@@ -12,6 +12,9 @@ public class ResId {
         public static int number_with_country_code;
         public static int message;
         public static int download;
+        public static int error_when_saving_try_again;
+        public static int saved_to;
+        public static int restart_whatsapp;
     }
 
 }

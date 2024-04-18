@@ -33,7 +33,7 @@ public abstract class AbstractSwitchButton extends LinearLayout {
         var tag = attrs.getAttributeValue(ANDROID_NS, "tag");
         var switchButton = (MaterialSwitch) findViewById(R.id.switch_button);
         reboot = attrs.getAttributeValue(MADRUGA_WPP_OTHER, "reboot");
-        switchButton.setText(switchButton.getText() + ("true".equals(reboot) ? " (reboot)" : ""));
+        switchButton.setText(switchButton.getText() + ("true".equals(reboot) ? " " + context.getString(R.string.reboot_whatsapp) : ""));
         this.setTag(tag);
         switchButton.setTag(this);
     }
