@@ -1,8 +1,5 @@
 package its.madruga.wpp;
 
-import static android.os.Process.killProcess;
-import static android.os.Process.myPid;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -16,7 +13,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,10 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -40,11 +32,8 @@ import its.madruga.wpp.xposed.XposedChecker;
 public class MainActivity extends BaseActivity {
 
     public final static String TAG = "Debug-Main";
-    public static boolean isLSPatched = false;
-    public List<PackageInfo> lspatchPkgs = new ArrayList<>();
     public List<PackageInfo> wppPkgs = new ArrayList<>();
     public HashSet<String> wppPkgNames = new HashSet<>();
-    private boolean requestingLSPosedScope = false;
 
 
     @Override
@@ -54,9 +43,6 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onPause() {
-        if (requestingLSPosedScope) {
-            killProcess(myPid());
-        }
         super.onPause();
     }
 
@@ -67,12 +53,7 @@ public class MainActivity extends BaseActivity {
         setWppPkgs();
 
         if (!XposedChecker.isActive()) {
-            requestLSPatchAccess();
-            if (isLSPatched) {
-                setContentViewMain();
-            } else {
-                setContentViewError();
-            }
+            setContentViewError();
         } else {
             setContentViewMain();
         }
@@ -88,10 +69,8 @@ public class MainActivity extends BaseActivity {
     private void setContentViewMain() {
         setContentView(R.layout.activity_main);
 
-        int mode = isLSPatched ? MODE_APPEND : MODE_WORLD_READABLE;
-        mShared = getSharedPreferences(getPackageName() + "_preferences", mode);
+        mShared = getSharedPreferences(getPackageName() + "_preferences", MODE_APPEND);
         mEditor = mShared.edit();
-
         mEditor.putStringSet("whatsapp_packages", wppPkgNames).apply();
 
         var container = (ViewGroup) findViewById(R.id.container);
@@ -99,17 +78,8 @@ public class MainActivity extends BaseActivity {
         var text = (TextView) findViewById(R.id.module_status_text);
 
         var workingText = getResources().getString(R.string.module_working_text);
-        if (isLSPatched) {
-            text.setText(String.format(workingText, "LSPatch"));
-            img.setImageResource(R.drawable.lspatch_icon);
-        } else {
-            text.setText(String.format(workingText, "LSPosed"));
-            img.setImageResource(R.drawable.lsposed_icon);
-        }
-
-
-        Log.i(TAG, "setContentViewMain: mode » " + mode);
-        Log.i(TAG, "setContentViewMain: LSPatch » " + isLSPatched);
+        text.setText(String.format(workingText, "LSPosed"));
+        img.setImageResource(R.drawable.lsposed_icon);
 
         findViewById(R.id.reset_preferences).setOnClickListener(v -> new MaterialAlertDialogBuilder(container.getContext()).setTitle(R.string.reset_preferences).setMessage(R.string.reset_preferences_message).setPositiveButton(android.R.string.ok, (dialog, which) -> {
             mEditor.clear().apply();
@@ -136,7 +106,7 @@ public class MainActivity extends BaseActivity {
 
         var dataModels = new ArrayList<AppInfoModel>();
         var pm = getPackageManager();
-        for (var appInfo : isLSPatched ? lspatchPkgs : wppPkgs) {
+        for (var appInfo : wppPkgs) {
             dataModels.add(new AppInfoModel(appInfo.packageName, appInfo.versionName, appInfo.applicationInfo.loadIcon(pm)));
         }
         var adapter = new AppListAdapter(dataModels, getApplicationContext());
@@ -155,23 +125,12 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        try{
+        try {
             var pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             mEditor.putLong("lastUpdateTime", pInfo.lastUpdateTime).commit();
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
-
-//    private void requestModuleScope() {
-//        try {
-//            var command = String.join(" ", new String[]{"am", "start", "-p", "com.android.shell", "-n", "com.android.shell/.BugreportWarningActivity", "-a", "android.intent.action.MAIN", "-f", "0x10000000", "-c", "org.lsposed.manager.LAUNCH_MANAGER", "-d", "module://" + getPackageName() + ":0/...\n"});
-//            var stdin = new DataOutputStream(shell.getOutputStream());
-//            stdin.writeBytes(command);
-//            stdin.flush();
-//            requestingLSPosedScope = true;
-//        } catch (IOException e) {
-//            Toast.makeText(getApplicationContext(), R.string.xposedinit_error, Toast.LENGTH_SHORT).show();
-//        }
-//    }
 
     private void setWppPkgs() {
         var pm = getPackageManager();
@@ -184,14 +143,6 @@ public class MainActivity extends BaseActivity {
                         wppPkgNames.add(pkg.packageName);
                     }
                 }
-            }
-        }
-    }
-
-    private void requestLSPatchAccess() {
-        for (var pkg : wppPkgs) {
-            if (pkg.applicationInfo.metaData != null && pkg.applicationInfo.metaData.containsKey("lspatch")) {
-                lspatchPkgs.add(pkg);
             }
         }
     }
