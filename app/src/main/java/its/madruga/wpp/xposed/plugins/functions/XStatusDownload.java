@@ -22,8 +22,12 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import its.madruga.wpp.R;
 import its.madruga.wpp.xposed.Unobfuscator;
+import its.madruga.wpp.xposed.UnobfuscatorCache;
 import its.madruga.wpp.xposed.models.XHookBase;
+import its.madruga.wpp.xposed.plugins.core.ResId;
+import its.madruga.wpp.xposed.plugins.core.Utils;
 
 public class XStatusDownload extends XHookBase {
     public XStatusDownload(ClassLoader loader, XSharedPreferences preferences) {
@@ -68,7 +72,7 @@ public class XStatusDownload extends XHookBase {
                             Object menuObj = XposedHelpers.getObjectField(submenu, menuField.getName());
                             var menu = (MenuItem) XposedHelpers.callMethod(menuObj, "findItem", 0x7f0b1009);
                             if (menu != null) return;
-                            menu = (MenuItem) XposedHelpers.callMethod(menuObj, "add", 0, 0x7f0b1009, 0, "Download");
+                            menu = (MenuItem) XposedHelpers.callMethod(menuObj, "add", 0, 0x7f0b1009, 0, Utils.getApplication().getString(ResId.string.download));
                             menu.setOnMenuItemClickListener(item -> {
                                 if (copyFile(file)) {
                                     Toast.makeText(mApp, "Saved to " + getPathDestination(file), Toast.LENGTH_SHORT).show();

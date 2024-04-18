@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_desc">An LSPosed module to customize your WhatsApp</string>
-    <string name="antirevoke">Anti Tarik Pesa</string>
+    <string name="antirevoke">Anti Tarik Pesan</string>
     <string name="antirevoke_sum">Pesan tidak akan dihapus untuk Anda</string>
     <string name="ghostmode">Sembunyikan mengetik</string>
     <string name="ghostmode_sum">Orang lain tidak akan mengetahui bahwa Anda sedang mengetik</string>
@@ -147,4 +147,8 @@ Anda perlu mengaktifkan dan mengatur ulang kembali</string>
     <string name="cancel">Batal</string>
     <string name="edited_history">Edit riwayat</string>
     <string name="message_original">Pesan asli</string>
+    <string name="new_chat">Obrolan baru</string>
+    <string name="number_with_country_code">Nomor dengan kode negara</string>
+    <string name="message">Pesan</string>
+    <string name="download">Unduh</string>
 </resources>

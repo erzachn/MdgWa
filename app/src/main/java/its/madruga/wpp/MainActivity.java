@@ -128,7 +128,7 @@ public class MainActivity extends BaseActivity {
         try {
             var pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             mEditor.putLong("lastUpdateTime", pInfo.lastUpdateTime).commit();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 

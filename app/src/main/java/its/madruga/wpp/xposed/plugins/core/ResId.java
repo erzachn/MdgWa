@@ -8,5 +8,10 @@ public class ResId {
         public static int activate;
         public static int cancel;
         public static int message_original;
+        public static int new_chat;
+        public static int number_with_country_code;
+        public static int message;
+        public static int download;
     }
+
 }

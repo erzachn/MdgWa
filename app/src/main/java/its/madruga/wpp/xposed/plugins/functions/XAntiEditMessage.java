@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.BlendMode;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
@@ -137,20 +138,20 @@ public class XAntiEditMessage extends XHookBase {
     }
 
     @SuppressLint("SetTextI18n")
-    private void showBottomDialog(Class<?> dialogClass,ArrayList messages) {
+    private void showBottomDialog(Class<?> dialogClass,ArrayList<MessageHistory.MessageItem> messages) {
         ((Activity) mConversation).runOnUiThread(() -> {
             var ctx = (Context) mConversation;
+
             var dialog = (Dialog) XposedHelpers.newInstance(dialogClass, ctx, 0);
             // NestedScrollView
             NestedScrollView nestedScrollView0 = new NestedScrollView(ctx, null);
             nestedScrollView0.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             nestedScrollView0.setFillViewport(true);
             nestedScrollView0.setFitsSystemWindows(true);
-            nestedScrollView0.setBackgroundColor(Color.TRANSPARENT);
             // Main Layout
             LinearLayout linearLayout = new LinearLayout(ctx);
             linearLayout.setOrientation(LinearLayout.VERTICAL);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-1, -1);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             linearLayout.setFitsSystemWindows(true);
             linearLayout.setMinimumHeight(layoutParams.height = Utils.getApplication().getResources().getDisplayMetrics().heightPixels / 4);
             linearLayout.setLayoutParams(layoutParams);
@@ -159,6 +160,7 @@ public class XAntiEditMessage extends XHookBase {
             Drawable bg = DesignUtils.createDrawable("rc_dialog_bg");
             bg.setTint(DesignUtils.getPrimarySurfaceColor(ctx));
             linearLayout.setBackground(bg);
+
             // Title View
             TextView titleView = new TextView(ctx);
             LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -169,6 +171,7 @@ public class XAntiEditMessage extends XHookBase {
             titleView.setTextColor(DesignUtils.getPrimaryTextColor(ctx));
             titleView.setTypeface(null, Typeface.BOLD);
             titleView.setText(ResId.string.edited_history);
+
             // List View
             var adapter = new MessageAdapter(Utils.getApplication(), messages);
             ListView listView = new NoScrollListView(ctx);
@@ -200,10 +203,9 @@ public class XAntiEditMessage extends XHookBase {
             linearLayout.addView(okButton);
             nestedScrollView0.addView(linearLayout);
             dialog.setContentView(nestedScrollView0);
-            var dialogWindow = dialog.getWindow();
-            dialogWindow.setDimAmount(0);
-            dialogWindow.setBackgroundDrawable(null);
-            dialogWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(0x00000000));
+            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+            dialog.setCanceledOnTouchOutside(true);
             dialog.show();
         });
     }

@@ -7,17 +7,18 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
-import its.madruga.wpp.R;
 import its.madruga.wpp.core.databases.MessageHistory;
 import its.madruga.wpp.xposed.plugins.core.DesignUtils;
 import its.madruga.wpp.xposed.plugins.core.ResId;
 import its.madruga.wpp.xposed.plugins.core.Utils;
 
-public class MessageAdapter extends ArrayAdapter {
-    private Context context;
-    private List<MessageHistory.MessageItem> items;
+public class MessageAdapter extends ArrayAdapter<MessageHistory.MessageItem> {
+    private final Context context;
+    private final List<MessageHistory.MessageItem> items;
 
     public MessageAdapter(Context context, List<MessageHistory.MessageItem> items) {
         super(context, android.R.layout.simple_list_item_2, android.R.id.text1, items);
@@ -31,7 +32,7 @@ public class MessageAdapter extends ArrayAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public MessageHistory.MessageItem getItem(int position) {
         return items.get(position);
     }
 
@@ -40,8 +41,9 @@ public class MessageAdapter extends ArrayAdapter {
         return position;
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         View view1 = super.getView(position, convertView, parent);
         TextView textView0 = view1.findViewById(android.R.id.text1);
         textView0.setTextSize(14.0f);

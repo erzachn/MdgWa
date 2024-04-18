@@ -146,4 +146,8 @@
     <string name="cancel">Cancel</string>
     <string name="edited_history">Edited History</string>
     <string name="message_original">Message Original</string>
+    <string name="new_chat">New Chat</string>
+    <string name="number_with_country_code">Number with country code</string>
+    <string name="message">Message</string>
+    <string name="download">Download</string>
 </resources>

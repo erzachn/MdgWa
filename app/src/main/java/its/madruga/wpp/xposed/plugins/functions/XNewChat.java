@@ -18,7 +18,9 @@ import androidx.annotation.NonNull;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
+import its.madruga.wpp.R;
 import its.madruga.wpp.xposed.models.XHookBase;
+import its.madruga.wpp.xposed.plugins.core.ResId;
 import its.madruga.wpp.xposed.plugins.core.XMain;
 
 public class XNewChat extends XHookBase {
@@ -35,7 +37,7 @@ public class XNewChat extends XHookBase {
                 var home = (Activity) param.thisObject;
                 var menu = (Menu) param.args[0];
 
-                var item = menu.add(0, 0, 0, "New Chat");
+                var item = menu.add(0, 0, 0, ResId.string.new_chat);
                 item.setOnMenuItemClickListener(item1 -> {
                     var view = new LinearLayout(home);
                     view.setGravity(Gravity.CENTER);
@@ -45,12 +47,12 @@ public class XNewChat extends XHookBase {
                     edt.setMaxLines(1);
                     edt.setInputType(InputType.TYPE_CLASS_PHONE);
                     edt.setTransformationMethod(null);
-                    edt.setHint("number");
+                    edt.setHint(ResId.string.number_with_country_code);
                     view.addView(edt);
                     new AlertDialog.Builder(home)
-                            .setTitle("New Chat")
+                            .setTitle(ResId.string.new_chat)
                             .setView(view)
-                            .setPositiveButton("Message", (dialog, which) -> {
+                            .setPositiveButton(ResId.string.message, (dialog, which) -> {
                                 var number = edt.getText().toString();
                                 var numberFomatted = number.replaceAll("[+\\-()/\\s]", "");
                                 Toast.makeText(home, numberFomatted, Toast.LENGTH_SHORT).show();
@@ -59,7 +61,7 @@ public class XNewChat extends XHookBase {
                                     intent.setPackage(XMain.mApp.getPackageName());
                                     home.startActivity(intent);
                             })
-                            .setNegativeButton("Cancel",null)
+                            .setNegativeButton(ResId.string.cancel,null)
                             .setCancelable(false)
                             .create().show();
                     return true;

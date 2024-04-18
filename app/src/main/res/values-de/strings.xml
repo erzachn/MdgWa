@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_desc">Ein LSPosed-Modul um Ihre WhatsApp anzupassen</string>
-    <string name="antirevoke">Nachrichten</string>
+    <string name="app_desc">Ein LSPosed-Modul um WhatsApp anzupassen</string>
+    <string name="antirevoke">Gegen gelöschte Nachrichten</string>
     <string name="antirevoke_sum">Gelöschte Nachrichten anzeigen</string>
     <string name="ghostmode">Verstecke, dass ich gerade schreibe</string>
     <string name="ghostmode_sum">Benutzer können nicht sehen, dass Sie gerade etwas eingeben</string>
@@ -137,9 +137,13 @@
     <string name="show_edited_message_history">Nachrichtenverlauf anzeigen</string>
     <string name="show_edited_message_history_sum">Nachrichtenverlauf beim Klicken auf \'bearbeitet\' in der Nachricht anzeigen</string>
     <string name="dnd_message">Wenn \"Nicht stören\" aktiviert ist, können Sie keine Nachrichten senden oder empfangen.</string>
-    <string name="dnd_mode_title">DND Mode</string>
-    <string name="activate">Activate</string>
-    <string name="cancel">Cancel</string>
-    <string name="edited_history">Edited History</string>
-    <string name="message_original">Message Original</string>
+    <string name="dnd_mode_title">Bitte-Nicht-Stören-Modus</string>
+    <string name="activate">Aktivieren</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="edited_history">Verlauf bearbeiten</string>
+    <string name="message_original">Originalnachricht</string>
+    <string name="new_chat">Neuer Chat</string>
+    <string name="number_with_country_code">Nummer mit Landesvorwahl</string>
+    <string name="message">Nachricht</string>
+    <string name="download">Download</string>
 </resources>
