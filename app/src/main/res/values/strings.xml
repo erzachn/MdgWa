@@ -153,4 +153,9 @@
     <string name="reboot_whatsapp">(Reboot WhatsApp)</string>
     <string name="error_when_saving_try_again">Error when saving, try again</string>
     <string name="saved_to">"Saved to "</string>
+    <string name="hide_tabs_on_home">Hide Tabs on Home</string>
+    <string name="hide_tabs_on_home_sum">Allows hiding tabs on the home page such as updates, communities, calls.</string>
+    <string name="communities">Communities</string>
+    <string name="calls">"Calls "</string>
+    <string name="updates">Updates</string>
 </resources>

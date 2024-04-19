@@ -2,6 +2,7 @@ package its.madruga.wpp.xposed.plugins.personalization;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -18,6 +19,7 @@ import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import its.madruga.wpp.xposed.models.XHookBase;
+import its.madruga.wpp.xposed.plugins.core.DesignUtils;
 import its.madruga.wpp.xposed.plugins.privacy.XHideArchive;
 
 public class XBioAndName extends XHookBase {
@@ -89,14 +91,14 @@ public class XBioAndName extends XHookBase {
             mTitle.setText(showName ? startup_prefs.getString("push_name", "WhatsApp") : "WhatsApp");
             mTitle.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
             mTitle.setTextSize(20f);
-            mTitle.setTextColor(0xffffffff);
+            mTitle.setTextColor(DesignUtils.getPrimaryTextColor(homeActivity));
             parent.addView(mTitle);
             if (showBio) {
                 var mSubtitle = new TextView(homeActivity);
                 mSubtitle.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
                 mSubtitle.setText(mainPrefs.getString("my_current_status", ""));
                 mSubtitle.setTextSize(12f);
-                mSubtitle.setTextColor(0xffffffff);
+                mSubtitle.setTextColor(DesignUtils.getPrimaryTextColor(homeActivity));
                 mSubtitle.setMarqueeRepeatLimit(-1);
                 mSubtitle.setEllipsize(TextUtils.TruncateAt.MARQUEE);
                 mSubtitle.setSingleLine();

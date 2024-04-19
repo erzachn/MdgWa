@@ -149,4 +149,9 @@
     <string name="reboot_whatsapp">(Reiniciar WhatsApp)</string>
     <string name="error_when_saving_try_again">Erro ao salvar, tente novamente</string>
     <string name="saved_to">"Salvo em: "</string>
+    <string name="hide_tabs_on_home">Ocultar abas na tela inicial</string>
+    <string name="hide_tabs_on_home_sum">Permite ocultar abas na página inicial, como atualizações, comunidades, chamadas.</string>
+    <string name="communities">Comunidades</string>
+    <string name="calls">"Chamadas"</string>
+    <string name="updates">Atualizações</string>
 </resources>

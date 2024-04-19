@@ -13,6 +13,12 @@
         <attr name="android:text" />
         <attr name="android:summary" />
     </declare-styleable>
+    <declare-styleable name="MultichoiceButton">
+        <attr name="android:text" />
+        <attr name="android:entries" />
+        <attr name="android:summary" />
+        <attr name="android:entryValues" />
+    </declare-styleable>
     <declare-styleable name="RadioButton">
         <attr name="android:text" />
         <attr name="android:summary" />

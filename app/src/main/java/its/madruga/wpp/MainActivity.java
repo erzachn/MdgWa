@@ -65,11 +65,10 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.lspatch_download).setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/LSPosed/LSPatch"))));
     }
 
-    @SuppressLint({"WorldReadableFiles", "WrongConstant"})
     private void setContentViewMain() {
         setContentView(R.layout.activity_main);
 
-        mShared = getSharedPreferences(getPackageName() + "_preferences", MODE_APPEND);
+        mShared = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
         mEditor = mShared.edit();
         mEditor.putStringSet("whatsapp_packages", wppPkgNames).apply();
 

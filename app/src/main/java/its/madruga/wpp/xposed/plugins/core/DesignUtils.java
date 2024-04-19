@@ -9,26 +9,14 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
+import android.view.ContextThemeWrapper;
+
+import java.lang.reflect.Method;
 
 import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 
 public class DesignUtils {
-
-    private static int primaryTextId;
-    private static int primarySurfaceId;
-
-    @SuppressLint("ResourceType")
-    public static void initColors(Context context) {
-        try {
-            var resourceId = Utils.getID("Theme.Base", "style");
-            int[] ids = {android.R.attr.textColorPrimary, android.R.attr.windowBackground};
-            TypedArray values = context.getTheme().obtainStyledAttributes(resourceId, ids);
-            primaryTextId = values.getResourceId(0, 0);
-            primarySurfaceId = values.getResourceId(1, 0);
-        }catch (Exception e) {
-            XposedBridge.log("Error while getting colors: " + e);
-        }
-    }
 
     @SuppressLint("UseCompatLoadingForDrawables")
     public static Drawable getDrawable(int id) {
@@ -79,17 +67,27 @@ public class DesignUtils {
 
     // Colors
     public static int getPrimaryTextColor(Context context) {
-        if (primaryTextId == 0) {
-            initColors(context);
+        try {
+            var resourceId = (int) XposedHelpers.callMethod(context, "getThemeResId");
+            @SuppressLint("ResourceType")
+            TypedArray values = context.getTheme().obtainStyledAttributes(resourceId, new int[]{android.R.attr.textColorPrimary});
+            return values.getColor(0, 0);
+        } catch (Exception e) {
+            XposedBridge.log("Error while getting colors: " + e);
         }
-        return context.getColor(primaryTextId);
+        return 0;
     }
 
     public static int getPrimarySurfaceColor(Context context) {
-        if (primarySurfaceId == 0) {
-            initColors(context);
+        try {
+            var resourceId = (int) XposedHelpers.callMethod(context, "getThemeResId");
+            @SuppressLint("ResourceType")
+            TypedArray values = context.getTheme().obtainStyledAttributes(resourceId, new int[]{android.R.attr.windowBackground});
+            return values.getColor(0, 0);
+        } catch (Exception e) {
+            XposedBridge.log("Error while getting colors: " + e);
         }
-        return context.getColor(primarySurfaceId);
+        return 0;
     }
 
 }

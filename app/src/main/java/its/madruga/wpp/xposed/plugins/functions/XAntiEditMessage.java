@@ -173,7 +173,7 @@ public class XAntiEditMessage extends XHookBase {
             titleView.setText(ResId.string.edited_history);
 
             // List View
-            var adapter = new MessageAdapter(Utils.getApplication(), messages);
+            var adapter = new MessageAdapter(ctx, messages);
             ListView listView = new NoScrollListView(ctx);
             LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             layoutParams2.weight = 1.0f;

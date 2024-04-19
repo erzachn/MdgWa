@@ -114,6 +114,17 @@
                     other:reboot="true"
                     android:text="@string/show_online_dot_in_conversation_list" />
 
+                <its.madruga.wpp.views.MultichoiceButton
+                    android:id="@+id/hidetabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/tabshide_contents"
+                    android:entryValues="@array/tabshide_values"
+                    android:summary="@string/hide_tabs_on_home_sum"
+                    android:tag="hidetabs"
+                    other:reboot="true"
+                    android:text="@string/hide_tabs_on_home" />
+
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>

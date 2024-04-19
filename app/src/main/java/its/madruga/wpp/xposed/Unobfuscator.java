@@ -378,6 +378,29 @@ public class Unobfuscator {
         });
     }
 
+    public static Constructor loadEnableCountTabConstructor1(ClassLoader classLoader) throws Exception {
+       var countMethod = loadEnableCountTabMethod(classLoader);
+       var indiceClass = countMethod.getParameterTypes()[1];
+       var result = dexkit.findClass(new FindClass().matcher(new ClassMatcher().superClass(indiceClass.getName()).addMethod(new MethodMatcher().paramCount(1))));
+       if (result.isEmpty()) throw new Exception("EnableCountTab method not found");
+       return result.get(0).getInstance(classLoader).getConstructors()[0];
+    }
+
+    public static Constructor loadEnableCountTabConstructor2(ClassLoader classLoader) throws Exception {
+        var countTabConstructor1 =  loadEnableCountTabConstructor1(classLoader);
+        var indiceClass = countTabConstructor1.getParameterTypes()[0];
+        var result = dexkit.findClass(new FindClass().matcher(new ClassMatcher().superClass(indiceClass.getName()).addMethod(new MethodMatcher().paramCount(1).addParamType(int.class))));
+        if (result.isEmpty()) throw new Exception("EnableCountTab method not found");
+        return result.get(0).getInstance(classLoader).getConstructors()[0];
+    }
+
+    public static Constructor loadEnableCountTabConstructor3(ClassLoader classLoader) throws Exception {
+        var countTabConstructor1 =  loadEnableCountTabConstructor1(classLoader);
+        var indiceClass = countTabConstructor1.getParameterTypes()[0];
+        var result = dexkit.findClass(new FindClass().matcher(new ClassMatcher().superClass(indiceClass.getName()).addMethod(new MethodMatcher().paramCount(0))));
+        if (result.isEmpty()) throw new Exception("EnableCountTab method not found");
+        return result.get(0).getInstance(classLoader).getConstructors()[0];
+    }
     // TODO: Classes and methods to TimeToSeconds
 
     public static Method loadTimeToSecondsMethod(ClassLoader classLoader) throws Exception {

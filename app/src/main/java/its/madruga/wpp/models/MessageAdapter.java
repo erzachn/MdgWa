@@ -47,13 +47,13 @@ public class MessageAdapter extends ArrayAdapter<MessageHistory.MessageItem> {
         View view1 = super.getView(position, convertView, parent);
         TextView textView0 = view1.findViewById(android.R.id.text1);
         textView0.setTextSize(14.0f);
-        textView0.setTextColor(DesignUtils.getPrimaryTextColor(view1.getContext()));
+        textView0.setTextColor(DesignUtils.getPrimaryTextColor(context));
         textView0.setText(this.items.get(position).message);
         TextView textView1 = view1.findViewById(android.R.id.text2);
         textView1.setTextSize(12.0f);
         textView1.setAlpha(0.75f);
         textView1.setTypeface(null, Typeface.ITALIC);
-        textView1.setTextColor(DesignUtils.getPrimaryTextColor(view1.getContext()));
+        textView1.setTextColor(DesignUtils.getPrimaryTextColor(context));
         var timestamp = this.items.get(position).timestamp;
         textView1.setText((timestamp == 0L ? context.getString(ResId.string.message_original) : "✏️ " + Utils.getDateTimeFromMillis(timestamp)));
         return view1;

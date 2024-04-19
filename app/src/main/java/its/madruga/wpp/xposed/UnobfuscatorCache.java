@@ -3,12 +3,14 @@ package its.madruga.wpp.xposed;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -50,8 +52,10 @@ public class UnobfuscatorCache {
 
     private void initializeReverseResourceMap() {
         try {
-            XposedBridge.log("Initialize reverse resource map");
-            Resources resources = XMain.mApp.getResources();
+            var configuration =   new Configuration(mApp.getResources().getConfiguration());
+            configuration.setLocale(Locale.ENGLISH);
+            var context = XMain.mApp.createConfigurationContext(configuration);
+            Resources resources = context.getResources();
             for (int i = 0x7f120000; i < 0x7f12ffff; i++) {
                 try {
                     String resourceString = resources.getString(i);
@@ -65,8 +69,10 @@ public class UnobfuscatorCache {
     }
 
     private String getMapIdString(String search) {
-        if (reverseResourceMap.isEmpty())
+        if (reverseResourceMap.isEmpty()) {
+            XposedBridge.log("Initialize reverse resource map for: " + search);
             initializeReverseResourceMap();
+        }
         search = search.toLowerCase().replaceAll("\\s", "");
         return reverseResourceMap.get(search);
     }
@@ -76,6 +82,7 @@ public class UnobfuscatorCache {
         var id = mShared.getString(search, null);
         if (id == null) {
             id = getMapIdString(search);
+            XposedBridge.log("Get ofuscate id string: " + search + " -> " + id);
             if (id != null) {
                 mShared.edit().putString(search, id).commit();
             }
