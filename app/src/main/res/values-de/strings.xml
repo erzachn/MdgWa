@@ -22,7 +22,7 @@
     <string name="segundosnahora_sum">Sekunden anzeigen</string>
     <string name="textonahora">Text neben dem Zeitstempel hinzufügen</string>
     <string name="no_active">Wenn Sie auf diesem Bildschirm sind, bedeutet dies, dass das Modul noch nicht aktiv ist, sie haben weder LSPosed installiert, noch haben Sie eine WhatsApp APK von LSPatch gepatcht.\n\nBitte reparieren, das Modul neu starten und erneut versuchen</string>
-    <string name="viewonce">Einmalige Ansicht deaktivieren</string>
+    <string name="viewonce">Einmalige Ansicht</string>
     <string name="viewonce_sum">Einmalige Ansicht von Medien können wiederholt betrachtet werden</string>
     <string name="novotema">Neues WhatsApp Thema</string>
     <string name="novotema_sum">Ändern Sie das Farb- und Symbol-Theme auf das neue WhatsApp-Theme</string>
@@ -39,7 +39,7 @@
     <string name="xposedinit_error">Errore durante l\'avvio di Xposed</string>
     <string name="ampm">Uhrzeit wird im 12 Stunden Format angezeigt</string>
     <string name="media_settings">Medien Einstellungen</string>
-    <string name="statusdowload">Download Stato</string>
+    <string name="statusdowload">Status</string>
     <string name="statusdowload_sum">Aggiungi un pulsante per scaricare gli stati delle persone</string>
     <string name="videoquality">Videoqualität</string>
     <string name="videoquality_sum">Sende Videos standardmäßig immer in HD-Qualität</string>
@@ -85,7 +85,7 @@
     <string name="home">Startseite</string>
     <string name="showname">Name anzeigen</string>
     <string name="showname_sum">Anzeige des Profilnamen oben auf dem Startbildschirm, anstatt \"WhatsApp\"</string>
-    <string name="showbio_sum">Zeige die Bio unter dem Titel der Symbolleiste</string>
+    <string name="showbio_sum">Zeigt die Bio unter dem Titel der Symbolleiste</string>
     <string name="showbio">Bio anzeigen</string>
     <string name="reset_preferences">Einstellungen zurücksetzen</string>
     <string name="reset_preferences_sum">Tippen Sie hier, um alle Einstellungen zurückzusetzen, die Sie in diesem Modul gesetzt haben</string>
@@ -107,7 +107,7 @@
     <string name="module_not_setted_text">Il modulo è abilitato, ma l\'ambito è vuoto</string>
     <string name="imagequality">Bilder immer HD senden</string>
     <string name="imagequality_sum">Bilder in HD senden</string>
-    <string name="downloadviewonce">Einmal-Ansichten herunterladen</string>
+    <string name="downloadviewonce">Einmal-Ansicht</string>
     <string name="downloadviewonce_sum">Button anzeigen, um einmalige Ansicht herunterzuladen</string>
     <string name="separate_groups_sum">Trennen Sie Ihre Chats nach Gruppen, privaten Chats, Status, Anrufe, Gemeinschaften</string>
     <string name="separate_groups">Gruppen sind separat</string>
