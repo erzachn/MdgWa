@@ -45,22 +45,22 @@ public class XOthers extends XHookBase {
 //                param.setResult(date);
 //            }
 //        });
-        var novoTema = prefs != null && prefs.getBoolean("novotema", false);
-        var menuWIcons = prefs != null && prefs.getBoolean("menuwicon", false);
-        var newSettings = prefs != null && prefs.getBoolean("novaconfig", false);
-        var filterChats = prefs != null && prefs.getBoolean("novofiltro", false);
-        var strokeButtons = prefs != null && prefs.getBoolean("strokebuttons", false);
-        var outlinedIcons = prefs != null && prefs.getBoolean("outlinedicons", false);
-        var separateGroups = prefs != null && prefs.getBoolean("separategroups", false);
-        var showDnd = prefs != null && prefs.getBoolean("show_dndmode", false);
+        var novoTema =  prefs.getBoolean("novotema", false);
+        var menuWIcons =  prefs.getBoolean("menuwicon", false);
+        var newSettings = prefs.getBoolean("novaconfig", false);
+        var filterChats = prefs.getBoolean("barfilter", false);
+        var strokeButtons = prefs.getBoolean("strokebuttons", false);
+        var outlinedIcons = prefs.getBoolean("outlinedicons", false);
+        var showDnd = prefs.getBoolean("show_dndmode", false);
 
         props.put(4524, novoTema);
         props.put(4497, menuWIcons);
         props.put(4023, newSettings);
-        props.put(5171, filterChats);
+        props.put(8013, filterChats);
         props.put(5834, strokeButtons);
         props.put(5509, outlinedIcons);
-        props.put(2358, separateGroups);
+        props.put(2358, false);
+
 
         var methodProps = Unobfuscator.loadPropsMethod(loader);
         logDebug(Unobfuscator.getMethodDescriptor(methodProps));
@@ -71,12 +71,7 @@ public class XOthers extends XHookBase {
                 int i = (int) (param.args.length > 2 ? param.args[2] : param.args[1]);
 
                 var propValue = props.get(i);
-
                 if (propValue != null) {
-                    if (i == 2358) {
-                        param.setResult(false);
-                        return;
-                    }
                     var stacktrace = Thread.currentThread().getStackTrace();
                     var stackTraceElement = stacktrace[6];
                     if (stackTraceElement != null) {
