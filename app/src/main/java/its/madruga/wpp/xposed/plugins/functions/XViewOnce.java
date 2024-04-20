@@ -24,6 +24,7 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import its.madruga.wpp.xposed.Unobfuscator;
 import its.madruga.wpp.xposed.models.XHookBase;
+import its.madruga.wpp.xposed.plugins.core.ResId;
 
 public class XViewOnce extends XHookBase {
     public XViewOnce(ClassLoader loader, XSharedPreferences preferences) {
@@ -33,14 +34,20 @@ public class XViewOnce extends XHookBase {
     @Override
     public void doHook() throws Exception {
         var methods = Unobfuscator.loadViewOnceMethod(loader);
+        var classViewOnce = Unobfuscator.loadViewOnceClass(loader);
+        logDebug(classViewOnce);
+        var classViewOnce2 = Unobfuscator.loadViewOnceClass2(loader);
+        logDebug(classViewOnce2);
 
         for (var method : methods) {
             logDebug(Unobfuscator.getMethodDescriptor(method));
             XposedBridge.hookMethod(method, new XC_MethodHook() {
                 @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                protected void afterHookedMethod(MethodHookParam param) {
                     if (!prefs.getBoolean("viewonce", false)) return;
-                    param.setResult(null);
+                    if ((int) param.getResult() != 2 && (Unobfuscator.isCalledFromClass(classViewOnce) || Unobfuscator.isCalledFromClass(classViewOnce2))) {
+                        param.setResult(0);
+                    }
                 }
             });
         }
@@ -66,21 +73,19 @@ public class XViewOnce extends XHookBase {
 
                     if (XposedHelpers.getIntField(param.thisObject, menuIntField.getName()) == 3) {
                         Menu menu = (Menu) param.args[0];
-                         var idIconDownload = mApp.getResources().getIdentifier("btn_download", "drawable", mApp.getPackageName());
-                        MenuItem item = menu.add(0, 0, 0, "Download").setIcon(idIconDownload);
+                        var idIconDownload = mApp.getResources().getIdentifier("btn_download", "drawable", mApp.getPackageName());
+                        MenuItem item = menu.add(0, 0, 0, ResId.string.download).setIcon(idIconDownload);
                         item.setShowAsAction(2);
                         item.setOnMenuItemClickListener(item1 -> {
                             var i = XposedHelpers.getIntField(param.thisObject, initIntField.getName());
-                            logDebug("init: " + i);
                             var message = callMethod.getParameterCount() == 2 ? XposedHelpers.callMethod(param.thisObject, callMethod.getName(), param.thisObject, i) : XposedHelpers.callMethod(param.thisObject, callMethod.getName(), i);
-                            log("message: " + message);
                             if (message != null) {
                                 var fileData = XposedHelpers.getObjectField(message, "A01");
                                 var file = (File) XposedHelpers.getObjectField(fileData, fileField.getName());
                                 if (copyFile(file)) {
-                                    Toast.makeText(mApp, "Saved to " + getDestination(file), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(mApp, mApp.getString(ResId.string.saved_to) + getDestination(file), Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(mApp, "Error when saving, try again", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(mApp, mApp.getString(ResId.string.error_when_saving_try_again), Toast.LENGTH_SHORT).show();
                                 }
                             }
                             return true;

@@ -123,6 +123,16 @@ public class Unobfuscator {
         return field.getDeclaringClass().getName() + "->" + field.getName() + ":" + field.getType().getName();
     }
 
+    public static boolean isCalledFromClass(Class<?> cls) {
+      var trace = Thread.currentThread().getStackTrace();
+      for (StackTraceElement stackTraceElement : trace) {
+        if (stackTraceElement.getClassName().equals(cls.getName()))
+          return true;
+      }
+      return false;
+    }
+
+
     // TODO: Classes and Methods for FreezeSeen
     public static Method loadFreezeSeenMethod(ClassLoader classLoader) throws Exception {
         return UnobfuscatorCache.getInstance().getMethod(classLoader, () -> UnobfuscatorCache.getInstance().getMethod(classLoader, () -> findFirstMethodUsingStrings(classLoader, StringMatchType.Contains, "presencestatemanager/setAvailable/new-state")));
@@ -581,8 +591,9 @@ public class Unobfuscator {
                 ClassDataList listClasses = dexkit.findClass(new FindClass().matcher(new ClassMatcher().addInterface(mInstance.getDeclaringClass().getName())));
                 for (ClassData c : listClasses) {
                     Class<?> clazz = c.getInstance(classLoader);
-                    Method m1 = clazz.getMethod(mInstance.getName(), mInstance.getParameterTypes());
-                    list.add(m1);
+                    var resultMethod = Arrays.stream(clazz.getDeclaredMethods()).filter(m1 -> m1.getParameterCount() == 0 && m1.getReturnType().equals(int.class)).findFirst().orElse(null);
+                    if (resultMethod == null) continue;
+                    list.add(resultMethod);
                 }
                 return list.toArray(new Method[0]);
             }
@@ -590,6 +601,19 @@ public class Unobfuscator {
         throw new Exception("ViewOnce method not found");
 
     }
+
+    public static Class loadViewOnceClass(ClassLoader loader) throws Exception {
+        var clazz = findFirstClassUsingStrings(loader, StringMatchType.Contains, "conversation/row/viewOnce/no file");
+        if (clazz == null) throw new Exception("ViewOnce class not found");
+        return clazz;
+    }
+
+    public static Class loadViewOnceClass2(ClassLoader loader) throws Exception {
+        var clazz = findFirstClassUsingStrings(loader, StringMatchType.Contains, "INSERT_VIEW_ONCE_SQL");
+        if (clazz == null) throw new Exception("ViewOnce class not found");
+        return clazz;
+    }
+
 
     public static Method loadViewOnceDownloadMenuMethod(ClassLoader classLoader) throws Exception {
         return UnobfuscatorCache.getInstance().getMethod(classLoader, () -> {
@@ -1035,6 +1059,15 @@ public class Unobfuscator {
         });
     }
 
+    public static Method loadNewMessageWithMediaMethod(ClassLoader loader) throws Exception {
+        return UnobfuscatorCache.getInstance().getMethod(loader, () -> {
+            var clazzMessage = loadThreadMessageClass(loader);
+            var methodData = dexkit.findMethod(new FindMethod().searchInClass(List.of(dexkit.getClassData(clazzMessage))).matcher(new MethodMatcher().addUsingNumber(0x200000).returnType(String.class)));
+            if (methodData.isEmpty()) throw new RuntimeException("NewMessage method not found");
+            return methodData.get(0).getMethodInstance(loader);
+        });
+    }
+
     public static Method loadMessageEditMethod(ClassLoader loader) throws Exception {
         return UnobfuscatorCache.getInstance().getMethod(loader, () -> {
             var method = findFirstMethodUsingStrings(loader, StringMatchType.Contains, "MessageEditInfoStore/insertEditInfo/missing");
@@ -1112,10 +1145,14 @@ public class Unobfuscator {
     }
 
     public static Constructor loadRecreateFragmentConstructor(ClassLoader loader) throws Exception {
-        var data = dexkit.findMethod(new FindMethod().matcher(new MethodMatcher().addUsingString("Instantiated fragment")));
-        if (data.isEmpty()) throw new RuntimeException("RecreateFragment method not found");
-        if (!data.single().isConstructor())
-            throw new RuntimeException("RecreateFragment method not found");
-        return data.single().getConstructorInstance(loader);
+        return UnobfuscatorCache.getInstance().getConstructor(loader, () -> {
+            var data = dexkit.findMethod(new FindMethod().matcher(new MethodMatcher().addUsingString("Instantiated fragment")));
+            if (data.isEmpty()) throw new RuntimeException("RecreateFragment method not found");
+            if (!data.single().isConstructor())
+                throw new RuntimeException("RecreateFragment method not found");
+            return data.single().getConstructorInstance(loader);
+        });
     }
+
+
 }

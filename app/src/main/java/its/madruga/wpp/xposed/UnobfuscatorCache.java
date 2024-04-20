@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -160,6 +161,33 @@ public class UnobfuscatorCache {
 
     private String getKeyName() {
         return Arrays.stream(Thread.currentThread().getStackTrace()).filter(stackTraceElement -> stackTraceElement.getClassName().equals(Unobfuscator.class.getName())).findFirst().get().getMethodName();
+    }
+
+    public Constructor getConstructor(ClassLoader loader, FunctionCall functionCall) throws Exception {
+        var methodName = getKeyName();
+        String value = mShared.getString(methodName, null);
+        if (value == null) {
+            var result = (Constructor) functionCall.call();
+            if (result == null) throw new Exception("Class is null");
+            saveConstructor(methodName, result);
+            return result;
+        }
+        String[] classAndName = value.split(":");
+        Class<?> cls = XposedHelpers.findClass(classAndName[0], loader);
+        if (classAndName.length == 2) {
+            String[] params = classAndName[1].split(",");
+            Class<?>[] paramTypes = Arrays.stream(params).map(param -> XposedHelpers.findClass(param, loader)).toArray(Class<?>[]::new);
+            return XposedHelpers.findConstructorExact(cls, paramTypes);
+        }
+        return XposedHelpers.findConstructorExact(cls);
+    }
+
+    private void saveConstructor(String key, Constructor constructor) {
+        String value = constructor.getDeclaringClass().getName();
+        if (constructor.getParameterTypes().length > 0) {
+            value += ":" + Arrays.stream(constructor.getParameterTypes()).map(Class::getName).collect(Collectors.joining(","));
+        }
+        mShared.edit().putString(key, value).commit();
     }
 
     public interface FunctionCall {

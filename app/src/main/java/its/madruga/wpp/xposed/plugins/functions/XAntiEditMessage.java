@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.BlendMode;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -27,7 +26,6 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import its.madruga.wpp.R;
 import its.madruga.wpp.core.databases.MessageHistory;
 import its.madruga.wpp.core.databases.MessageStore;
 import its.madruga.wpp.models.MessageAdapter;
@@ -67,10 +65,13 @@ public class XAntiEditMessage extends XHookBase {
         var newMessageMethod = Unobfuscator.loadNewMessageMethod(loader);
         logDebug(Unobfuscator.getMethodDescriptor(newMessageMethod));
 
+        var newMessageWithMediaMethod = Unobfuscator.loadNewMessageWithMediaMethod(loader);
+        logDebug(Unobfuscator.getMethodDescriptor(newMessageMethod));
+
         var editMessageShowMethod = Unobfuscator.loadEditMessageShowMethod(loader);
         logDebug(Unobfuscator.getMethodDescriptor(editMessageShowMethod));
 
-        var editMessageViewField= Unobfuscator.loadEditMessageViewField(loader);
+        var editMessageViewField = Unobfuscator.loadEditMessageViewField(loader);
         logDebug(Unobfuscator.getFieldDescriptor(editMessageViewField));
 
         var dialogViewClass = Unobfuscator.loadDialogViewClass(loader);
@@ -99,6 +100,9 @@ public class XAntiEditMessage extends XHookBase {
                 if (timestamp == 0L) return;
                 long id = getFieldIdMessage.getLong(param.args[0]);
                 String newMessage = (String) newMessageMethod.invoke(param.args[0]);
+                if (newMessage == null){
+                    newMessage = (String) newMessageWithMediaMethod.invoke(param.args[0]);
+                }
                 try {
                     MessageHistory.getInstance(XMain.mApp).insertMessage(id, newMessage, timestamp);
                 } catch (Exception e) {
@@ -111,7 +115,7 @@ public class XAntiEditMessage extends XHookBase {
         XposedBridge.hookMethod(editMessageShowMethod, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                var textView = (TextView)editMessageViewField.get(param.thisObject);
+                var textView = (TextView) editMessageViewField.get(param.thisObject);
                 if (textView != null && !textView.getText().toString().contains("\uD83D\uDCDD")) {
                     textView.getPaint().setUnderlineText(true);
                     textView.append("\uD83D\uDCDD");
@@ -119,11 +123,11 @@ public class XAntiEditMessage extends XHookBase {
                         try {
                             var messageObj = XposedHelpers.callMethod(param.thisObject, "getFMessage");
                             long id = getFieldIdMessage.getLong(messageObj);
-                            var msg = new MessageHistory.MessageItem(id, MessageStore.getMessageById(id),0);
+                            var msg = new MessageHistory.MessageItem(id, MessageStore.getMessageById(id), 0);
                             var messages = MessageHistory.getInstance(XMain.mApp).getMessages(id);
                             if (messages == null) {
                                 messages = new ArrayList<>();
-                            }else {
+                            } else {
                                 messages.add(0, msg);
                             }
                             showBottomDialog(dialogViewClass, messages);
@@ -138,7 +142,7 @@ public class XAntiEditMessage extends XHookBase {
     }
 
     @SuppressLint("SetTextI18n")
-    private void showBottomDialog(Class<?> dialogClass,ArrayList<MessageHistory.MessageItem> messages) {
+    private void showBottomDialog(Class<?> dialogClass, ArrayList<MessageHistory.MessageItem> messages) {
         ((Activity) mConversation).runOnUiThread(() -> {
             var ctx = (Context) mConversation;
 
