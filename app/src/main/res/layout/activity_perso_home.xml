@@ -101,7 +101,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:summary="@string/novofiltro_sum"
-                    android:tag="novofiltro"
+                    android:tag="barfilter"
                     other:reboot="true"
                     android:text="@string/novofiltro" />
 
